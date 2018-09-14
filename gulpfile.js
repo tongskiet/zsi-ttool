@@ -3,7 +3,7 @@ var sass = require('gulp-sass');
 var rename = require('gulp-rename');
 var gulpSequence = require('gulp-sequence')
 
-gulp.task('compile',function(){
+gulp.task('compile-sass',function(){
    return gulp.src('./sass/*.scss')
               .pipe(sass({
 				  errorLogToConsole: true
