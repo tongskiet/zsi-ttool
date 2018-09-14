@@ -8,3 +8,5 @@ package-lock.json
 scripts/jquery.min.js
 scripts/bootstrap.min.js
 scripts/handlebars.min.js
+css/fontawesome*.css
+css/bootstrap.min.css
