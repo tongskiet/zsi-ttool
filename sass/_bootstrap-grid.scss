@@ -710,8 +710,8 @@ $jumbotron-bg:                      $gray-200 !default;
 
 // Cards
 
-$card-spacer-y:                     0.1rem !default;
-$card-spacer-x:                     1rem !default;
+$card-spacer-y:                     .75rem !default;
+$card-spacer-x:                     1.25rem !default;
 $card-border-width:                 $border-width !default;
 $card-border-radius:                $border-radius !default;
 $card-border-color:                 rgba($black, .125) !default;
@@ -889,11 +889,11 @@ $figure-caption-color:              $gray-600 !default;
 
 // Breadcrumbs
 
-$breadcrumb-padding-y:              .3rem !default;
+$breadcrumb-padding-y:              .75rem !default;
 $breadcrumb-padding-x:              1rem !default;
 $breadcrumb-item-padding:           .5rem !default;
 
-$breadcrumb-margin-bottom:          0.2rem !default;
+$breadcrumb-margin-bottom:          1rem !default;
 
 $breadcrumb-bg:                     $gray-200 !default;
 $breadcrumb-divider-color:          $gray-600 !default;

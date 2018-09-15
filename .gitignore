@@ -10,3 +10,4 @@ scripts/bootstrap.min.js
 scripts/handlebars.min.js
 css/fontawesome*.css
 css/bootstrap.min.css
+css/app.min.css
