@@ -2,9 +2,12 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var rename = require('gulp-rename');
 var gulpSequence = require('gulp-sequence')
+var browserSync = require('browser-sync').create();
+
+var sassFiles = './sass/**/*.scss';
 
 gulp.task('compile-sass',function(){
-   return gulp.src('./sass/*.scss')
+   return gulp.src(sassFiles)
               .pipe(sass({
 				  errorLogToConsole: true
 				  ,outputStyle :'compressed'				  
@@ -12,11 +15,21 @@ gulp.task('compile-sass',function(){
 			  .on('error',console.error.bind(console))
 			  .pipe( rename({suffix: '.min'}))
               .pipe(gulp.dest('./css'))
+			  .pipe(browserSync.stream())
 	;
 
 });
-
-
+ 
+gulp.task('serve', function(){
+	browserSync.init({
+		server : './'
+	});
+ 
+	gulp.watch(sassFiles,gulp.parallel('compile-sass'));
+	gulp.watch("./*.html").on('change',browserSync.reload);
+		
+});
+ 
 gulp.task('copy-fa-fonts', function() {
    return gulp.src('./bower_components/components-font-awesome/webfonts/**/*.*')
    .pipe(gulp.dest('./webfonts'));
@@ -33,6 +46,7 @@ gulp.task('copy-js', function() {
 
 });
 
-
 gulp.task('copy-all', gulp.parallel('copy-fa-fonts', 'copy-js'));
+
+gulp.task('default', gulp.series('compile-sass','serve'));
 
