@@ -1,6 +1,7 @@
 Requirements: NodeJS  
 Configuration:  
 run cmd and goto project folder, and type the following:  
+npm install bower -g
 npm install  
 bower install  
 gulp compile-sass  
