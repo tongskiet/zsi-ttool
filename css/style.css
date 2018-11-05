@@ -28,11 +28,33 @@
     margin: 0.4rem 0 0 !important;
 	width:300px !important;
 }
+.menu-icon {
+	height:70px;
+}
 
+a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
+	background:#FF0021 !important;
+}
 
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0px !important;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+} 
 
-
-
+.btn-link{
+	text-decoration: none;
+    background-color: FF0021;
+    border-radius: 2px;
+	color:#ffffff;
+}
 
 
 
