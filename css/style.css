@@ -68,30 +68,52 @@ a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
  
 }
 
+.tt-menu {
+     
+}
+.menu-item {
+    float: left;
+	text-align:center;
+}
 .tt-menu a{
     background-color: #494749;
     color: #fff;
     border-radius: 8px;
-    height: 63px;
+    height: inherit;
+    width: 89px;
+    height: 80px;
+    margin: 5px;
+	float:left;
+	text-decoration: none;
 }
 .tt-menu a:hover{
     background-color: red;
     color: #fff;
-    border-radius: 8px;
-    height: 63px;
 }
 
 
 .tt-menu a i{
-    font-size: 50px;
+    font-size: 38px;
+    line-height: 78px;
 }
 
+.menu-item{
+	
+}
+.menu-filter {
+    margin-top: 20px;
+    clear: both;
+    float: left;     
+}
+
+ 
+
+ 
 
 
 
 
-
-
+ 
 
 
 
