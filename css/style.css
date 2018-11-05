@@ -48,12 +48,22 @@ a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
     background-color: transparent;
     border: 0;
 } 
-
-.btn-link{
+.menutop-margin{
+	margin-top:20px;
+}
+.btn-menu{
 	text-decoration: none;
-    background-color: FF0021;
-    border-radius: 2px;
-	color:#ffffff;
+    background: FF0021 !important;
+    border-radius: 2px !important;
+	color:#ffffff !important;
+}
+
+.ddmenu-header {
+    background-color: #ff0021;
+    color: #fff;
+	padding: .1rem 1rem;
+ 
+ 
 }
 
 
