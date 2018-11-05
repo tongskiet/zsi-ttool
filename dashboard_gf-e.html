@@ -10,18 +10,31 @@
     <title> E - Systems Trend Tool (Dashboard)</title>
     <link href="css/app.min.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">	
+<script>
+function toggleMenu(o){
+	var ttmenu = document.querySelector(".tt-menu");
+	if (ttmenu.getAttribute("class").indexOf("show") === -1){	
+		ttmenu.classList.add("show");
+	
+	}else{
+		ttmenu.classList.remove("show");
+	}
+	
+}
+
+</script>	
   </head>
   <body id="page-top">    
 		<nav class="navbar navbar-expand navbar-dark bg-dark static-top">				
 			<nav class="navbar navbar-expand">
 				<ul class="navbar-nav">
 					<li class="nav-item dropdown no-arrow">
-						<a class="dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<a class="dropdown-toggle" href="javascript:void(0);" onclick="toggleMenu();"   >
 							<button class="btn btn-link btn-sm text-white">
 								<i class="fas fa-bars"></i>
 							</button>
 						</a>
-						<div class="tt-menu dropdown-menu dropdown-menu-left " aria-labelledby="dropdown01">
+						<div class="tt-menu dropdown-menu dropdown-menu-left " >
 							<div class="ddmenu-header">								
 								ELECTRICAL MENU
 							</div>
