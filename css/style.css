@@ -1,3 +1,5 @@
+@import 'zsi-trendtool.css';
+
 .navbar-btn{
 	box-shadow: none;
 	outline: none!important;
@@ -66,7 +68,23 @@ a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
  
 }
 
+.tt-menu a{
+    background-color: #494749;
+    color: #fff;
+    border-radius: 8px;
+    height: 63px;
+}
+.tt-menu a:hover{
+    background-color: red;
+    color: #fff;
+    border-radius: 8px;
+    height: 63px;
+}
 
+
+.tt-menu a i{
+    font-size: 50px;
+}
 
 
 

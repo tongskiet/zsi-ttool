@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<link rel="icon" href="images/favicon.png">
+    <title> E - Systems Trend Tool (Dashboard)</title>
+    <link href="css/app.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">	
+  </head>
+  <body id="page-top">    
+		<nav class="navbar navbar-expand navbar-dark bg-dark static-top">				
+			<nav class="navbar navbar-expand">
+				<ul class="navbar-nav">
+					<li class="nav-item dropdown no-arrow">
+						<a class="dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<button class="btn btn-link btn-sm text-white">
+								<i class="fas fa-bars"></i>
+							</button>
+						</a>
+						<div class="tt-menu dropdown-menu dropdown-menu-left " aria-labelledby="dropdown01">
+							<div class="ddmenu-header">								
+								ELECTRICAL MENU
+							</div>
+							<div class="row menutop-margin">
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											
+											<i class="ttool vehicle"></i>
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<i class="ttool wire"></i>
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<i class="ttool pdb"></i>
+										</a>
+									</div>
+								</div>
+							</div>	
+							<div class="row">
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<i class="ttool grounding"></i>
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<i class="ttool safety"></i>
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<i class="ttool network-distrib"></i>
+										</a>
+									</div>
+								</div>
+							</div>	
+							<div class="row menutop-margin text-center">
+								<div class="col-6 pull-left">									
+										<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+											<i class="fas fa-arrow-left"></i> Back
+										</button>									
+								</div>
+								<div class="col-6 pull-right">									
+										<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+											Next <i class="fas fa-arrow-right"></i>
+										</button>									
+								</div>
+							</div>
+							<div class="row menutop-margin">
+								<div class="col-6">									
+									<label class="col-12 control-label text-right">Category :</label>
+									<label class="col-12 control-label text-right">Graph Type : </label>
+										
+								</div>
+								<div class="col-6">									
+									<div class="col-12">
+										<select name="per_model_year" class="form-control input-sm" placeholder="Per Model Year">
+											<option></option>
+										</select>
+									</div>	
+									<div class="col-12">
+										<select name="column_graph" class="form-control input-sm" placeholder="Column Graph">
+											<option></option>
+										</select>
+									</div>	
+								</div>
+							</div>
+							
+						</div>
+						
+					</li>				
+				</ul>
+			</nav>
+			<a class="navbar-brand mr-1" href="index.html"> 
+				<img src="images/logo.png"  class="logo"/>
+			</a>
+			<div class="d-none d-sm-block appTitle"> E - Systems Trend Tool</div>			   
+			<!--<a class="navbar-brand" href="#">Navbar</a> -->
+			<button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item dropdown no-arrow mx-1">
+					  <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-bell fa-fw"></i>
+						<span class="badge badge-danger">9+</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">Something else here</a>
+					  </div>
+					</li>
+			 
+					<li class="nav-item dropdown no-arrow">
+					  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-user-circle fa-fw"> </i> <span class="d-none d-sm-inline "> SMAGER</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+						<a class="dropdown-item" href="#">Settings</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+					  </div>
+					</li>
+				</ul>
+			</div>
+		</nav>	
+    <div id="wrapper">
+		<div class="content-wrapper">			
+		
+        <div class="container-fluid">
+			<!-- Breadcrumbs-->
+			<ol class="breadcrumb">
+				<li>Dashboard Electrical</li>            
+				<li class="ml-auto">
+				<nav class="navbar navbar-expand navbar-white bg-none static-top">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item dropdown no-arrow">
+							<a class="dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-cog fa-fw"> </i> 
+							</a>
+							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown01">
+								<a class="dropdown-item" href="#">Action</a>
+								<a class="dropdown-item" href="#">Another action</a>
+								<a class="dropdown-item" href="#">Something else here</a>
+							</div>
+						</li>				
+					</ul>
+				</nav>
+			</li>
+			
+			</ol>
+
+		<div class="row">	
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool vehicle"></i>
+						VEHICLE ARCHITECTURE
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool wire"></i>
+						CABLE & WIRES
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool pdb"></i>
+						POWER DISTRIBUTION
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<div class="row">	
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool grounding"></i>
+						GROUNDING DISTRIBUTION
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool safety"></i>
+						SAFETY/CRITICAL CIRCUITS
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+			<div class="col-4">	
+				<!-- Area Chart Example-->
+				<div class="card mb-3">
+					<div class="card-header">
+						<i class="ttool network-distrib"></i>
+						NETWORK TOPOLOGY
+					</div>
+					<div class="card-body">
+					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+		  
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+				<span>Copyright © 2018 - Powered By <a href="http://www.zetta-solutions.net">ZettaSolutions, Inc.</a></span>
+            </div>
+          </div>
+        </footer>
+
+		</div>
+      <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+	
+    <script>
+	    $(document).ready(function(){	
+		
+			$('#sidebarCollapse').on('click',function(){				
+				$('#sidebar').toggleClass('active');
+			});
+		});  
+		
+	</script>
+  </body>
+</html>
