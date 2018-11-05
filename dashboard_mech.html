@@ -22,25 +22,51 @@
 							</button>
 						</a>
 						<div class="dropdown-menu dropdown-menu-left " aria-labelledby="dropdown01">
+							<div class="ddmenu-header">								
+								ELECTRICAL MENU
+							</div>
+							<div class="row menutop-margin">
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<img src="images/wc_mech.png"  class="mx-auto d-block menu-icon"/>
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<img class="mx-auto d-block menu-icon" src="images/ic_mech.png" />
+										</a>
+									</div>
+								</div>
+								<div class="col-4" >
+									<div class="text-center">									
+										<a class="dropdown-item" href="#">
+											<img src="images/ge_mech.png"  class="mx-auto d-block menu-icon"/>
+										</a>
+									</div>
+								</div>
+							</div>	
 							<div class="row">
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img src="images/va.png"  class="mx-auto d-block menu-icon"/>
+											<img src="images/coverings_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img class="mx-auto d-block menu-icon" src="images/wc.png" />
+											<img src="images/c&r_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img src="images/pd.png"  class="mx-auto d-block menu-icon"/>
+											<img src="images/grommets_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
@@ -49,41 +75,57 @@
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img src="images/gd.png"  class="mx-auto d-block menu-icon"/>
+											<img src="images/splices_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img src="images/scc.png"  class="mx-auto d-block menu-icon"/>
+											<img src="images/tsb_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
 								<div class="col-4" >
 									<div class="text-center">									
 										<a class="dropdown-item" href="#">
-											<img src="images/nt.png"  class="mx-auto d-block menu-icon"/>
+											<img src="images/bft_mech.png"  class="mx-auto d-block menu-icon"/>
 										</a>
 									</div>
 								</div>
 							</div>	
-							<div class="row">
-								<div class="col-6">
-									<div class="text-center">									
-										<button class="btn btn-link btn-sm text-white">
-											<a href="#">Back</a>
-										</button>							
-									</div>
+							<div class="row menutop-margin text-center">
+								<div class="col-6 pull-left">									
+										<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+											<i class="fas fa-arrow-left"></i> Back
+										</button>									
 								</div>
-								<div class="col-6">
-									<div class="text-center">									
-										<button class="btn btn-link btn-sm text-white">
-											<a href="#">Next</a>
-										</button>
-									</div>
+								<div class="col-6 pull-right">									
+										<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+											Next <i class="fas fa-arrow-right"></i>
+										</button>									
 								</div>
 							</div>
+							<div class="row menutop-margin">
+								<div class="col-6">									
+									<label class="col-12 control-label text-right">Category :</label>
+									<label class="col-12 control-label text-right">Graph Type : </label>
+										
+								</div>
+								<div class="col-6">									
+									<div class="col-12">
+										<select name="per_model_year" class="form-control input-sm" placeholder="Per Model Year">
+											<option></option>
+										</select>
+									</div>	
+									<div class="col-12">
+										<select name="column_graph" class="form-control input-sm" placeholder="Column Graph">
+											<option></option>
+										</select>
+									</div>	
+								</div>
+							</div>
+							
 						</div>
 						
 					</li>				
@@ -129,10 +171,10 @@
 		<div class="content-wrapper">			
 		
         <div class="container-fluid">
-          <!-- Breadcrumbs-->
-          <ol class="breadcrumb">
-            <li>Dashboard Mechanical</li>            
-			<li class="ml-auto">
+			<!-- Breadcrumbs-->
+			<ol class="breadcrumb">
+				<li>Dashboard Electrical</li>            
+				<li class="ml-auto">
 				<nav class="navbar navbar-expand navbar-white bg-none static-top">
 					<ul class="navbar-nav ml-auto">
 						<li class="nav-item dropdown no-arrow">
@@ -149,9 +191,9 @@
 				</nav>
 			</li>
 			
-          </ol>
+			</ol>
 
-			<div class="row">	
+		<div class="row">	
 				<div class="col-4">	
 					<!-- Area Chart Example-->
 					<div class="card mb-3">
@@ -275,7 +317,7 @@
 				</div>
 			</div>
 		</div><!-- /.row -->
-	
+
 		  
         </div>
         <!-- /.container-fluid -->
