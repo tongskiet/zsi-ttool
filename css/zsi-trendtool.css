@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'zsi-trendtool';
   src:
-    url('../webfonts/zsi-trendtool.ttf?gsj8qo') format('truetype'),
-    url('../webfonts/zsi-trendtool.woff?gsj8qo') format('woff'),
-    url('../webfonts/zsi-trendtool.svg?gsj8qo#zsi-trendtool') format('svg');
+    url('../webfonts/zsi-trendtool.ttf?g4my6c') format('truetype'),
+    url('../webfonts/zsi-trendtool.woff?g4my6c') format('woff'),
+    url('../webfonts/zsi-trendtool.svg?g4my6c#zsi-trendtool') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -22,21 +22,60 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.grounding:before {
+.batery-fuse-terminal:before {
   content: "\e900";
 }
-.network-distrib:before {
+.clips-retainers:before {
   content: "\e901";
 }
-.pdb:before {
+.covering:before {
   content: "\e902";
 }
-.safety:before {
+.grommets:before {
   content: "\e903";
 }
-.vehicle:before {
+.grommets2:before {
   content: "\e904";
 }
-.wire:before {
+.ground-eyelet:before {
   content: "\e905";
+}
+.grounding:before {
+  content: "\e906";
+}
+.inline-con:before {
+  content: "\e907";
+}
+.lear-logo:before {
+  content: "\e908";
+}
+.lear-logo-text:before {
+  content: "\e909";
+}
+.network-distrib:before {
+  content: "\e90a";
+}
+.pdb:before {
+  content: "\e90b";
+}
+.safety:before {
+  content: "\e90c";
+}
+.smager:before {
+  content: "\e90d";
+}
+.splices:before {
+  content: "\e90e";
+}
+.tsb:before {
+  content: "\e90f";
+}
+.vehicle:before {
+  content: "\e910";
+}
+.wire:before {
+  content: "\e911";
+}
+.zsi-logo:before {
+  content: "\e912";
 }
