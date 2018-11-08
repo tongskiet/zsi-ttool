@@ -144,3 +144,53 @@ a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
     margin-right: 15px;
     margin-left: 15px; 
 }
+.navbar .lear-logo {
+    color: red;
+    font-size: 30px;
+    margin-top: 1px;
+    float: left;
+}
+.icon-size{    
+    font-size: 50px;
+    margin-top: 1px;
+    float: left;
+}
+.img-slider {
+	overflow:hidden;
+	background:grey;
+	min-height:295px;
+	background-image: url("../images/ttool-bg-slider.png");
+	background-size:cover;
+	color:#fff;
+	max-width: 100%;
+    height: auto;
+	margin-bottom:10px;
+}
+#content-margin{
+	margin-top:55px;
+	margin-left:25px;
+}
+.elec-content{
+	margin-bottom:10px;
+}
+.elec-content-left{
+	margin:20px;
+	background:#cccccc;
+	border-radius:5px;
+	padding:20px;
+}
+.card-header a{    
+    color: #fff !important;
+}
+.card-header a:hover{    
+    color: #000 !important;
+	text-decoration:none;
+}
+thead tr th, tbody tr th{
+	background:#FF0021 !important;
+	color:#fff;
+}
+.table th, .table td{
+	border:1px solid#ccc;
+	padding:0px !important;
+}
