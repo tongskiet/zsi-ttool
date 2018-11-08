@@ -46,50 +46,50 @@ function toggleMenu(o){
 								</div>
 								
 								<div class="menu-item">									
-									<a href="#" title="Network Topology">
-										<i class="ttool network-distrib"></i>
+									<a href="#" title="Inline Connector">
+										<i class="ttool inline-con"></i>
 									</a>
 								</div>
 							 
 								<div class="menu-item">									
-									<a href="#" title="Power Distribution">
-										<i class="ttool pdb"></i>
+									<a href="#" title="Ground Eyelet">
+										<i class="ttool ground-eyelet"></i>
 									</a>
 								</div>
 							 
 					 
 								<div class="menu-item">									
-									<a href="#" title="Grounding">
-										<i class="ttool grounding"></i>
+									<a href="#" title="Coverings">
+										<i class="ttool covering"></i>
 									</a>
 								</div>
 							 
 								<div class="menu-item">									
-									<a  href="#" title="Safety/Critical">
-										<i class="ttool safety"></i>
+									<a  href="#" title="Clips & Retainers">
+										<i class="ttool clips-retainers"></i>
 									</a>
 								</div>
 								
 								<div class="menu-item">									
-									<a  href="#" title="Vehicle">											
-										<i class="ttool vehicle"></i>
+									<a  href="#" title="Grommets">											
+										<i class="ttool grommets"></i>
 									</a>
 								</div>
 								
 								<div class="menu-item">									
-									<a href="#" title="Network Topology">
-										<i class="ttool network-distrib"></i>
+									<a href="#" title="Splice">
+										<i class="ttool splices"></i>
 									</a>
 								</div>
 								
 								<div class="menu-item">									
-									<a href="#" title="Power Distribution">
-										<i class="ttool pdb"></i>
+									<a href="#" title="Rough/Shield/Bracket">
+										<i class="ttool tsb"></i>
 									</a>
 								</div>
 								<div class="menu-item">									
-									<a  href="#" title="Safety/Critical">
-										<i class="ttool safety"></i>
+									<a  href="#" title="Batery Fuse Terminal">
+										<i class="ttool batery-fuse-terminal"></i>
 									</a>
 								</div>
 								 
@@ -135,7 +135,7 @@ function toggleMenu(o){
 				</ul>
 			</nav>
 			<a class="navbar-brand mr-1" href="index.html"> 
-				<img src="images/logo.png"  class="logo"/>
+				<i class="ttool lear-logo" style=""></i>
 			</a>
 			<div class="d-none d-sm-block appTitle"> E - Systems Trend Tool</div>			   
 			<!--<a class="navbar-brand" href="#">Navbar</a> -->
@@ -234,135 +234,134 @@ function toggleMenu(o){
 						</li>				
 					</ul>
 				</nav>
-			</li>
+				</li>
 			
 			</ol>
 
-		<div class="row">	
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool vehicle"></i>
-						WIRES & CABLES
+			<div class="row">	
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool wire"></i>
+							WIRES & CABLES
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+				</div>
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool inline-con"></i>
+							INLINE CONNECTOR
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					
+				</div>
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool ground-eyelet"></i>
+							GROUND EYELET
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
+					</div>
 				</div>
 			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool wire"></i>
-						INLINE CONNECTOR
+			<div class="row">	
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool covering"></i>
+							COVERINGS
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
 				</div>
-			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool pdb"></i>
-						GROUND EYELET
-					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
-				</div>
-			</div>
-		</div>
-		<div class="row">	
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool grounding"></i>
-						COVERINGS
-					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
-				</div>
-			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool safety"></i>
-						CLIPS & RETAINERS
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool clips-retainers"></i>
+							CLIPS & RETAINERS
 
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+				</div>
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool grommets"></i>
+							GROMMETS
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					
 				</div>
 			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool network-distrib"></i>
-						GROMMETS
+			<div class="row">	
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool splices"></i>
+							SPLICE
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+				</div>
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool tsb"></i>
+							ROUGH/SHIELD/BRACKET
+						</div>
+						<div class="card-body">
+							<canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
 					</div>
-					
+				</div>
+				<div class="col-4">	
+					<!-- Area Chart Example-->
+					<div class="card mb-3">
+						<div class="card-header">
+							<i class="ttool batery-fuse-terminal"></i>
+							BATTERY FUSE TERMINAL
+						</div>
+						<div class="card-body">
+						  <canvas id="myAreaChart" width="100%" height="30"></canvas>
+						</div>
+						
+					</div>
 				</div>
 			</div>
-		</div>
-		
-		<div class="row">	
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool grounding"></i>
-						SPLICE
-					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
-				</div>
-			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool safety"></i>
-						ROUGH/SHIELD/BRACKET
-					</div>
-					<div class="card-body">
-						<canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
-				</div>
-			</div>
-			<div class="col-4">	
-				<!-- Area Chart Example-->
-				<div class="card mb-3">
-					<div class="card-header">
-						<i class="ttool network-distrib"></i>
-						BATTERY FUSE TERMINAL
-					</div>
-					<div class="card-body">
-					  <canvas id="myAreaChart" width="100%" height="30"></canvas>
-					</div>
-					
-				</div>
-			</div>
-		</div>
 
 		  
         </div>
