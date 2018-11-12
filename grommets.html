@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<link rel="icon" href="images/favicon.png">
+    <title> E - Systems Trend Tool (Dashboard)</title>
+    <link href="css/app.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">	
+<script>
+function toggleMenu(o){
+	var ttmenu = document.querySelector(".tt-menu");
+	if (ttmenu.getAttribute("class").indexOf("show") === -1){	
+		ttmenu.classList.add("show");
+	
+	}else{
+		ttmenu.classList.remove("show");
+	}
+	
+}
+
+</script>	
+  </head>
+  <body id="page-top">    
+		<nav class="navbar navbar-expand navbar-dark bg-dark static-top">				
+			<nav class="navbar navbar-expand">
+				<ul class="navbar-nav">
+					<li class="nav-item dropdown no-arrow">
+						<a class="dropdown-toggle" href="javascript:void(0);" onclick="toggleMenu();"   >
+							<button class="btn btn-link btn-sm text-white">
+								<i class="fas fa-bars"></i>
+							</button>
+						</a>
+						<div class="tt-menu dropdown-menu dropdown-menu-left " >
+							<div class="ddmenu-header">								
+								MECHANICAL MENU
+							</div>
+							<div class="menu-content">								 
+															 
+								<div class="menu-item">									
+									<a href="mechanical-wire-cables.html" title="Wires">
+										<i class="ttool wire"></i>
+									</a>
+								</div>
+								
+								<div class="menu-item">									
+									<a href="inline-connect.html" title="Inline Connector">
+										<i class="ttool inline-con"></i>
+									</a>
+								</div>
+							 
+								<div class="menu-item">									
+									<a href="ground-eyelet.html" title="Ground Eyelet">
+										<i class="ttool ground-eyelet"></i>
+									</a>
+								</div>
+							 
+					 
+								<div class="menu-item">									
+									<a href="coverings.html" title="Coverings">
+										<i class="ttool covering"></i>
+									</a>
+								</div>
+							 
+								<div class="menu-item">									
+									<a  href="clips-retainers.html" title="Clips & Retainers">
+										<i class="ttool clips-retainers"></i>
+									</a>
+								</div>
+								
+								<div class="menu-item">									
+									<a  href="grommets.html" title="Grommets">											
+										<i class="ttool grommets"></i>
+									</a>
+								</div>
+								
+								<div class="menu-item">									
+									<a href="splice.html" title="Splice">
+										<i class="ttool splices"></i>
+									</a>
+								</div>
+								
+								<div class="menu-item">									
+									<a href="trought-shield-bracket.html" title="Trough/Shield/Bracket">
+										<i class="ttool tsb"></i>
+									</a>
+								</div>
+								<div class="menu-item">									
+									<a  href="battery-fuse-terminal.html" title="Batery Fuse Terminal">
+										<i class="ttool batery-fuse-terminal"></i>
+									</a>
+								</div>
+								 
+							</div>	
+							<!--
+							<div class="row btnmenutop-margin text-center">
+								<div class="col-6 pull-left">									
+										<div class="col-12">
+											<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+												<i class="fas fa-arrow-left"></i> Back
+											</button>			
+										</div>
+								</div>
+								<div class="col-6 pull-right">									
+										<div class="col-12">
+											<button type="button" class="btn btn-primary btn-sm" id="btnGenerate">
+												Next <i class="fas fa-arrow-right"></i>
+											</button>			
+										</div>
+								</div>
+							</div>-->
+							<div class="row menu-filter">
+								<form>	
+									<div class="form-group ddrow">										
+										<div class="col-5">			
+											<label class="text-right">Category :</label>
+										</div>
+										<div class="col-7">			
+											<div class="selectWrapper">
+												<select name="per_model_year" class="form-control input-sm" placeholder="Per Model Year">
+													<option></option>
+													<option>Per Model Year</option>
+													<option>Per Region</option>
+												</select>
+											</div>	
+										</div>
+									</div>
+									<div class="form-group ddrow">
+										<div class="col-5">										
+											<label class="text-right">Graph Type : </label>
+										</div>
+										<div class="col-7">										
+											<div class="selectWrapper">
+												<select name="column_graph" class="form-control input-sm" placeholder="Column Graph">
+													<option></option>
+													<option>Line Graph</option>
+													<option>Column Graph</option>
+													<option>Pie Chart</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>							
+						</div>						
+					</li>				
+				</ul>
+			</nav>
+			<a class="navbar-brand mr-1" href="index.html"> 
+				<i class="ttool lear-logo" style=""></i>
+			</a>
+			<div class="d-none d-sm-block appTitle"> E - Systems Trend Tool</div>			   
+			<!--<a class="navbar-brand" href="#">Navbar</a> -->
+			<button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item dropdown no-arrow mx-1">
+					  <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-bell fa-fw"></i>
+						<span class="badge badge-danger">9+</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">Something else here</a>
+					  </div>
+					</li>
+			 
+					<li class="nav-item dropdown no-arrow">
+					  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fas fa-user-circle fa-fw"> </i> <span class="d-none d-sm-inline "> SMAGER</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+						<a class="dropdown-item" href="#">Settings</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+					  </div>
+					</li>
+				</ul>
+			</div>
+		</nav>	
+    <div id="wrapper">
+		<div class="content-wrapper">			
+		
+        <div class="container-fluid">
+			<!-- Breadcrumbs-->
+			<ol class="breadcrumb">
+				<li>Grommets</li>            
+			</ol>
+			<!-- Table-->
+			<div class="table-responsive">
+			  <table class="table">
+				<thead>
+					<tr >
+						<th class="text-center"><strong>CRITERIA GUIDELINES&nbsp;</strong></th>
+						<th rowspan="2" class="text-center"><strong>TREND</strong></th>
+						<th rowspan="2" class="text-center"><strong>OPPORTUNITIES/EVOLUTION</strong></th>
+					</tr>
+					<tr>
+						<th><strong>Grommet Strategy and Grommet Standard and Specification</strong></th>
+					</tr>
+				</thead>	
+				<tbody>	
+					<tr>
+						<td>&nbsp; &nbsp;Applied grommet is less complication to process</td>
+						<td class="text-center"></td>
+						<td class="text-center"></td>
+					</tr>
+					<tr>
+						<td>&nbsp; &nbsp;Ethylene Propylene Diene Monomer (EPDM) offers all around performance and excellent weather resistance, widely used as a lower cost polymer
+						</td>
+						<td class="text-center"></td>
+						<td class="text-center"></td>
+					</tr>
+					<tr>
+						<td>&nbsp; &nbsp;Plastic insert is better grommet reinforcement</td>
+						<td class="text-center">
+						</td>
+						<td class="text-center">
+						</td>
+					</tr>	
+					
+				</tbody>
+			  </table>
+			</div>
+		
+		  
+        </div>
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+				<span>Copyright &copy; 2018 - Powered By <a href="http://www.zetta-solutions.net">ZettaSolutions, Inc.</a></span>
+            </div>
+          </div>
+        </footer>
+
+		</div>
+      <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+	
+    
+  </body>
+</html>
