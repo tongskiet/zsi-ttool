@@ -3,7 +3,10 @@ Configuration:
 run cmd and goto project folder, and type the following:  
 npm install bower -g  
 npm install  
-bower install  
+----------------
+install yarn:
+https://yarnpkg.com/en/docs/install#windows-stable
+----------------
 gulp compile-sass  
 gulp copy-all  
 gulp  
