@@ -12,3 +12,4 @@ css/fontawesome*.css
 css/bootstrap.min.css
 css/app.min.css
 css/*.map
+yarn.lock
