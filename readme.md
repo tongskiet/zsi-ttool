@@ -5,8 +5,11 @@ npm install bower -g
 npm install  
 ----------------
 install yarn:
+npm install yarn -g
+or you can download here:
 https://yarnpkg.com/en/docs/install#windows-stable
 ----------------
+npm install gulp -g
 gulp compile-sass  
 gulp copy-all  
 gulp  
