@@ -12,5 +12,11 @@
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.1",
     "gulp-sourcemaps": "^2.6.4"
+  },
+  "dependencies": {
+    "bootstrap": "^4.2.1",
+    "components-font-awesome": "^5.4.2",
+    "handlebars": "^4.0.12",
+    "jquery": "^3.3.1"
   }
 }
