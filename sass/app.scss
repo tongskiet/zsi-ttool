@@ -162,18 +162,18 @@ body.sidebar-toggled footer.sticky-footer {
 
 /* -------- sub-menus-----------------*/
 .nav-item > ul.dropdown-menu > .nav-item > a.nav-link {
-   background: red;
+   background: $lear-red;
    color: #fff;
 }
 
 
 .nav-item > ul.dropdown-menu {
-   background-color: red;
+   background-color: $lear-red;
    font-size: 9pt;
 }
 
 .nav-item > ul.dropdown-menu > .nav-item > a.nav-link:hover {
-   background-color: #343a40;
-   color: #fff;
+   background-color: $gray-800;
+   color: #fff ;
 }
 
