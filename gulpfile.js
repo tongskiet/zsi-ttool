@@ -37,6 +37,11 @@ gulp.task('serve', function(){
 
 });
 
+gulp.task('watch-sass', function(){
+	gulp.watch(sassFiles,gulp.parallel('compile-sass'));
+});
+
+
 gulp.task('copy-fa-fonts', function() {
    return gulp.src('./node_modules/components-font-awesome/webfonts/**/*.*')
    .pipe(gulp.dest('./webfonts'));

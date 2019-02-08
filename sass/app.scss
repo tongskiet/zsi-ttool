@@ -159,3 +159,21 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+/* -------- sub-menus-----------------*/
+.nav-item > ul.dropdown-menu > .nav-item > a.nav-link {
+   background: red;
+   color: #fff;
+}
+
+
+.nav-item > ul.dropdown-menu {
+   background-color: red;
+   font-size: 9pt;
+}
+
+.nav-item > ul.dropdown-menu > .nav-item > a.nav-link:hover {
+   background-color: #343a40;
+   color: #fff;
+}
+
