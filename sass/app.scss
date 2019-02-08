@@ -1,14 +1,131 @@
- @import "bootstrap";
- @import "fontawesome";
- 
+@import "bootstrap";
+@import "fontawesome";
+@import "zcore";
+@import "zgrid";
+@import "ztable";
+@import "zpanel";
+@import "zsearch";
+@import "bs-navbar";
+@import "bs-navtabs";
+@import "report";
+@import "print";
+
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  height: 100%;
+ height: 100%;
+ font-family: Verdana,Arial,"Verdana","Helvetica",Sans-serif !important;
+ font-size:8.5pt !important;
+ margin-left:1px;
+ margin-right:1px;
+ margin-top:0px;
+ margin-bottom:0px;
+ background:#D4D5D6;
 }
+
+a{
+  color: #0000FF;
+  text-decoration:none;
+}
+a:hover{
+	color:#508BD1;
+	text-decoration:underline;
+}
+
+
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.zBanner {
+    background-image: url(/images/new_banners.jpg);
+}
+.container {
+    width: 939px !important;
+}
+
+.page {
+   min-height: 500px;
+   padding-top: 10px;
+}
+.pageHeader {
+      background-color: #1D64B6;
+    height: 44px;
+}
+.pageTitle {
+  background-color: #fff;
+  color: black;
+  font-size: 11pt;
+  height: 27px;
+  margin-bottom: 5px;
+  margin-left: -10px;
+  margin-top: -10px;
+  padding-left: 12px;
+  padding-top: 2px;
+}
+
+.pageTitle > select{
+    border-radius: 3px;
+	border: 1px solid #cccccc;
+}
+
+.formTitle {
+    background-color: #333333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    height: 22px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-left: 8px;
+    padding-top: 1px;
+}
+
+.zContainer1 {
+    border: 1pt solid #d6d8d8;
+    border-radius: 4pt;
+    overflow: hidden;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+
+.zHeaderTitle1 {
+    background-color: #17569e;
+    overflow: hidden;
+    height: 26px;
+    color: #fff;
+    line-height: normal;
+}
+
+.zHeaderTitle1 label {
+    margin-top: 5px;
+    margin-left: 5px;
+    font-weight: normal;
+    font-size: 10pt;
+}
+
+.zForm{
+    background-color: #fff;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 5px;
+    padding-top: 5px;
+	overflow:auto;
+}
+
+
 .logo{
 	height: 40px;
 }
@@ -17,36 +134,178 @@ body {
     font-size: 1.25rem;
 }
 
-#wrapper {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+#localTemplates,#tmpHtml{display:none;}
+
+.modal-header {
+  min-height: 16.42857143px;
+  background-color: rgb(54,119,195);
 }
 
-#wrapper #content-wrapper {
-  overflow-x: hidden;
-  width: 100%;
-  padding-top: 0.2rem;
-  padding-bottom: 80px;
+.modal-title {
+  color: #fff;
 }
 
-.fixed-nav #content-wrapper {
-  margin-top: 56px;
-  padding-left: 90px;
+.modal-title > select {
+    color: #000;
+    border: solid 1pt #d6d8d8;
+    border-radius: 2px;
 }
 
-.fixed-nav.sidebar-toggled #content-wrapper {
-  padding-left: 0;
+.table {
+   margin-top: 10px;
 }
 
-@media (min-width: 768px) {
-  .fixed-nav #content-wrapper {
-    padding-left: 225px;
+.modal-body > table.table tbody tr td {
+   padding-right:10px;
+}
+
+.subTable tbody tr td {
+   padding-top: 2px;
+}
+
+
+ ul
+ {
+     list-style-type: none;
+ }
+
+ .leftnavpanel ul{
+   margin-left: 0;
+   padding-left: 5px;
+ }
+
+ .leftnavpanel a{
+
+   font-size: 11px;
+   font-weight: normal;
+ }
+
+
+ #footer{
+  margin-top:15px;
+ }
+ #footer a{
+  color:#C1E3FF;
+ }
+
+
+ #copyright{
+   margin-left:15px;
+ }
+
+ #poweredby{
+   margin-right:5px;
+ }
+
+ .container-full{
+   margin: 0 auto;
+   width: 99%;
+ }
+ .welcome-container{
+   margin: 0 auto;
+   width: 99%;
+ }
+
+ .screen-holder{
+   width:661px;
+ }
+
+
+ #banner{
+  background :url("../images/banner.jpg") no-repeat;
+  height:39px;
+  background-color:#99B7FD;
+ }
+
+
+
+ .theme-dropdown .dropdown-menu {
+   position: static;
+   display: block;
+   margin-bottom: 20px;
+ }
+
+ .theme-showcase > p > .btn {
+   margin: 5px 0;
+ }
+
+ .theme-showcase .navbar .container {
+   width: auto;
+ }
+ .bottomNav{
+
+ }
+
+ .buttonGroup {
+   margin-top:5px;
+   margin-right:20px;
+   padding-left: 6px;
+   margin-bottom: 5px;
+ }
+ .buttonGroup button {
+   margin-right:5px;
+ }
+
+ .inputDate{
+    width:130px;
+ }
+ .input-group-btn button{
+   margin-top: -3px;
+ }
+
+
+ .form-group .control-label{
+   text-align: right;
+ }
+ .form-header {
+    margin-bottom:5px;
+    margin-top: 5px
+ }
+ .form-header .form-group label {
+    padding-top: inherit;
+ }
+
+ .yesno-td{
+    width: 53px
+ }
+
+ /* m5= minus 5*/
+ .LeftAdjust-m5{
+   margin-left:-5px
+ }
+
+ .LeftAdjust-m4{
+   margin-left:-4px
+ }
+
+ .LeftAdjust-m3{
+   margin-left:-3px
+ }
+ /*modal*/
+
+
+ .modal-body {
+     overflow: auto;
+ 	margin-right:10px;
+ 	margin-left:10px;
+ }
+
+
+
+  .fullWidth{
+     width:100%;
   }
-  .fixed-nav.sidebar-toggled #content-wrapper {
-    padding-left: 90px;
-  }
-}
+
+
+
+ .alignCenter{
+    text-align:center;
+ }
+
+ .alignLeft{
+    text-align:left;
+ }
+
 
 .scroll-to-top {
   position: fixed;
@@ -94,50 +353,11 @@ body {
   z-index: 1;
 }
 
-.navbar-nav .form-inline .input-group {
-  width: 100%;
-}
-
-.navbar-nav .nav-item.active .nav-link {
-  color: #fff;
-}
-
-.navbar-nav .nav-item.dropdown .dropdown-toggle::after {
-  width: 1rem;
-  text-align: center;
-  float: right;
-  vertical-align: 0;
-  border: 0;
-  font-weight: 900;
-  content: '\f105';
-  font-family: 'Font Awesome 5 Free';
-}
-
-.navbar-nav .nav-item.dropdown.show .dropdown-toggle::after {
-  content: '\f107';
-}
-
-.navbar-nav .nav-item.dropdown.no-arrow .dropdown-toggle::after {
-  display: none;
-}
-
-.navbar-nav .nav-item .nav-link:focus {
-  outline: none;
-}
-
-.navbar-nav .nav-item .nav-link .badge {
-  position: absolute;
-  margin-left: 0.75rem;
-  top: 0.3rem;
-  font-weight: 400;
-  font-size: 0.5rem;
-}
- 
 footer.sticky-footer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  position: absolute;
+  position: fixed;
   right: 0;
   left:0;
   bottom: 0;
@@ -159,21 +379,3 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
-
-/* -------- sub-menus-----------------*/
-.nav-item > ul.dropdown-menu > .nav-item > a.nav-link {
-   background: $lear-red;
-   color: #fff;
-}
-
-
-.nav-item > ul.dropdown-menu {
-   background-color: $lear-red;
-   font-size: 9pt;
-}
-
-.nav-item > ul.dropdown-menu > .nav-item > a.nav-link:hover {
-   background-color: $gray-800;
-   color: #fff ;
-}
-

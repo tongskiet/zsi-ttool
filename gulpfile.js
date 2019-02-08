@@ -21,7 +21,7 @@ gulp.task('compile-sass',function(){
 			  }))
 			  .pipe(rename({suffix: '.min'}))
 			  .pipe(sourcemaps.write('./'))
-              .pipe(gulp.dest('./css'))
+              .pipe(gulp.dest('//zsi-smager/wwwroot/lear_tt/css'))
 			  .pipe(browserSync.stream())
 	;
 

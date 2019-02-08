@@ -1,0 +1,30 @@
+/*search panel*/
+.SearchPanel{
+
+   border: 1pt solid #a6a6a6;
+   height: 256px;
+   overflow-y: scroll;
+   width: 300px;
+   position: absolute;
+   display:none;
+   background:#fff;
+}
+
+.SearchPanel table tr.active td{
+
+   background-color:#4285F4;
+   color:#fff;
+}
+
+.SearchPanel table tr.active td a{
+
+   color:#fff;
+}
+
+.SearchPanel table tr:hover td{
+
+   background-color:#94bcff;
+}
+
+.SearchPanel tbody tr:nth-child(even) {background: #E3E4E5}
+.SearchPanel tbody tr:nth-child(odd) {background: #fff}

@@ -1,0 +1,49 @@
+.rptTopHeader{
+ border-bottom: 1pt dotted #9b9c9d;
+ margin: 10px 8px 5px;
+}
+.rptTitle{
+ float: left;
+ font-size: 12pt;
+ font-weight: bold;
+ margin-left: 25px;
+
+}
+.rptRunDate{
+ float: right;
+ font-weight: bold;
+ margin-right: 10px
+}
+
+.reportcriteria{
+   font-size:10pt;
+   margin-bottom: 3px;
+}
+
+.reportTitle{
+   font-size: 11pt;
+   font-weight: bold;
+   margin-bottom: 2px;
+   margin-top: 5px;
+}
+
+
+.gridReport {
+   border-collapse: collapse;
+   border:1pt;
+}
+
+.gridReport tr th, .gridReport tr td{
+   border: solid 1pt #000;
+   padding-left: 5px;
+   padding-right: 5px;
+}
+
+.gridReport tr th{
+   font-size:10pt;
+}
+
+.gridReport tr td{
+   font-size:10pt;
+   border: 1px solid #f1171;
+}

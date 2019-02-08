@@ -1,0 +1,61 @@
+.navbar{
+ min-height: 30px;
+ padding: 0px !important;
+}
+
+
+.navbar-nav .form-inline .input-group {
+  width: 100%;
+}
+
+.navbar-nav .nav-item.active .nav-link {
+  color: #fff;
+}
+
+.navbar-nav .nav-item.dropdown .dropdown-toggle::after {
+  width: 1rem;
+  text-align: center;
+  float: right;
+  vertical-align: 0;
+  border: 0;
+  font-weight: 900;
+  content: '\f105';
+  font-family: 'Font Awesome 5 Free';
+}
+
+.navbar-nav .nav-item.dropdown.show .dropdown-toggle::after {
+  content: '\f107';
+}
+
+.navbar-nav .nav-item.dropdown.no-arrow .dropdown-toggle::after {
+  display: none;
+}
+
+.navbar-nav .nav-item .nav-link:focus {
+  outline: none;
+}
+
+.navbar-nav .nav-item .nav-link .badge {
+  position: absolute;
+  margin-left: 0.75rem;
+  top: 0.3rem;
+  font-weight: 400;
+  font-size: 0.5rem;
+}
+
+/* -------- sub-menus-----------------*/
+.nav-item > ul.dropdown-menu > .nav-item > a.nav-link {
+   background: $lear-red;
+   color: #fff;
+}
+
+
+.nav-item > ul.dropdown-menu {
+   background-color: $lear-red;
+   font-size: 9pt;
+}
+
+.nav-item > ul.dropdown-menu > .nav-item > a.nav-link:hover {
+   background-color: $gray-800;
+   color: #fff ;
+}
