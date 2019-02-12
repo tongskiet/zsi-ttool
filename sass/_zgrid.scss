@@ -1,0 +1,358 @@
+.zGrid{
+    border: 1pt solid #d6d8d8;
+}
+.zCell a{
+    text-decoration:underline;
+}
+.zGrid .zHeaders{
+	background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%);
+	color: #fff;
+	font-weight: bold;
+	overflow: hidden;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+.zHeaders .title .text{
+	padding-left: 4px;
+	white-space: nowrap;
+}
+.zHeaders .title .text input[type="checkbox"], .zHeaders .title .text input[type="radio"]{
+    left: 1px;
+    position: relative;
+    top: 2px;
+    width: inherit;    
+	margin-left:2px;
+}
+
+.zHeaders .item .cr {
+    height: 100%;
+    right: 0px;
+    position: absolute;
+    cursor: w-resize;
+    top: 0px;
+    width: 2px;
+}
+
+.zGrid .zGridPanel{
+	float:left;
+	overflow: hidden;
+}
+
+
+.zGroupHeaderItem:not(:last-child) {
+	border-right: 1pt solid #d6d8d8;
+	float: left;
+	height: inherit;
+	position: relative;
+}
+
+.zGrid .zHeaderItem {
+	position:relative;
+	float: left;
+	width: inherit;
+}
+
+.zGrid .zRows{
+	clear:left;
+}
+.zGrid .right{
+ border-left: 1pt solid #939393;
+}
+.zGrid .right .zRows{
+	overflow: auto;
+}
+.zGrid .left,.zGrid .left .zRows{
+	overflow: hidden;
+}
+
+.zGrid .item {
+    float: left;
+    text-align: center; 
+	clear:right;
+	
+}
+.zGrid .zHeaders .groupItem {
+    border-top : 1pt solid #d6d8d8;
+}
+
+
+.zGrid .zHeaders > .item .title {
+    height: 20px;
+    align-items: center;
+    display: flex;	
+}
+
+.zGrid .zHeaders .item {
+    position: relative;
+    overflow: hidden;
+}
+
+.zGrid .zHeaders .zSort {
+    align-items: center;
+    display: flex;
+}
+.zHeaders > .group0 > .title {
+    display: block;
+}
+
+
+.zGrid .item .title {
+    height: 20px;
+}
+
+
+.zGrid .zHeaders .item input {
+    display: inline-block;
+}
+
+.zGrid .item {
+    border-right: 1pt solid #d6d8d8;
+}
+
+.groupItem > .groupItem:last-child {
+    border-right: 0pt;
+} 
+ 
+.zGrid .zRows > #table {
+   
+}
+
+.zGrid .zRows .zRow input[type='checkbox'], input[type='radio']{
+	background-color:transparent;
+	outline: 0 none;
+	margin-left: 2px;
+}
+
+.zGrid .zRow{
+    border-bottom: 1pt solid #d6d8d8;
+    clear: left;
+    height: 28px;
+    overflow: hidden;
+}
+ 
+ .zGrid .zCell{
+    border-right: 1pt solid #d6d8d8;
+    float: left;
+    height: inherit;
+    line-height: 18pt;
+    min-width: 25px;
+	position: relative;
+	overflow: hidden;
+ }
+ 
+ 
+.zGrid .zRows #table{	 
+	position:relative;	 
+}   
+    
+.zRows  #table  .even {
+
+
+}
+
+.zRows  #table .odd {
+
+  background-color:#e3e4e5;
+}
+
+.zRows  #table  .zRow:hover  {
+    background-color: #b8b8b8;
+    color: #000;
+}
+
+.zRows #table .zRow.active  {
+    background-color: #333333;
+    color: #fff;
+}
+
+
+.zRows #table .zRow.active a {
+    color: #fff;
+}
+
+
+.zGrid .zCell .form-control:not([type="checkbox"]) {
+    background-color: transparent;
+    border: medium none;
+    height: inherit;
+    width: inherit;
+}
+.zGrid .active .zCell .form-control {
+	background-color:#333333;
+	color:#fff;
+	border-radius: 0;
+	border-right: 1pt solid #d6d8d8;
+}
+
+
+.zGrid  .zRow .form-control.mandatory {
+	border-radius: 0;
+	border-right: 1pt solid #d6d8d8 !important;
+}
+.zGrid  .zRow.odd .form-control.mandatory {
+    background-color:#B7B5B5 !important;
+}
+
+.zGrid  .zRow.even .form-control.mandatory {
+    background-color: #DDDDDD !important;
+	
+}
+
+
+.zGrid  .zPageFooter {
+	background-color: #bcbcbc;
+    background-image: linear-gradient(to bottom, #bcbcbc 0px, #9c9d9e 100%);
+    height: 27px;
+    overflow: visible;
+    padding-left: 5px;
+    padding-right: 5px;
+	clear:left;
+	position: relative;
+    z-index: 1;
+	
+}
+
+.zGrid  .zPageFooter .pagestatus {
+    float: left;
+    font-weight: bold;
+    padding-top: 4px;
+}
+
+.zGrid  .zPageFooter .pagectrl {
+    float: right;
+    padding-top: 4px;
+}
+
+.zGrid  .zPageFooter .pagectrl input#rpp {
+    height: 18px;
+    width: 35px;
+}
+
+.pagectrl input, .pagectrl select {
+    border: 1pt solid #5f6061;
+    border-radius: 2pt;
+}
+
+.zGrid .left {
+    position: relative;
+    z-index: 1;
+}
+
+/*dropdown list */
+.zDdlBtn {
+	border-left: 1pt solid #d6d8d8;
+	float: right;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 17px;
+	color:#000;
+	padding-right: 3px;
+}
+.zDdlBtn > .caret {
+	margin-left: 4px;
+}
+
+.zDDList{
+	background-color: #333333;
+	color: #fff;
+	font-size: 9pt;
+	left: 0;
+	position: absolute;
+	z-index: 1000;
+	top:100px;
+	display:none;
+	
+}
+.zRow.odd .zDdlBtn{
+    background-color: #e3e4e5;
+}
+
+.zRow.even .zDdlBtn{
+    background-color: #fff;
+}
+.zRow.active .zDdlBtn {
+	background-color:#333333;
+    color: #fff;
+}
+
+/*end of dropdown list */
+
+
+/*sort */
+.zHeaders .item > .title.hasSort {
+    float: left;
+}
+
+.zGrid .zHeaders .zSort {
+    width: 10px;
+    text-align: left;
+    position: absolute;
+    right: 6px;
+    top: 1px;
+}
+
+.zGrid .zHeaders .zSort a {
+    color: #fff;
+}
+ 
+.zGrid .zHeaders .zSort span.sPane{
+    float:left;
+	line-height:5px; 
+}  
+
+.zGrid .zHeaders  .zSort {
+	white-space: normal;
+}
+.zGrid .zHeaders .zSort span.sPane{
+}
+
+
+.zGrid .zHeaders .arrow-up {
+    border-bottom: 4px solid #dff904;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    display: inline-block;
+    height: 0;
+    width: 0;
+}
+
+.zGrid .zHeaders .arrow-down {
+	border-top: 4px solid #dff904;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+    display: inline-block;
+	width: 0; 
+	height: 0; 
+
+}
+.zGrid .zHeaders  .zSort > .asc > .sPane
+,.zGrid .zHeaders  .zSort  > .desc > .sPane{
+    line-height:10px
+}
+/*end of sort*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
