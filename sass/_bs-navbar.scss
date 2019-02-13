@@ -45,17 +45,17 @@
 
 /* -------- sub-menus-----------------*/
 .nav-item > ul.dropdown-menu > .nav-item > a.nav-link {
-   background: $lear-red;
-   color: #fff;
+   
+   color: $lear-red;
 }
 
 
 .nav-item > ul.dropdown-menu {
-   background-color: $lear-red;
+   background-color: #fff;
    font-size: 9pt;
 }
 
 .nav-item > ul.dropdown-menu > .nav-item > a.nav-link:hover {
-   background-color: $gray-800;
+   background-color: $lear-red;
    color: #fff ;
 }
