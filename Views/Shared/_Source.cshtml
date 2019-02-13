@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8, IE=9, IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="@Url.Content("~/")favicon.png" type="image/x-icon">
+    <title>@ViewBag.pageTitle </title>
+    <script src="@Url.Content("~/")Scripts/jquery-1.12.0.min.js"></script>
+    <link href="@Url.Content("~/")Content/bootstrap.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/site.css" rel="stylesheet" />  
+    <link href="@Url.Content("~/")Content/zGrid.css" rel="stylesheet" />
+    <script>
+        var base_url = '@Url.Content("~/")';
+        var controller_url = base_url + '@this.Context.Request.RequestContext.RouteData.Values["controller"].ToString()/';
+    </script>
+    <script type="text/javascript" src="@Url.Content("~/")Scripts/zsiLib.js"></script>   
+    <style>
+        .modal-dialog {
+            width: 95%;
+        }
+
+        .ace_search.right {
+            position: fixed !important;
+        }
+
+        .ace_search_field {
+            color: #000 !important;
+            background-color: #fff !important;
+        }
+
+    </style>   
+</head>
+<body>
+<div class="progressWindow">
+    <div class="loadingImg"></div>
+    <div class="loadingText">Loading...Please wait</div>
+</div>
+<div class="errorWindow">
+    Some processe(s) encountered a problem.
+    <br> Please Contact System Administrator.
+</div>
+ 
+<div class="container-fluid page">
+    @RenderBody()
+</div>
+<footer class="noprint">
+    <p>&copy; @DateTime.Now.Year - Powered By <a href="http://zetta-solutions.net/">ZettaSolutions, Inc. </a></p>
+</footer>
+
+<script src="@Url.Content("~/")ace/src-noconflict/ace.js"></script>
+<script src="@Url.Content("~/")ace/src-noconflict/ext-language_tools.js"></script>
+<script src="@Url.Content("~/")Scripts/bootstrap.min.js"></script>
+<div class="alert alert-success">
+    <p>Data has been saved.</p>
+</div>
+</body>
+</html>
+
+

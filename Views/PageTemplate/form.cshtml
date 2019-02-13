@@ -1,0 +1,35 @@
+﻿
+@{ Layout = null;}
+
+<form id="frmWindow">
+	<div class="form-horizontal">
+		<input type="hidden" id="pt_id" name="pt_id">
+        <input type="hidden" id="page_id" name="page_id">
+		<input type="hidden" id="pt_content" name="pt_content">
+		<div class='form-group  '>  
+			<label class=" col-xs-2 control-label">Page Name :</label>
+			<div class=' col-xs-3'>
+                <p class="form-control-static" id="page_name"></p>              
+			</div>
+		</div>
+		
+		<div class='form-group  '>
+			<div class="form-group">
+				<label class="col-xs-2 control-label">HTML Code:</label>
+			</div>
+			<pre id="editor"></pre>
+		</div>
+</div>
+
+    <div class="col-xs-12 buttonGroup">
+        <button id="btnSubmit" class="btn btn-primary btn-sm" type="button">
+            <span class="glyphicon glyphicon-floppy-disk"></span> Save
+        </button>
+
+        <button type="button" id="btnCloseWindow" class="btn btn-primary"><span class=" glyphicon glyphicon-off"></span> Close</button>
+
+    </div>
+</form>
+<div class="alert alert-success">
+    <p>Data has been saved.</p>
+</div>

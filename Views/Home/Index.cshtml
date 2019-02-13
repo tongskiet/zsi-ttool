@@ -1,0 +1,198 @@
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+<style>
+
+    body{
+       background-image: url("@Url.Content("~/")images/.jpg");
+       background: #D4D5D6;  /* fallback for old browsers */
+      
+
+    }
+    #loginform {
+        margin-top: -10px;
+        padding-right: 25px;
+    }
+
+    #loginform label {
+        color: #fff;
+    }
+	.login-panel h1, .login-panel h2 {
+    text-align: center;
+    font-family: 'Black Ops One', cursive;
+    font-size: 36px;
+	text-shadow: 2px 2px 5px #333;
+	}
+
+	.login-form {
+        background-color: #fff;
+        /*border: 1pt solid #92bc6d;*/
+        min-height: 127px;
+        opacity: 0.75;
+        padding: 35px 35px 15px;
+    }
+
+.container {
+   /* width: 939px !important;*/
+    margin-top: 65px;
+}
+.form-group .control-label {
+    text-align: left;
+    color:#333;
+
+}
+.ftrlogin {
+    font-size: 10px;
+}
+
+</style>
+
+<div class="pageHeader">
+    <div class="container-fluid">
+        <div class="row">
+            <!--<div class="col-md-12">
+                <a href="@Url.Content("~/")">
+                    <img src="@Url.Content("~/")images/.png" style="z-index: 100;width: 173px;"/>
+                </a>
+            </div>-->
+        </div>
+    </div>
+</div>
+<div class="container page">
+	<div class="login-panel col-md-12 col-md-12">
+	    <div style="text-align: center;">
+            <img src="@Url.Content("~/")images/.png" style="z-index: 100;"/>
+	    </div>
+	    <div>
+	        <h1>Trend Tool</h1>
+	    </div>
+	    <div>
+    		<form id="frmLogin" method="post" action="@Url.Content("~/")account/validate" class="login-form col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
+				<div class="input-group mb-3">
+					<div class="input-group-append">
+						<span class="input-group-text"><i class="fas fa-user"></i></span>
+					</div>
+					<input type="text" name="username" class="form-control input_user" value="" placeholder="username">
+				</div>
+				<div class="input-group mb-2">
+					<div class="input-group-append">
+						<span class="input-group-text"><i class="fas fa-key"></i></span>
+					</div>
+					<input type="password" name="password" class="form-control input_pass" value="" placeholder="password">
+				</div>
+				<div class="form-group">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="customControlInline">
+						<label class="custom-control-label" for="customControlInline">Remember me</label>
+					</div>
+				</div>
+				
+				<button id='btnLogin' class='btn btn-block' name='cmdlogin' type='submit'>Log In</button>
+				
+				
+    		</form>
+    		<div class="ftrlogin">
+    		    <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4"> </div>
+            </div>
+		</div>
+	</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+	    var msg = zsi.getUrlParamValue("access");
+	    var _username = readCookie("username");
+
+		if(_username){
+			if (msg !== "") {
+				$("#username").val(_username);
+				$("#password").val( readCookie("userpwd"));
+				$("#isremember").prop('checked',true);
+				$("#frmLogin").submit();
+			}
+			else
+				clearCookies();
+		}
+		else {
+		    if (msg) alert( unescape(msg) + " Please try again.")
+        }
+
+        $('.carousel').carousel({
+            interval: 6000
+        })
+    });
+
+$("#frmLogin").submit(function () {
+
+    if ($("#username").val() === "") { alert("Please enter username."); return false; }
+    if ($("#password").val() === "") { alert("Please enter password."); return false; }
+	checkRememberSignin();
+});
+
+$("#btnTest").click(function () {
+	checkRememberSignin();
+});
+
+function clearCookies(){
+	createCookie("username","",0);
+	createCookie("userpwd","",0);
+	$("#isremember").prop('checked',false);
+}
+
+function checkRememberSignin(){
+	if ( $("#isremember").is(':checked') ){
+			createCookie("username",$("#username").val(),1);
+			createCookie("userpwd",$("#password").val(),1);
+	}
+	else clearCookies();
+}
+
+var button = $("#example-one");
+button.on("click", function () {
+
+    var x = $(this);
+    if (x.text() == x.data("text-swap")) {
+        x.text(x.data("text-original"));
+    } else {
+        x.data("text-original", x.text());
+        x.text(x.data("text-swap"));
+    }
+
+});
+
+var button = $("#example-two");
+button.on("click", function () {
+
+    var x = $(this);
+    if (x.text() == x.data("text-swap")) {
+        x.text(x.data("text-original"));
+    } else {
+        x.data("text-original", x.text());
+        x.text(x.data("text-swap"));
+    }
+
+});
+
+function createCookie(name,value,days) {
+    var expires;
+    if (days) {
+    	var date = new Date();
+    	date.setTime(date.getTime()+(days*24*60*60*1000));
+    	expires = "; expires="+date.toGMTString();
+    }
+    else expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+</script>

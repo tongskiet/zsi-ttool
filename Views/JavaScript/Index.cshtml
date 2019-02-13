@@ -1,0 +1,147 @@
+
+@{
+    ViewBag.Title = "JavaScript List";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div class="pageTitle">JavaScripts </div> 
+
+	<div class="form-horizontal ">
+		<div class="form-group  ">
+			<div class="col-xs-12">
+				<label class=" col-xs-1 control-label">Page Name:</label>
+				<div class=" col-xs-2">
+					<input type="text" name="filter_name" id="filter_name" class="form-control input-sm ">
+				</div>
+
+				<label class=" col-xs-1 control-label">Content:</label>
+				<div class=" col-xs-2">
+					<input type="text" name="filter_content" id="filter_content" class="form-control input-sm ">
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="zPanel">
+		 <div id="grid" class="zGrid"></div>
+			
+	</div>
+
+	<div class="buttonGroup">
+		
+		<button id="btnDelete" class="btn btn-primary btn-sm" >
+			<span class="glyphicon glyphicon-trash"></span> Delete
+		</button>
+		<button id="btnGenerateFiles" type="button" class="btn btn-primary btn-sm" >Create Backup</button>
+	</div>
+
+
+<script>
+var bs 		= zsi.bs.ctrl;
+var svn =  zsi.setValIfNull;
+var controller_url = base_url + "javascript/";
+var tmr;
+
+$(document).ready(function(){
+    setInputs();
+
+    displayDataToGrid();
+
+    $("#btnGenerateFiles").click(function(){
+
+        $.getJSON(controller_url + "selfBackup"
+            ,function(data){
+                if (data) {
+                    alert("Backup files has been created.")
+                }
+            }
+       );
+
+    });
+
+});
+
+function setInputs() {
+    $filter_name = $("#filter_name");
+    $filter_content = $("#filter_content");
+
+    $("#filter_name,#filter_content").keyup(function(e){
+		clearTimeout(tmr);
+		tmr = setTimeout(
+		function(){
+			 displayDataToGrid();
+		},600);		
+	});
+}
+
+ 
+
+function displayDataToGrid() {
+	var _url = base_url + "sql/proc?p=javascripts_sel "
+	var _params = "";
+	 
+	_params = createParameter(_params, "@Html.Raw('@')search_page_name", $filter_name, true);
+	_params  = createParameter(_params,"@Html.Raw('@')js_content",$filter_content,true);   
+	
+    //if (_url == null) _url = base_url + "sql/exec?p=javascripts_sel";
+ 
+	var cb = bs({name:"cbFilter1",type:"checkbox"});
+    $("#grid").dataBind({
+	     url            : _url + _params
+	    ,width          : $(document).width() - 50
+	    ,height         : $(document).height() - 250
+	    ,selectorType   : "checkbox"
+        //,blankRowsLimit:5
+        ,isPaging : false
+        ,dataRows : [
+                 {text  : cb  , width : 25        , style : "text-align:left;"       
+        		    , onRender      :  function(d){ 
+                		                    return     bs({name:"js_id",type:"hidden",value: svn(d,"js_id")})
+                                                      +  (d !==null ? bs({name:"cb",type:"checkbox"}) : "" );
+                      }
+				}	
+                ,{ text  : "Page Name"  , width : 250        , style : "text-align:left;"       
+        		    , onRender      :  function(d){ 
+						return '<a class="iconEdit" title="Open URL" target="_blank" href="' + base_url + 'page/name/' + d.page_name + '"><span class="glyphicon glyphicon-globe"><span></span></span></a>'
+					  +'&nbsp;<a target="_blank" href="' + base_url + 'javascript/source/' + d.page_name + '">' + d.page_name + '</a>';
+                    }
+				}	
+        		,{text  : "Revision"     , name  : "rev_no"     		, width : 65       	, style : "text-align:center;"}
+        		,{text  : "Created By"   , name  : "created_by_name"  	, width : 180      	 , style : "text-align:left;"}
+        		,{text  : "Created Date" , name  : "created_date"   	, width : 133          , style : "text-align:left;"}
+        		,{text  : "Updated By"   , name  : "updated_by_name" 	, width : 180          , style : "text-align:left;"}
+        		,{text  : "Updated Date" , name  : "updated_date"   	, width : 133          , style : "text-align:left;"}
+	    ] 
+    	     ,onComplete: function(){
+                $("#cbFilter1").setCheckEvent("#grid input[name='cb']");
+        }  
+    });     
+	
+}
+
+     
+function createParameter(src,name,obj,isString){
+    var _q  =  ( typeof isString  === "undefined") ? "": "'";
+	if( obj.val()  !== "") {
+		if( src !== "") src +=",";
+		src += name + "=" +  _q + obj.val() + _q;
+	} 
+	return src;	
+}
+ 
+
+$("#btnDelete").click(function () {
+    zsi.form.deleteData({
+         code      : "sys-0001"
+        ,onComplete: function (data) {
+            displayDataToGrid();
+        }
+    });
+
+});
+
+
+</script>
+
+
+

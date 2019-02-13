@@ -1,0 +1,131 @@
+
+@{
+    ViewBag.Title = "Page List";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div class="pageTitle">@ViewBag.Title </div>
+
+
+	
+	<div class="col-12">
+		<div class="form-group row">		
+			<label for="filter_name" class="col-2 col-form-label">Search Page Name:</label>
+			<div class="col-3">
+				<input type="text" name="filter_name" id="filter_name" class="form-control">
+			</div>		
+		</div>
+	</div>
+	<div class="col-12 zPanel">		
+		 <form method="post" id="frm"><div id="grid" class="zGrid"></div></form>
+		<div class="buttonGroup">
+			<button type="button" class="btn btn-primary btn-sm" id="btnSave">
+				<i class="fas fa-save"></i> Save
+			</button>
+			<button type="button" class="btn btn-primary btn-sm" id="btnDelete">
+				<i class="fas fa-trash-alt"></i> Delete
+			</button>
+		</div>
+	</div>
+
+<style>
+
+ .iconEdit{
+	font-size: 12pt;
+    color: #3878C4;
+ }
+ .zGrid .zHeaders { 
+    font-size: .8rem;
+}
+.zHeaders .title .text input[type="checkbox"], .zHeaders .title .text input[type="radio"] {    
+    top: 5px;    
+}
+.zPanel{padding:5px !important;}
+</style>
+<script>
+    var bs 		= zsi.bs.ctrl;
+	var svn  	=  zsi.setValIfNull;
+    var gArr = null;
+	var tmr;
+    $(document).ready(function () {
+        displayRecords();
+    });
+
+    $("#btnSave").click(function () {
+        $("#frm").jsonSubmit({
+              procedure: "pages_upd"
+			, optionalItems: ["is_public"]
+            , onComplete: function (data) {
+				zsi.form.showAlert("alert");
+				$("#grid").clearGrid();
+				displayRecords();
+            }
+        });
+    });
+    function displayRecords() {
+		var sName = $("#filter_name");
+		var params =  (sName.val()!=="" ? " @@search_page_name='" + sName.val() + "'" : "");
+        var cb = bs({name:"cbFilter1",type:"checkbox"});
+        $("#grid").dataBind({
+         url			: base_url + "sql/exec?p=pages_sel" + params
+        ,width          : $(document).width()- 20
+	    ,height         : $(document).height()-220
+	    ,selectorType   : "checkbox"
+        ,blankRowsLimit :5
+        ,dataRows       :[
+
+       		 { text: cb           , width:25  , style:"text-align:center;", type:"hidden" , name:"page_id"}
+    		,{ text:"Page Name"   , width:214 , style:"text-align:left;", type:"input"  , name:"page_name"}
+    		,{ text:"Page Title"   , width:300 , style:"text-align:left;", type:"input" , name:"page_title"}
+			,{ text:"Public ?"      , width: 65, style: "text-align:center;", type: "yesno", name: "is_public", defaultValue: "N" }
+    		,{ text:"Master Page"   , width:100 , style:"text-align:center;", type:"select" , name:"master_page_id"}
+    		,{ text:"URL"
+				, width:40
+				, style:"text-align:center;"
+				, onRender	: function(d){
+					return '<a class="iconEdit"  title="Open URL" target="_blank" href="' + base_url + 'page/' + svn(d,"page_name") + '"><i class="fas fa-globe-americas"></i></a>';
+				}
+
+			}
+    		,{ text:"Template"
+				, width:75
+				, style:"text-align:center;"
+				, onRender	: function(d){
+					return '<a class="iconEdit" title="Edit Source Code" target="_blank" href="' + base_url + 'pagetemplate/source/' + svn(d,"page_name") + '"><i class="fas fa-edit"></i></a>';
+				}
+
+			}
+    		,{ text:"JavaScript"
+				, width:85
+				, style:"text-align:center;"
+				, onRender	: function(d){
+					return '<a class="iconEdit" title="Edit Source Code"  target="_blank" href="' + base_url + 'javascript/source/' + svn(d,"page_name") + '"><i class="fas fa-edit"></i></a>';
+				}
+
+			}
+
+        ]
+            ,onComplete: function(){
+				 $("select[name='master_page_id']").dataBind("masterpages");
+            }
+        });
+    }
+
+	$("#filter_name").keyup(function(e){
+		clearTimeout(tmr);
+		tmr = setTimeout(
+		function(){
+			displayRecords();
+		},600);
+	});
+
+    $("#btnDelete").click(function () {
+        $("#grid").deleteData({
+            code       : "sys-0006"
+            ,onComplete: function (data) {
+                displayRecords();
+            }
+        });
+    });
+
+
+</script>

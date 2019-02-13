@@ -1,0 +1,63 @@
+@{
+    Layout = "~/Views/Shared/_Source.cshtml";
+}
+<div class="pageTitle">HTML Source: @ViewBag.pageTitle</div> 
+<form id="frmWindow">
+    <div class="form-horizontal">
+        <input type="hidden" id="pt_id" name="pt_id" value="@ViewBag.ptId">
+        <input type="hidden" id="page_id" name="page_id" value="@ViewBag.pageId">
+        <input type="hidden" id="pt_content" name="pt_content">
+        <div class="form-group  ">
+            <pre id="editor">@ViewBag.ptContent</pre>
+        </div>
+    </div>
+</form>
+
+<script>
+ var editor =null;
+$(window).bind('keydown', function(e) {
+    var isCtrlS = (e.ctrlKey && e.which == 83);
+    if(isCtrlS){
+        submit(false);
+        e.preventDefault();
+        return false;
+    }
+
+});
+
+$(document).ready(function(){
+	$(".pageTitle").dblclick(function(){ submit();});
+    initAceEditor();
+});
+
+function initAceEditor(){
+    $("#editor").css({height:  $(window).height() - 71 });
+    ace.require("ace/ext/language_tools");
+    editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/html");
+    editor.setAutoScrollEditorIntoView(true);
+
+    editor.setOptions({
+           enableBasicAutocompletion: true,
+           enableSnippets: true,
+           enableLiveAutocompletion: false,
+           fontSize: "10pt"
+    });
+
+}
+  
+function submit() {
+
+    $("#pt_content").val(editor.getSession().getValue());
+    var data = $("#frmWindow").serializeArray();
+    $.post(base_url + "pageTemplate/update", data, function (d) {
+        $("#pt_id").val(d.pt_id);
+        zsi.form.showAlert("alert");
+
+    });
+
+}
+</script>
+
+

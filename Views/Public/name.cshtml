@@ -1,0 +1,14 @@
+﻿
+@{
+    Layout = ViewBag.layoutPage;
+
+}
+@{ if (ViewBag.masterPage.ToLower() != "_popup" && ViewBag.masterPage.ToLower() != "_nomenu")
+    {
+
+        <div class="pageTitle">@ViewBag.pageTitle </div>
+
+    }
+}
+@Html.Raw(ViewBag.template)
+@Html.Raw(ViewBag.pageJSLink) 

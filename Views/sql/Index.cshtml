@@ -1,0 +1,171 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Console</title>
+    <script src="@Url.Content("~/")Scripts/jquery-1.12.0.min.js"></script>
+    <link href="@Url.Content("~/")Content/bootstrap.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/site.css" rel="stylesheet" />    
+    <script>
+        var base_url = '@Url.Content("~/")';
+    </script>
+    <script type="text/javascript" src="@Url.Content("~/")Scripts/zsiLib.js"></script>
+    <style>
+        .modal-dialog {
+            width: 95%;
+        }
+
+        .alert {
+            position: absolute;
+            top: 0px;
+            display: none;
+            z-index: 10000;
+        }
+        .ace_editor {
+            min-height: 400px !important;
+        }
+        .ace_search.right {
+            position: fixed !important;
+        }
+        .ace_search_field {
+            color: #000 !important;
+            background-color: #fff !important;
+        }
+        .dhtmlx_wins_body_inner > div[ida='dhxMainCont'] {
+            overflow: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="progressWindow">
+        <div class="loadingImg"></div>
+        <div class="loadingText">Loading...Please wait</div>
+    </div>
+     <div class="container-fluid page">
+        <div class="pageTitle">SQL Console</div>
+        <form id="frm">
+            <div class="form-horizontal">
+                <input type="hidden" id="sql_content" name="sql_content">
+                <div class="form-group  ">
+                    <pre id="editor">@ViewBag.jsContent </pre>
+                </div>
+            </div>
+
+            <div class="col-xs-12 buttonGroup">
+                <button id="btnRun" class="btn btn-primary btn-sm" type="button">
+                    <span class="glyphicon glyphicon-play"></span> Run
+                </button>
+
+            </div>
+        </form>
+
+        <div id="tblResult" class="zPanel"></div>
+    </div>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - Powered By ZettaSolutions, Inc.</p>
+    </footer>
+
+    <script>
+    var tbl = "#tblResult";
+    var editor = null;
+    var w1 = null;
+
+    $(window).bind('keydown', function (e) {
+        var isCtrlR = (e.ctrlKey && e.which == 82);
+        if (isCtrlR) {
+            runSQL();
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $(document).ready(function () {
+        initAceEditor();
+
+    });
+
+    $("#btnRun").click(function () {
+        runSQL();
+    });
+    function runSQL() {
+        var text = editor.getSelectedText();
+        if (text === "") text = editor.getSession().getValue();
+        $.post(base_url + "sql/exec?p=" + escape(text), DisplayRecords)
+        .error(function (xhr) {
+            $(tbl).html(xhr.responseText);
+        })
+        .success(function () {
+            $(tbl).append("<br /><br />SQL command has been executed.");
+        });
+
+    }
+
+
+    function DisplayRecords(data) {
+        var d = data.rows;
+        if (d.length == 0) {
+            $(tbl).html("No Result.");
+            return;
+        }
+        var hInfo = d[0];
+        var keys = Object.keys(hInfo);
+        var colsLength = keys.length;
+
+        var h = "<table class='fullWidth'><thead><tr>";
+        for (var i = 0; i < colsLength; i++) {
+            h += "<th>" + keys[i] + "</th>";
+        }
+        h += "</tr></thead></table>"
+        $(tbl).html(h);
+
+        var trCls = "odd";
+        for (var y = 0; y < d.length; y++) {
+
+            h = "<tr class='" + trCls + "'>";
+            if (trCls == "odd") trCls = "even"; else trCls = "odd";
+
+            for (var x = 0; x < colsLength; x++) {
+                var info = d[y];
+                var val = info[keys[x]];
+                var new_val = $('<div/>').text(val).html();
+                h += "<td>" + new_val + "</td>";
+            }
+            h += "</tr>";
+            $(tbl + " table").append(h);
+        }
+    }
+
+
+    function initAceEditor() {
+
+        ace.require("ace/ext/language_tools");
+        editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/sql");
+        editor.setAutoScrollEditorIntoView(true);
+
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: false,
+            maxLines: 40,
+            fontSize: "10pt"
+        });
+
+    }
+
+    </script>
+
+    <script src="@Url.Content("~/")ace/src-noconflict/ace.js"></script>
+    <script src="@Url.Content("~/")ace/src-noconflict/ext-language_tools.js"></script>
+    <script src="@Url.Content("~/")Scripts/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+

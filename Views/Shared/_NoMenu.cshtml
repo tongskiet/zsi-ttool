@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8, IE=9, IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="@Url.Content("~/")favicon.png" type="image/x-icon">
+    <title>@ViewBag.pageTitle - PAFEIS</title>
+    
+    <script src="@Url.Content("~/")Scripts/jquery-1.12.0.min.js"></script>
+    <link href="@Url.Content("~/")Content/bootstrap.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="@Url.Content("~/")Content/site.css" rel="stylesheet" />    
+    <link href="@Url.Content("~/")Content/zGrid.css" rel="stylesheet" />
+
+    @Html.Raw(ViewBag.GetScriptLinkCurrentVersion("zsiLib"))    
+    <script>
+        var base_url = '@Url.Content("~/")';
+        var controller_url = '@this.Context.Request.RequestContext.RouteData.Values["controller"].ToString()';
+    </script>
+</head>
+<body>
+    <div class="progressWindow">
+        <div class="loadingImg"></div>
+        <div class="loadingText">Loading...Please wait</div>
+    </div>
+    <div class="errorWindow">
+        Some processe(s) encountered a problem.
+        <br> Please Contact System Administrator.
+    </div>
+    @Html.Raw(ViewBag.GetScriptLinkCurrentVersion("appStart")) 
+    <div class="container-fluid page">
+        @RenderBody()
+    </div>
+
+@{
+    if (Session["zsi_login"].ToString() == "Y")
+    {
+        <div class='debugPanel noprint'>     
+              <a href="@Url.Content("~/")pagetemplate/source/@ViewBag.pageName" target="_blank">Edit Page Template</a> 
+            | <a href="@Url.Content("~/")javascript/source/@ViewBag.pageName" target="_blank">Edit Javascript</a> 
+            | <a href="@Url.Content("~/")page" target="_blank">Pages</a>         
+            | <a href="@Url.Content("~/")pagetemplate" target="_blank">Page Templates</a>
+            | <a href="@Url.Content("~/")javascript" target="_blank">JavaScripts</a>
+        </div> 
+    }
+}
+     <footer >
+         <p>&copy; @DateTime.Now.Year - Powered By <a href="http://zetta-solutions.net/">ZettaSolutions, Inc. </a></p>
+       </footer>
+<script src="@Url.Content("~/")Scripts/bootstrap.min.js"></script>
+<div class="alert alert-success">
+    <p>Data has been saved.</p>
+</div>
+</body>
+</html>
+
+
+
