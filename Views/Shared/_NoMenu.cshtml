@@ -7,11 +7,9 @@
     <link rel="shortcut icon" href="@Url.Content("~/")favicon.png" type="image/x-icon">
     <title>@ViewBag.pageTitle - PAFEIS</title>
     
-    <script src="@Url.Content("~/")Scripts/jquery-1.12.0.min.js"></script>
-    <link href="@Url.Content("~/")Content/bootstrap.css" rel="stylesheet" />
-    <link href="@Url.Content("~/")Content/bootstrap-theme.min.css" rel="stylesheet" />
-    <link href="@Url.Content("~/")Content/site.css" rel="stylesheet" />    
-    <link href="@Url.Content("~/")Content/zGrid.css" rel="stylesheet" />
+    <script src='@Url.Content("~/")Scripts/jquery.min.js'></script>
+    <link href='@Url.Content("~/")css/app.min.css' rel="stylesheet" />
+    <link href='@Url.Content("~/")css/zsi-trendtool.css' rel="stylesheet" />
 
     @Html.Raw(ViewBag.GetScriptLinkCurrentVersion("zsiLib"))    
     <script>
