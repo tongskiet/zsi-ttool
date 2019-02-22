@@ -1,34 +1,28 @@
 @media print {
-   .noprint{
-     display:none;
-   }
-   .navbar,.btn,.debugPanel {
-       display: none;
-   }
-   table tr th,table tr td{
-      border:solid 1px #000;
-   }
-
-   .page, div.zPanel table{
-       border:none;
-   }
-
-   .pgbreakBefore{
-  		page-break-before:always
-  	}
-  	.pgbreakAfter{
-  		page-break-after:always
-  	}
-  	.zPanel table thead{
-  		display: table-header-group;
-  	}
-  	.page {
-              overflow: visible;
+    .noprint, .navbar, .btn, .debugPanel {
+      display: none;
+    }
+    table tr {
+      th, td {
+        border: solid 1px #000;
       }
-
-  	footer{
-  		display:none;
-  	}
-
-
-}
+    }
+    .page, div.zPanel table {
+      border: none;
+    }
+    .pgbreakBefore {
+      page-break-before: always;
+    }
+    .pgbreakAfter {
+      page-break-after: always;
+    }
+    .zPanel table thead {
+      display: table-header-group;
+    }
+    .page {
+      overflow: visible;
+    }
+    footer {
+      display: none;
+    }
+  }

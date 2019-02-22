@@ -4,132 +4,127 @@
 	border-radius: 3px;
 	background-color: #3577c3;
 	color: #fff;
-	display:none;
+	display: none;
 	z-index: 2000;
-}
-
-
-.loadingStatus{
-	 color: red;
-	 font-size: 10pt;
-	 font-weight: bold;
-	 margin: 0 auto 30px;
-	 width: 220px;
-}
-
-.progressWindow{
-	 background-color: #fff;
-	 color: #333;
-	 font-weight: bold;
-	 height: 27px;
-	 top: 0px;
-	 padding-left: 10px;
-	 padding-top: 3px;
-	 position: fixed;
-	 width: 200px;
-	 z-index: 1001;
-	 display:none;
-	 border: 1pt dotted #b8b8b8;
-}
-
-.errorWindow{
-	 background-color: #fff;
-		color: red;
-		font-weight: bold;
-		padding: 5px 5px 10px 10px;
-		position: absolute;
-		top: 0;
-		width: 315px;
-		z-index: 1000;
-		border: 1pt solid #3399ff;
-		display:none;
-}
-
-.alert {
-		position: absolute;
-		top: 0px;
-		display: none;
-		z-index: 10000;
-}
-
-.loadingImg{
-	 background :url("../images/loading.gif") no-repeat;
-	 width:30px;
-	 height:19px;
-	 float: left;
-}
-
-.loadIconR{
-	 background-image: url("../images/loading.gif") ;
-	 background-repeat: no-repeat;
-	 background-size: 17px 15px;
-	 background-position: right center;
-}
-
-
-.loadingText{
-	 float: left;
-	 margin-left: 5px;
-}
-.debugPanel {
-		background-color: #fff;
-		border: 0.1em solid #b7b2b2;
-		border-radius: 0 0 3px 3px;
-		font-size: 8pt;
-		height: 20px;
-		margin-left: 10px;
-		padding-left: 10px;
-		padding-right: 10px;
-		position: fixed;
-		right: 16px;
-		bottom: 2px;
-		z-index: 1000;
-}
-
-
-/* waitingBox */
-
-.waitingBox {
-		background  : #212121;
-		color       : #ffffff;
-		cursor      : wait;
-		opacity     : 0.9;
-		margin      : -2px;
-		text-align  : center;
-		position    : absolute;
-}
-
-.waitingBox .label {
-		position: absolute;
-		top: 50%;
-		bottom: 0;
-		left: 0;
-		right: 0;
-}
-
-.waitingBox .img {
-		background: url(/images/loading.gif) no-repeat;
-		width: 30px;
-		height: 19px;
-		margin: auto;
-}
-
-.waitingBox .text {
-		margin-top: 8px;
-}
-
-/* end waitingBox */
-
-.pagectrl{
+  }
+  
+  .loadingStatus {
+	color: red;
+	font-size: 10pt;
+	font-weight: bold;
+	margin: 0 auto 30px;
+	width: 220px;
+  }
+  
+  .progressWindow {
+	background-color: #fff;
+	color: #333;
+	font-weight: bold;
+	height: 27px;
+	top: 0px;
+	padding-left: 10px;
+	padding-top: 3px;
+	position: fixed;
+	width: 200px;
+	z-index: 1001;
+	display: none;
+	border: 1pt dotted #b8b8b8;
+  }
+  
+  .errorWindow {
+	background-color: #fff;
+	color: red;
+	font-weight: bold;
+	padding: 5px 5px 10px 10px;
+	position: absolute;
+	top: 0;
+	width: 315px;
+	z-index: 1000;
+	border: 1pt solid #3399ff;
+	display: none;
+  }
+  
+  .alert {
+	position: absolute;
+	top: 0px;
+	display: none;
+	z-index: 10000;
+  }
+  
+  .loadingImg {
+	background: url("../images/loading.gif") no-repeat;
+	width: 30px;
+	height: 19px;
+	float: left;
+  }
+  
+  .loadIconR {
+	background-image: url("../images/loading.gif");
+	background-repeat: no-repeat;
+	background-size: 17px 15px;
+	background-position: right center;
+  }
+  
+  .loadingText {
+	float: left;
+	margin-left: 5px;
+  }
+  
+  .debugPanel {
+	background-color: #fff;
+	border: 0.1em solid #b7b2b2;
+	border-radius: 0 0 3px 3px;
+	font-size: 8pt;
+	height: 20px;
+	margin-left: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	position: fixed;
+	right: 16px;
+	bottom: 2px;
+	z-index: 1000;
+  }
+  
+  /* waitingBox */
+  
+  .waitingBox {
+	background: #212121;
+	color: #ffffff;
+	cursor: wait;
+	opacity: 0.9;
+	margin: -2px;
+	text-align: center;
+	position: absolute;
+	.label {
+	  position: absolute;
+	  top: 50%;
+	  bottom: 0;
+	  left: 0;
+	  right: 0;
+	}
+	.img {
+	  background: url(/images/loading.gif) no-repeat;
+	  width: 30px;
+	  height: 19px;
+	  margin: auto;
+	}
+	.text {
+	  margin-top: 8px;
+	}
+  }
+  
+  /* end waitingBox */
+  
+  .pagectrl {
 	float: right;
 	padding-top: 10px;
-}
-.pagectrl label{
-	margin-left: 5px;
-}
-
-.pagestatus{
+	label {
+	  margin-left: 5px;
+	}
+  }
+  
+  .pagestatus {
 	float: left;
 	font-weight: bold;
 	padding-top: 10px;
-}
+  }

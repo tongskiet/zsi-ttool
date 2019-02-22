@@ -1,141 +1,163 @@
-.zPanel table a{
-	text-decoration:underline;
-}
-
-/*zPanel Table*/
-div.zPanel table .align-l{ text-align:left;}
-div.zPanel table .align-r{ text-align:right;}
-div.zPanel table .align-c{ text-align:center;}
-div.zPanel table tr.total td {
-    background-image:linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color:#fff;
-    font-weight:bold;
-}
-
-div.zPanel table tr th{
-    vertical-align: inherit;
-    background-color:#508BD1;
-    background-image:linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color: #fff;
- }
- div.zPanel table tr th, div.zPanel table tr td {
-     padding-left: 5px;
-     padding-right: 5px;
-     height: 23px;
- }
-
- div.zPanel table input[type="checkbox"], div.zPanel table input[type="radio"] {
-     background: rgba(0,0,0,0.5);
-     outline: 0 none;
- }
-
-
- div.zPanel {
-     -webkit-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-     -moz-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-     box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-     background-color: #fff;
-     padding: 20px;
-     margin-bottom: 15px;
-     border-radius: 3px;
- 	overflow: auto;
- }
-
-
- div.zPanel .headerTitle{
- 	background-image: linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
- 	color: #fff;
- 	padding: 3px 10px;
- 	border: 1pt solid #a8acad;
-
- }
-
- @media screen{
-     div.zPanel table{ border: 1pt solid #e5e5e5; }
-     div.zPanel table tr th, div.zPanel table tr td { border-left: 1pt solid #d6d8d8; }
- }
-
-
- div.zPanel table tr th.title1{
-     background-image:linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
-     color:#fff;
- }
-
- div.zPanel table tr th.title2{
-     background-image:linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
-     border-top: solid 1pt #B82E38;
-     color:#fff;
- }
-
- div.zPanel table tbody tr.even td{
-       background-color:#E3E4E5 !important;
- }
- div.zPanel table tbody tr.odd td{
-       background-color:#fff !important;
- }
-
- div.zPanel:not(.noHover) table tbody tr:hover td {
-     background-color:#B8B8B8 !important;
-     color:#000;
- }
-
- div.zPanel table tbody tr.active:hover td,div.zPanel table tbody tr.active:hover td a{
- 	background-color:#333333 !important;
- 	color:#fff;
- }
-
- div.zPanel table > tfoot > tr > td {
- 	background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
- 	background-color:#BCBCBC;
- }
- div.zPanel table tr.extraRow{
- 	border:solid 1pt #D6D8D8;
-
- }
- div.zPanel table tr.trOpen{
- 	display:table-row;
- }
-
- div.zPanel table tr.trClose{
- 	display:none;
- }
-
- div.zPanel table tr.extraRow > td {
-     padding-left: 25px !important;
-     padding-top: 5px;
- }
-
- div.zPanel table a:hover {
- 	color:red;
- }
-
- div.zPanel table.zTableTop tbody tr.active td, div.zPanel table tbody tr.active td,div.zPanel table tbody tr.active td a{
- 	background-color:#333333 !important;
- 	color:#fff;
- }
-
- div.zPanel table.zTableTop tr th, div.zPanel table.zTable2 tr td {
-     padding-left: 5px;
-     padding-right: 5px;
-     height: 23px;
- }
-
-
- div.zPanel table.zTableTop tr.extraRow > td {
-     padding-left: 25px !important;
-     padding-top: 5px;
- }
-
- tr.extraRow div.zPanel table tbody tr.even td{
-       background-color:#E3E4E5 !important;
- }
-
- tr.extraRow div.zPanel table tbody tr.odd td{
-       background-color:#fff !important;
- }
-
+.zPanel table a {
+    text-decoration: underline;
+  }
+  
+  /*zPanel Table*/
+  
+  div.zPanel {
+    table {
+      .align-l {
+        text-align: left;
+      }
+      .align-r {
+        text-align: right;
+      }
+      .align-c {
+        text-align: center;
+      }
+      tr {
+        &.total td {
+          background-image: linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #fff;
+          font-weight: bold;
+        }
+        th {
+          vertical-align: inherit;
+          background-color: #508BD1;
+          background-image: linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #fff;
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+        td {
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+      }
+    }
+    -webkit-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+    -moz-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+    box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 3px;
+    overflow: auto;
+    .headerTitle {
+      background-image: linear-gradient(to bottom, #508BD1 0px, #1D64B6 100%);
+      color: #fff;
+      padding: 3px 10px;
+      border: 1pt solid #a8acad;
+    }
+    table {
+      tr th {
+        &.title1 {
+          background-image: linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
+          color: #fff;
+        }
+        &.title2 {
+          background-image: linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
+          border-top: solid 1pt #B82E38;
+          color: #fff;
+        }
+      }
+      tbody tr {
+        &.even td {
+          background-color: #E3E4E5 !important;
+        }
+        &.odd td {
+          background-color: #fff !important;
+        }
+      }
+    }
+    &:not(.noHover) table tbody tr:hover td {
+      background-color: #B8B8B8 !important;
+      color: #000;
+    }
+    table {
+      tbody tr.active:hover td {
+        background-color: #333333 !important;
+        color: #fff;
+        a {
+          background-color: #333333 !important;
+          color: #fff;
+        }
+      }
+      > tfoot > tr > td {
+        background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+        background-color: #BCBCBC;
+      }
+      tr {
+        &.extraRow {
+          border: solid 1pt #D6D8D8;
+        }
+        &.trOpen {
+          display: table-row;
+        }
+        &.trClose {
+          display: none;
+        }
+        &.extraRow > td {
+          padding-left: 25px !important;
+          padding-top: 5px;
+        }
+      }
+      a:hover {
+        color: red;
+      }
+      &.zTableTop tbody tr.active td {
+        background-color: #333333 !important;
+        color: #fff;
+      }
+      tbody tr.active td {
+        background-color: #333333 !important;
+        color: #fff;
+        a {
+          background-color: #333333 !important;
+          color: #fff;
+        }
+      }
+      &.zTableTop tr th, &.zTable2 tr td {
+        padding-left: 5px;
+        padding-right: 5px;
+        height: 23px;
+      }
+      &.zTableTop tr.extraRow > td {
+        padding-left: 25px !important;
+        padding-top: 5px;
+      }
+    }
+  }
+  
+  @media screen {
+    div.zPanel table {
+      border: 1pt solid #e5e5e5;
+      tr {
+        th, td {
+          border-left: 1pt solid #d6d8d8;
+        }
+      }
+    }
+  }
+  
+  tr.extraRow div.zPanel table tbody tr {
+    &.even td {
+      background-color: #E3E4E5 !important;
+    }
+    &.odd td {
+      background-color: #fff !important;
+    }
+  }
  
+  div.zPanel table {
+    input-helper--checkbox, input-helper--radio  {
+          background: rgba(0, 0, 0, 0.5);
+          outline:  0 none;
+    }
+  }

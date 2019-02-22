@@ -1,142 +1,174 @@
 /*start of zTableReport*/
-table.zTableReport .align-l{ text-align:left;}
-table.zTableReport .align-r{ text-align:right;}
-table.zTableReport .align-c{ text-align:center;}
-table.zTableReport tr.total td {
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color:#000000;
-    font-weight:bold;
-}
-table.zTableReport tr th{
-    vertical-align: inherit;
-    background-color:#508BD1;
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color: #000000;
- }
-table.zTableReport tr th, table.zTableReport tr td {
-    padding-left: 5px;
-    padding-right: 5px;
-    height: 23px;
-}
 
-table.zTableReport{
-    -webkit-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    -moz-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    margin-bottom: 15px;
-}
-
-@media screen{
-    table.zTableReport{ border: 1pt solid #e5e5e5; }
-    table.zTableReport tr th, table.zTableReport tr td { border-left: 1pt solid #d6d8d8; }
-}
-
-
-table.zTableReport tr th.title1{
-    background-image:linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
-    color:#fff;
-}
-table.zTableReport tr th.title2{
-    background-image:linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
-    border-top: solid 1pt #B82E38;
-    color:#fff;
-}
-
-table.zTableReport tbody tr.even td {
-    background-color:#E3E4E5;
-}
-
-table.zTableReport tbody tr.odd td {
-    background-color:#fff;
-}
-
-table.zTableReport tbody tr:hover td {
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    background-color:#BCBCBC;
-
-    color:#000;
-}
-table.zTableReport > tfoot > tr > td {
-
-}
-
-table.zTableTop  tr.extraRow  div.zPanel tbody tr.active td{
-	background-color:#333333 !important;
-	color:#fff;
-}
-
-table.zTableTop  tr.extraRow  div.zPanel  tbody tr:hover td,table.zTableTop  tr.extraRow  div.zPanel  tbody tr:hover td  a {
-    background-color:#B8B8B8 !important;
-    color:#000;
-}
-
-/*start of zTableReport*/
-table.zTableReport .align-l{ text-align:left;}
-table.zTableReport .align-r{ text-align:right;}
-table.zTableReport .align-c{ text-align:center;}
-table.zTableReport tr.total td {
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color:#000000;
-    font-weight:bold;
-}
-table.zTableReport tr th{
-    vertical-align: inherit;
-    background-color:#508BD1;
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    padding-bottom: 4px;
-    padding-top: 4px;
-    color: #000000;
- }
-table.zTableReport tr th, table.zTableReport tr td {
-    padding-left: 5px;
-    padding-right: 5px;
-    height: 23px;
-}
-
-table.zTableReport{
-    -webkit-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    -moz-box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    box-shadow: 2px 3px 10px -1px rgba(0,0,0,0.58);
-    margin-bottom: 15px;
-}
-
-@media screen{
-    table.zTableReport{ border: 1pt solid #e5e5e5; }
-    table.zTableReport tr th, table.zTableReport tr td { border-left: 1pt solid #d6d8d8; }
-}
-
-
-table.zTableReport tr th.title1{
-    background-image:linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
-    color:#fff;
-}
-table.zTableReport tr th.title2{
-    background-image:linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
-    border-top: solid 1pt #B82E38;
-    color:#fff;
-}
-
-table.zTableReport tbody tr.even td {
-    background-color:#E3E4E5;
-}
-
-table.zTableReport tbody tr.odd td {
-    background-color:#fff;
-}
-
-table.zTableReport tbody tr:hover td {
-    background-image:linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
-    background-color:#BCBCBC;
-
-    color:#000;
-}
-table.zTableReport > tfoot > tr > td {
-
-}
-/*end of zTableReport*/
+table {
+    &.zTableReport {
+      .align-l {
+        text-align: left;
+      }
+      .align-r {
+        text-align: right;
+      }
+      .align-c {
+        text-align: center;
+      }
+      tr {
+        &.total td {
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #000000;
+          font-weight: bold;
+        }
+        th {
+          vertical-align: inherit;
+          background-color: #508BD1;
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #000000;
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+        td {
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+        th {
+          &.title1 {
+            background-image: linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
+            color: #fff;
+          }
+          &.title2 {
+            background-image: linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
+            border-top: solid 1pt #B82E38;
+            color: #fff;
+          }
+        }
+      }
+      -webkit-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      -moz-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      margin-bottom: 15px;
+      tbody tr {
+        &.even td {
+          background-color: #E3E4E5;
+        }
+        &.odd td {
+          background-color: #fff;
+        }
+        &:hover td {
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          background-color: #BCBCBC;
+          color: #000;
+        }
+      }
+      > tfoot > tr > td {}
+    }
+    &.zTableTop tr.extraRow div.zPanel tbody tr {
+      &.active td {
+        background-color: #333333 !important;
+        color: #fff;
+      }
+      &:hover td {
+        background-color: #B8B8B8 !important;
+        color: #000;
+        a {
+          background-color: #B8B8B8 !important;
+          color: #000;
+        }
+      }
+    }
+    &.zTableReport {
+      .align-l {
+        text-align: left;
+      }
+      .align-r {
+        text-align: right;
+      }
+      .align-c {
+        text-align: center;
+      }
+      tr {
+        &.total td {
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #000000;
+          font-weight: bold;
+        }
+        th {
+          vertical-align: inherit;
+          background-color: #508BD1;
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          padding-bottom: 4px;
+          padding-top: 4px;
+          color: #000000;
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+        td {
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 23px;
+        }
+        th {
+          &.title1 {
+            background-image: linear-gradient(to bottom, #b9313c 0px, #7f142a 100%);
+            color: #fff;
+          }
+          &.title2 {
+            background-image: linear-gradient(to bottom, #9b072c 0px, #941f31 100%);
+            border-top: solid 1pt #B82E38;
+            color: #fff;
+          }
+        }
+      }
+      -webkit-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      -moz-box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      box-shadow: 2px 3px 10px -1px rgba(0, 0, 0, 0.58);
+      margin-bottom: 15px;
+      tbody tr {
+        &.even td {
+          background-color: #E3E4E5;
+        }
+        &.odd td {
+          background-color: #fff;
+        }
+        &:hover td {
+          background-image: linear-gradient(to bottom, #BCBCBC 0px, #9C9D9E 100%);
+          background-color: #BCBCBC;
+          color: #000;
+        }
+      }
+      > tfoot > tr > td {}
+    }
+  }
+  
+  @media screen {
+    table.zTableReport {
+      border: 1pt solid #e5e5e5;
+      tr {
+        th, td {
+          border-left: 1pt solid #d6d8d8;
+        }
+      }
+    }
+  }
+  
+  /*start of zTableReport*/
+  
+  @media screen {
+    table.zTableReport {
+      border: 1pt solid #e5e5e5;
+      tr {
+        th, td {
+          border-left: 1pt solid #d6d8d8;
+        }
+      }
+    }
+  }
+  
+  /*end of zTableReport*/
