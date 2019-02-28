@@ -1,12 +1,17 @@
 .zGrid {
     border: 1pt solid #d6d8d8;
-}
-
-.zCell a {
+    float: left;
+    .form-control[type='checkbox']{
+        height: unset;
+    
+    }
+  }
+  
+  .zCell a {
     text-decoration: underline;
-}
-
-.zGrid .zHeaders {
+  }
+  
+  .zGrid .zHeaders {
     background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%);
     color: #fff;
     font-weight: bold;
@@ -23,273 +28,232 @@
     /* Internet Explorer/Edge */
     user-select: none;
     /* Non-prefixed version, currently supported by Chrome and Opera */
-}
-
-.zHeaders {
+  }
+  
+  .zHeaders {
     .title .text {
-        padding-left: 4px;
-        white-space: nowrap;
-
-        input {
-            &[type="checkbox"], &[type="radio"] {
-                left: 1px;
-                position: relative;
-                top: 5px;
-                width: inherit;
-                margin-left: 2px;
-            }
+      padding-left: 4px;
+      white-space: nowrap;
+      font-size: 0.7rem;
+      input {
+        &[type="checkbox"], &[type="radio"] {
+          left: 1px;
+          position: relative;
+          top: 1px;
+          width: inherit;
         }
+      }
     }
-
     .item .cr {
-        height: 100%;
-        right: 0px;
-        position: absolute;
-        cursor: w-resize;
-        top: 0px;
-        width: 2px;
+      height: 100%;
+      right: 0px;
+      position: absolute;
+      cursor: w-resize;
+      top: 0px;
+      width: 2px;
     }
-}
-
-.zGrid .zGridPanel {
+  }
+  
+  .zGrid .zGridPanel {
     float: left;
     overflow: hidden;
-}
-
-.zGroupHeaderItem:not(:last-child) {
+  }
+  
+  .zGroupHeaderItem:not(:last-child) {
     border-right: 1pt solid #d6d8d8;
     float: left;
     height: inherit;
     position: relative;
-}
-
-.zGrid {
+  }
+  
+  .zGrid {
     .zHeaderItem {
-        position: relative;
-        float: left;
-        width: inherit;
+      position: relative;
+      float: left;
+      width: inherit;
     }
-
     .zRows {
-        clear: left;
+      clear: left;
     }
-
     .right {
-        border-left: 1pt solid #939393;
-
-        .zRows {
-            overflow: auto;
-        }
+      border-left: 1pt solid #939393;
+      .zRows {
+        overflow: auto;
+      }
     }
-
     .left {
+      overflow: hidden;
+      .zRows {
         overflow: hidden;
-
-        .zRows {
-            overflow: hidden;
-        }
+      }
     }
-
     .item {
-        float: left;
-        text-align: center;
-        clear: right;
+      float: left;
+      text-align: center;
+      clear: right;
     }
-
     .zHeaders {
-        .groupItem {
-            border-top: 1pt solid #d6d8d8;
-        }
-
-        > .item .title {
-            height: 20px;
-            align-items: center;
-            display: flex;
-        }
-
-        .item {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .zSort {
-            align-items: center;
-            display: flex;
-        }
-    }
-}
-
-.zHeaders > .group0 > .title {
-    display: block;
-}
-
-.zGrid {
-    .item .title {
+      .groupItem {
+        border-top: 1pt solid #d6d8d8;
+      }
+      > .item .title {
         height: 20px;
+        align-items: center;
+        display: flex;
+      }
+      .item {
+        position: relative;
+        overflow: hidden;
+      }
+      .zSort {
+        align-items: center;
+        display: flex;
+      }
     }
-
+  }
+  
+  .zHeaders > .group0 > .title {
+    display: block;
+  }
+  
+  .zGrid {
+    .item .title {
+      height: 20px;
+    }
     .zHeaders .item input {
-        display: inline-block;
+      display: inline-block;
     }
-
     .item {
-        border-right: 1pt solid #d6d8d8;
+      border-right: 1pt solid #d6d8d8;
     }
-}
-
-.groupItem > .groupItem:last-child {
+  }
+  
+  .groupItem > .groupItem:last-child {
     border-right: 0pt;
-}
-
-.zGrid .zRows {
-    > #table {
-    }
-
+  }
+  
+  .zGrid .zRows {
+    > #table {}
     .zRow input[type='checkbox'] {
-        background-color: transparent;
-        outline: 0 none;
-        position: absolute;
-        margin-top: 1px \9;
-        line-height: normal;
-        width: auto;
-        box-shadow: none;
-        margin-left: 5px;
+      background-color: transparent;
+      outline: 0 none;
+      margin-top: 5px;
     }
-}
-
-input[type='radio'] {
+  }
+  
+  input[type='radio'] {
     background-color: transparent;
     outline: 0 none;
-    position: absolute;
-    margin-top: 1px \9;
-    line-height: normal;
-    width: auto;
-    box-shadow: none;
-    margin-left: 5px;
-}
-
-.zGrid {
+    margin-top: 5px;
+  }
+  
+  .zGrid {
     .zRow {
-        border-bottom: 1pt solid #d6d8d8;
-        clear: left;
-        height: 28px;
-        overflow: hidden;
+      border-bottom: 1pt solid #d6d8d8;
+      clear: left;
+      height: 23px;
+      overflow: hidden;
     }
-
     .zCell {
-        border-right: 1pt solid #d6d8d8;
-        float: left;
-        height: inherit;
-        line-height: 18pt;
-        min-width: 25px;
-        position: relative;
-        overflow: hidden;
+      border-right: 1pt solid #d6d8d8;
+      float: left;
+      height: inherit;
+      line-height: 18pt;
+      min-width: 25px;
+      position: relative;
+      overflow: hidden;
     }
-
     .zRows #table {
-        position: relative;
+      position: relative;
     }
-}
-
-.zRows #table {
-    .even {
-    }
-
-    .odd {
+  }
+  
+  .zRows {
+    .zRow {
+      transition: background 0.2s ease-in;
+      &:nth-child(even) {
         background-color: #e3e4e5;
+      }
+      &:hover {
+        background-color: #b8b8b8;
+        color: #000;
+      }
     }
-
-    .zRow {
-        &:hover {
-            background-color: #b8b8b8;
-            color: #000;
-        }
-
-        &.active {
-            background-color: #333333;
-            color: #fff;
-
-            a {
-                color: #fff;
-            }
-        }
-    }
-}
-
-.zGrid {
-    .zCell .form-control:not([type="checkbox"]) {
-        background-color: transparent;
-        border: medium none;
-        height: inherit;
-        width: inherit;
-    }
-
-    .active .zCell .form-control {
-        background-color: #333333;
+    #table .zRow.active {
+      background-color: #333333;
+      color: #fff;
+      a {
         color: #fff;
-        border-radius: 0;
-        border-right: 1pt solid #d6d8d8;
+      }
     }
-
+  }
+  
+  .zGrid {
+    .zCell .form-control:not([type="checkbox"]) {
+      background-color: transparent;
+      border: medium none;
+      height: inherit;
+      width: inherit;
+    }
+    .active .zCell .form-control {
+      background-color: #333333;
+      color: #fff;
+      border-radius: 0;
+      border-right: 1pt solid #d6d8d8;
+    }
     .zRow {
-        .form-control.mandatory {
-            border-radius: 0;
-            border-right: 1pt solid #d6d8d8 !important;
-        }
-
-        &.odd .form-control.mandatory {
-            background-color: #B7B5B5 !important;
-        }
-
-        &.even .form-control.mandatory {
-            background-color: #DDDDDD !important;
-        }
+      .form-control.mandatory {
+        border-radius: 0;
+        border-right: 1pt solid #d6d8d8 !important;
+      }
+      &:nth-child(odd) .form-control.mandatory {
+        background-color: #B7B5B5 !important;
+      }
+      &:nth-child(even) .form-control.mandatory {
+        background-color: #DDDDDD !important;
+      }
     }
-
     .zPageFooter {
-        background-color: #bcbcbc;
-        background-image: linear-gradient(to bottom, #bcbcbc 0px, #9c9d9e 100%);
-        height: 27px;
-        overflow: visible;
-        padding-left: 5px;
-        padding-right: 5px;
-        clear: left;
-        position: relative;
-        z-index: 1;
-
-        .pagestatus {
-            float: left;
-            font-weight: bold;
-            padding-top: 4px;
+      background-color: #bcbcbc;
+      background-image: linear-gradient(to bottom, #bcbcbc 0px, #9c9d9e 100%);
+      height: 27px;
+      overflow: visible;
+      padding-left: 5px;
+      padding-right: 5px;
+      clear: left;
+      position: relative;
+      z-index: 1;
+      .pagestatus {
+        float: left;
+        font-weight: bold;
+        padding-top: 4px;
+      }
+      .pagectrl {
+        float: right;
+        padding-top: 4px;
+        input#rpp {
+          height: 18px;
+          width: 35px;
         }
-
-        .pagectrl {
-            float: right;
-            padding-top: 4px;
-
-            input#rpp {
-                height: 18px;
-                width: 35px;
-            }
-        }
+      }
     }
-}
-
-.pagectrl {
+  }
+  
+  .pagectrl {
     input, select {
-        border: 1pt solid #5f6061;
-        border-radius: 2pt;
+      border: 1pt solid #5f6061;
+      border-radius: 2pt;
     }
-}
-
-.zGrid .left {
+  }
+  
+  .zGrid .left {
     position: relative;
     z-index: 1;
-}
-
-/*dropdown list */
-
-.zDdlBtn {
+  }
+  
+  /*dropdown list */
+  
+  .zDdlBtn {
     border-left: 1pt solid #d6d8d8;
     float: right;
     position: absolute;
@@ -298,13 +262,12 @@ input[type='radio'] {
     width: 17px;
     color: #000;
     padding-right: 3px;
-
     > .caret {
-        margin-left: 4px;
+      margin-left: 4px;
     }
-}
-
-.zDDList {
+  }
+  
+  .zDDList {
     background-color: #333333;
     color: #fff;
     font-size: 9pt;
@@ -313,74 +276,66 @@ input[type='radio'] {
     z-index: 1000;
     top: 100px;
     display: none;
-}
-
-.zRow {
-    &.odd .zDdlBtn {
-        background-color: #e3e4e5;
+  }
+  
+  .zRow {
+    &:nth-child(odd) .zDdlBtn {
+      background-color: #e3e4e5;
     }
-
-    &.even .zDdlBtn {
-        background-color: #fff;
+    &:nth-child(even) .zDdlBtn {
+      background-color: #fff;
     }
-
     &.active .zDdlBtn {
-        background-color: #333333;
-        color: #fff;
+      background-color: #333333;
+      color: #fff;
     }
-}
-
-/*end of dropdown list */
-
-/*sort */
-
-.zHeaders .item > .title.hasSort {
+  }
+  
+  /*end of dropdown list */
+  
+  /*sort */
+  
+  .zHeaders .item > .title.hasSort {
     float: left;
-}
-
-.zGrid .zHeaders {
+  }
+  
+  .zGrid .zHeaders {
     .zSort {
-        width: 10px;
-        text-align: left;
-        position: absolute;
-        right: 6px;
-        top: 1px;
-
-        a {
-            color: #fff;
-        }
-
-        span.sPane {
-            float: left;
-            line-height: 5px;
-        }
-
-        white-space: normal;
+      width: 10px;
+      text-align: left;
+      position: absolute;
+      right: 6px;
+      top: 1px;
+      a {
+        color: #fff;
+      }
+      span.sPane {
+        float: left;
+        line-height: 5px;
+      }
+      white-space: normal;
     }
-
     .arrow-up {
-        border-bottom: 4px solid #dff904;
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
-        display: inline-block;
-        height: 0;
-        width: 0;
+      border-bottom: 4px solid #dff904;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      display: inline-block;
+      height: 0;
+      width: 0;
     }
-
     .arrow-down {
-        border-top: 4px solid #dff904;
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
-        display: inline-block;
-        width: 0;
-        height: 0;
+      border-top: 4px solid #dff904;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      display: inline-block;
+      width: 0;
+      height: 0;
     }
-
     .zSort > {
-        .asc > .sPane, .desc > .sPane {
-            line-height: 10px;
-        }
+      .asc > .sPane, .desc > .sPane {
+        line-height: 10px;
+      }
     }
-}
-
-/*end of sort*/
+  }
+  
+  /*end of sort*/
