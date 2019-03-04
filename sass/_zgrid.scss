@@ -133,11 +133,12 @@
   }
   
   .zGrid .zRows {
-    > #table {}
-    .zRow input[type='checkbox'] {
-      background-color: transparent;
-      outline: 0 none;
-      margin-top: 5px;
+      > #table {
+      .zRow input[type='checkbox'] {
+        background-color: transparent;
+        outline: 0 none;
+        margin-top: 5px;
+      }
     }
   }
   
@@ -149,13 +150,13 @@
   
   .zGrid {
     .zRow {
-      border-bottom: 1pt solid #d6d8d8;
       clear: left;
       height: 23px;
       overflow: hidden;
     }
     .zCell {
       border-right: 1pt solid #d6d8d8;
+      border-bottom: 1pt solid #d6d8d8;      
       float: left;
       height: inherit;
       line-height: 18pt;
