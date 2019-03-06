@@ -1,0 +1,22 @@
+<style>
+    
+iframe{
+    width:100%;    
+    border:0;
+}
+    
+</style>
+    <iframe src="https://www.photopea.com/"></iframe>
+
+<script>
+
+$(document).ready(function(){
+    var _$frm =$("iframe");
+    var _height = $(document).height()  -  _$frm.offset().top; 
+    console.log(_height);
+    _$frm.css({height: _height});
+    
+});
+    
+    
+</script>

@@ -1,0 +1,32 @@
+<div class="zPanel">
+    <div class="col-sm-4">
+        <form enctype="multipart/form-data" id="frmUploadFile">
+            
+            <div class="form-horizontal">
+                <div class="form-group">  
+                    <label class="col-xs-3  control-label">File Type</label>
+                    <div class=" col-xs-4">
+                        <select id="tmpData" name="tmpData" class="form-control input-sm"> </select>
+                    </div>
+                </div>
+                <div class="form-group">  
+                    <label class="col-xs-3  control-label">Select File</label>
+                    <div class=" col-xs-3">
+                        <input type="file" class="browse btn btn-primary" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" name="file">
+                    </div>
+                </div>
+
+                <div class="form-group">  
+                    <div class="col-xs-offset-3">
+                    <button type="button" onclick="excelFileUpload();" class="btn btn-primary" id="btnUploadFile" style="margin-left: 5px">
+                            <span class="glyphicon glyphicon-upload"></span> Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> 
+
+ 
+

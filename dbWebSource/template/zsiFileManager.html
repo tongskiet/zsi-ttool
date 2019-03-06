@@ -1,0 +1,102 @@
+ <link href="/Content/glyphicons.css" rel="stylesheet" />
+<style>
+.ace_search.right {
+    right: 8px;
+    top: 20px;
+    position:fixed;
+}
+
+.ace_search_field,button.ace_searchbtn  {
+    color: #000;
+}
+
+.ace_marker-layer .ace_selection {
+    background: #8e8e8a !important;
+}
+
+ul#folders,ul#files {
+    background-color: #fff;
+}
+
+ul#locations {
+    list-style-type: none;
+    margin: 0 0 0 5px;
+    padding: 0;
+ 
+}
+
+ul#locations li {
+    float: left;
+    margin-right: 5px;
+}
+
+ul#folders{
+    border: 1pt solid;
+    clear: left;
+    float: left;
+    list-style-type: none;
+    margin: 10px 0 0 5px;
+    padding: 5px;   
+}
+
+ul#files{
+    border: 1pt solid;
+    float: left;
+    list-style-type: none;
+    margin: 10px 0 0 5px;
+    padding: 5px;   
+}
+
+.btn-group {
+    clear: left;
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+
+#editorPane {
+    background-color: #fff;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    display:none;
+}
+
+
+#editorPane .zPopup .panel {
+    margin-top: 13px;
+}
+
+
+#editorPane > .zPopup > .panel > .header {
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.zPopup > .panel > .header > .close {
+
+    float: left;
+    margin-left: 9px;
+    margin-top: -18px;
+}
+
+.zPopup h2 {
+    font-size: 10pt;
+    font-weight: bold;
+    margin: 0 0 0 35px;
+}
+
+</style>
+
+<ul id="locations"></ul>
+<ul id="folders" class="col-xs-4"></ul>
+<ul id="files" class="col-xs-4"></ul>
+
+
+<script src="/ace/src-noconflict/ace.js"></script>
+<script src="/ace/src-noconflict/ext-language_tools.js"></script>

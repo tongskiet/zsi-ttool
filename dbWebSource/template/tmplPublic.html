@@ -1,0 +1,109 @@
+<ul>
+    <li name="div" >
+        <div name="{{name}}" id="{{id}}" class="{{class}}"> {{value}}</div>
+    </li>
+    <li  name="a">
+        <a id="{{id}}" name="{{name}}" href="{{href}}" class="{{class}}" style="{{style}}" onclick="{{onClick}}" > {{value}}</a>
+    </li>
+    <li  name="label">
+        <label id="{{id}}" name="{{name}}" class="{{class}}" style="{{style}}" for="{{for}}" > {{value}}</label>
+    </li>
+    <li  name="span">
+        <span id="{{id}}" name="{{name}}" class="{{class}}" style="{{style}}" > {{value}}</span>
+    </li>    
+    <li  name="input">
+        <input id="{{id}}" name="{{name}}" type="{{type}}" class="{{class}}" style="{{style}}" value="{{value}}" />
+    </li>
+    <li  name="button">
+        <button type="button" id="{{id}}" name="{{name}}" class="{{class}}" style="{{style}}" for="{{for}}" onclick="{{onClick}}"> {{value}}</button>
+    </li>    
+    
+    <li  name="select">
+        <select id="{{id}}" name="{{name}}" class="{{class}}" style="{{style}}" value="{{value}}" >{{options}}</select>
+    </li>
+    <li  name="option">
+        <option value="{{value}}">{{text}}</option>
+    </li>
+    <li  name="textArea">
+        <textarea id="{{id}}" name="{{name}}" class="{{class}}" style="{{style}}" rows="{{rows}}" cols="{{cols}}" > {{value}} </textarea>
+    </li>
+    <li name="img">
+        <img src="{{src}}" alt="{{alt}}" class="{{class}}" style="{{style}}" id="{{}}" />
+    </li>
+
+     <!---list elements -->
+    <li name="ul" >
+        <ul id="{{id}}" class="{{class}}" style="{{style}}">{{value}}</ul>
+    </li>
+    
+    <li name="li" >
+        <div id="{{id}}" class="tag-li {{class}}" style="{{style}}">{{value}}</div>
+    </li>
+
+    <li name="ol" >
+        <ol id="{{id}}" class="{{class}}" style="{{style}}">{{value}}</ol>
+    </li>
+    
+    <!---table elements -->
+    <li name="table" >
+        <table id="{{id}}" class="{{class}}" style="{{style}}">{{value}}</table>
+    </li>    
+    <li name="tbody" >
+        <div id="{{id}}" class="tag-tbody {{class}}" style="{{style}}">{{value}}</div>
+    </li>    
+    <li name="tfoot" >
+        <div id="{{id}}" class="tag-tfoot {{class}}" style="{{style}}">{{value}}</div>
+    </li>    
+    <li name="tr" >
+        <div id="{{id}}" class="tag-tr {{class}}" style="{{style}}">{{value}}</div>
+    </li>      
+    <li name="thead" >
+        <div id="{{id}}" class="tag-thead {{class}}" style="{{style}}">{{value}}</div>
+    </li>  
+    <li name="th" >
+        <div id="{{id}}" class="tag-th {{class}}" style="{{style}}">{{value}}</div>
+    </li>      
+    <li name="td" >
+        <div id="{{id}}" class="tag-td {{class}}" style="{{style}}">{{value}}</div>
+    </li>    
+    <!--bootstrap elements -->
+    <li  name="bsFormHorizontal">
+        <div id="{{id}}" class="form-horizontal {{class}}" style="{{style}}" ></div>
+    </li>     
+    <li  name="bsFormGroup" >
+        <div id="{{id}}" class="form-group {{class}}" style="{{style}}" ></div>
+    </li>  
+    <li  name="bsInput">
+        <input id="{{id}}" name="{{name}}" type="{{type}}" class="form-control {{class}}" style="{{style}}" placeholder="{{placeHolder}}" value="{{value}}" />
+    </li>
+    <li  name="bsButton">
+        <button type="button" id="{{id}}" name="{{name}}" class="btn {{class}}" style="{{style}}" onclick="{{onClick}}"><span class="glyphicon glyphicon-{{icon}}"></span> {{value}} </button>
+    </li>
+    <li  name="bsLabelInput">
+        <label class="{{labelSize}} control-label">{{labelText}}</label>
+        <div class="{{divSize}}">
+            <input id="{{id}}" name="{{name}}" class="form-control {{inputClass}}" placeholder="{{placeHolder}}" value="{{value}}">
+        </div>
+    </li> 
+    <li name="bsModalBox">
+        <div class="modal" id="{{id}}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog {{sizeAttr}}" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="{{id}}Label">{{title}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-4">
+                        {{{body}}}
+                    </div>
+                    <div class="modal-footer">
+                        {{{footer}}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li> 
+
+</ul>

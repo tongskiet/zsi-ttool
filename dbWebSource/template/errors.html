@@ -1,0 +1,64 @@
+<style>
+    .errorPanel{
+        position:absolute;
+        z-index:1000;
+        top : 175px;
+        right:50px;
+        min-height: 50px;
+        width:800px;
+        background:white;
+        display:none;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1pt solid #000;
+        
+    }
+    .errorFooter{
+        margin-top:10px;
+    }
+    
+    .errorBody {
+        overflow-x: auto;
+    }      
+</style>
+<div class="errorPanel">
+    <div class="errorBody"></div>
+    <div class="errorFooter">
+        <button type="button"  class="btn btn-primary btn-sm" id="btnClose"><span class="glyphicon glyphicon-eye-close"></span> Close</button>
+    </div>
+</div>
+<div class="zForm">    
+        <div class="col-12" >
+             <div class="form-group row">
+                <label for="user_id" class="col-1 col-form-label"> User</label>
+                <div class="col-3" >     
+                    <select name="user_id" id="user_id" class="form-control"> </select>
+                </div>
+
+                <div class="col-1">
+                    <button type="button"  class="btn btn-primary" id="btnGo"><i class="fas fa-filter"></i></button>
+                </div>
+            </div>
+            <div class="form-group row">
+                  <div class="col-1">&nbsp;</div>
+                  <div class="col-8">
+                     <div style="margin-top:8px;">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnDelete">
+                        	<span class="glyphicon glyphicon-trash"></span> Delete
+                        </button>    
+                    
+                        <button type="button" class="btn btn-primary btn-sm" id="btnRefresh">
+                        	<span class="glyphicon glyphicon-refresh"></span> Load My Errors
+                        </button>     
+                    
+                        <button type="button" class="btn btn-primary btn-sm" id="btnAllRefresh">
+                        	<span class="glyphicon glyphicon-refresh"></span> Load All Errors
+                        </button>      
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="zPanel">
+    <div id="grid" class="zGrid" > </div>    
+</div>

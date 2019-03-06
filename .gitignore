@@ -14,3 +14,4 @@ css/app.min.css
 css/*.map
 yarn.lock
 .vs/*
+createCodeBackup.exe.config

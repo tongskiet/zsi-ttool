@@ -1,0 +1,42 @@
+<style>
+    .page {
+    background: #D4D5D6 none repeat scroll 0 0;
+    border: 1pt solid #e5e5e5;
+    min-height: auto;
+    padding-top: 10px;
+    overflow: auto;
+}
+
+.innerBody{
+    background-color:#fff;
+    padding-top:5px;
+    margin-bottom:5px;
+    margin-left:5px;
+    height:inherit;
+}
+</style>
+
+<form id="frm" method="post" >
+    <div class="col-12 zPanel"> 
+        <input type="hidden" name="project_id" id="project_id" >
+        <div class="form-group row">
+            <label for="user_name" class="col-1 col-form-label">User Name</label>
+            <div class="col-3">
+                <input class="form-control" type="text" name="user_name" id="user_name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="user_pwd" class="col-1 col-form-label">Password</label>
+            <div class="col-3">
+                <input class="form-control" type="password" name="user_pwd" id="user_pwd">
+            </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="Third group">
+            <button type="submit" class="btn btn-primary" id="btnSave"> Login</button>
+        </div>    
+    </div>    
+</form> 
+
+<script>
+    $("#frm").attr("action", base_url + "page/loginAdmin");
+</script>
