@@ -2,12 +2,10 @@ var  svn           = zsi.setValIfNull
     ,bs            = zsi.bs.ctrl
     ,bsButton      = zsi.bs.button
     ,proc_url      = base_url + "common/executeproc/"
-     
     ,gMdlId        = "modalCriteriaColums"
     ,gtw           = null
     ,g$mdl         = null
     ,criteriaId    = ""
-
 ;
 
 zsi.ready(function(){
@@ -34,7 +32,7 @@ function getTemplates(callback){
 function displayRecords(){ 
     $("#grid").dataBind({
         url            : execURL + "trend_menus_sel "
-            ,width          : 600
+            ,width          : 400
     	    ,height         : $(document).height() - 250
     	    ,selectorType   : "checkbox"
             ,blankRowsLimit:5
@@ -69,7 +67,7 @@ function displayCriteria(menuId,specsId){
         $("#gridCriteria").dataBind({
              url: execURL + "criterias_sel @trend_menu_id=" + menuId 
             ,width          : 630
-    	    ,height         : $(document).height() - 350
+    	    ,height         : $(document).height() - 250
             ,blankRowsLimit : 10
             ,dataRows       :[
         		 { text: "Seq. No."   , width:65 , style:"text-align:left;" 
@@ -93,13 +91,13 @@ function displayCriteria(menuId,specsId){
     		          }
     		    }
     
-        		,{ text:"Active?"    , width:75  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
-        		,{ text:"" ,width:45 , style:"text-align:left;"
+        		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
+        		,{ text:"" ,width:35 , style:"text-align:left;"
         		        ,onRender   :   function(d){
-        		            var _criteria = svn(d,"pcriteria_id");
+        		            //var _criteria = svn(d,"pcriteria_id");
         		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
-        		            var _return = (_criteria ? _link : "" );
-                            return _return;
+        		            //var _return = (_criteria ? _link : "" );
+        		            return (d !==null ? _link : "" );
         		        }
         		}
     	    ]
@@ -142,17 +140,18 @@ $("#btnSave").click(function () {
 
 
 function showModalCriteriaColumns(criteriaId,specsId,name) {
-     g$mdl = $("#" + gMdlId); 
-     g$mdl.find(".modal-title").text("Criteria Columns  » " + name ) ;
-     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
-     displayCriteriaColumns(criteriaId,specsId);
-  //   displayCriteriaColumnValues(criteriaId,specsId);
+    $(".colval").hide();
+    g$mdl = $("#" + gMdlId); 
+    g$mdl.find(".modal-title").text("Criteria Columns  » " + name ) ;
+    g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
+    displayCriteriaColumns(criteriaId,specsId);
+
 }                   
 
 function displayCriteriaColumns(criteriaId,specsId){
     $("#gridCriteriaColumns").dataBind({
          url    : execURL + "criteria_columns_sel @criteria_id=" + criteriaId 
-        ,width          : 1000
+        ,width          : 900
 	    ,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
@@ -164,72 +163,72 @@ function displayCriteriaColumns(criteriaId,specsId){
     		                               
     		        }
     		 }
-    		 ,{ text: "Operator Name" ,name:"operator_value" ,type:"select", width:150 , style:"text-align:left;" }
-    		 ,{ text: ""            , width:25 , style:"text-align:left;"
-    		        ,onRender   :   function(d){
-    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='displayCriteriaColumnValues(\""+ svn(d,"operator_value") +"\",\""+ svn(d,"column_name") +"\",\"" +  svn(d,"criteria_column_id")  + "\");;'  ><i class='fas fa-link'></i> </a>";
-    		            var _return = (svn(d,"operator_value") === "IN" ? _link : "");
-                        return _return;
-    		        }
-    		  }
-    		 ,{ text: "Column Value1"     , width:150         , style:"text-align:left;" 
-    		     ,onRender : function(d){
-    		         return bs({name:"column_value"             , type:"hidden"})
-    		              + bs({name:"column_value_select"      , type:"select" , value: "column_value"}); 
+    		 ,{ text: "Operator Name" ,  width:150, style:"text-align:left;" 
+    		     ,onRender: function(d){
+    		         return bs({name:"operator_value",  type:"select", value: svn(d,"operator_value")});
     		     }
     		 }
-    		 ,{ text: "Column Value2"  , width:150         , style:"text-align:left;"  
+    		 ,{ text: ""              ,width:25      , style:"text-align:left;"
+    		        ,onRender   :   function(d){
+                       return "<span class='lst-icon'> &nbsp;<span>";
+        	        }
+    		  }
+    		 ,{ text: "Column Value1"     , width:150           , style:"text-align:left;" 
     		     ,onRender : function(d){
-    		         return bs({name:"column_value2"           , type:"hidden"})
-    		              + bs({name:"column_value_select2"    , type:"select" , value: "column_value2"}); 
+    		         return bs({name:"column_value"      , type:"select" , value: svn(d,"column_value")}); 
+    		     }
+    		 }
+    		 ,{ text: "Column Value2"     , width:150          , style:"text-align:left;"  
+    		     ,onRender : function(d){
+    		         return bs({name:"column_value2"    , type:"select" , value: svn(d,"column_value2")}); 
     		     }
     		     
     		 }
     		 ,{ text: "Is Output?"      , name:"is_output"     , type:"yesno"   , defaultValue:"Y"  , width:100 , style:"text-align:center;" }
 	    ]
 	    ,onComplete : function(){
-	        var _this = this
-	            _setDdlvalues =  function($zRow,harnessName){
-	                    if(harnessName === "") return;
-                        $zRow.find("select[name='column_value_select']").dataBind({
-                            url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
-                                , text: "attribute_name"
-                                , value: "attirbute_id"
-                                 , onEachComplete : function(data){
-                                    var _$self = $(this);
-                                    var _optVal = _$self.closest(".zRow").find("select[name='operator_value']").val();
-                                    if(["IN",""].includes(_optVal) ) _$self.attr("disabled","disabled"); else _$self.removeAttr("disabled");
+	        var      _this              = this
+                    
+                    ,_setDdlvalues      = function($zRow,harnessName){
+                            if(harnessName === "") return;
+                            $zRow.find("select[name='column_value']").dataBind({
+                                url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
+                                    , text: "attribute_name"
+                                    , value: "attribute_id"
+                                     , onEachComplete : function(data){
+                                        //trigger display on each complete
+                                        var _$self = $(this);
+                                        var _optVal = _$self.closest(".zRow").find("select[name='operator_value']").attr("selectedvalue");
+                                        if(["IN",""].includes(_optVal) ) _$self.css({"display":"none"}); else _$self.css({"display":"unset"});
+                                    }                                
+                                    , onChange: function(){
+                                        var __$zRow = this.closest(".zRow");
+                                        var _val = this.find("option:selected").text();
+                                    }
+                            });  
+                            
+                            $zRow.find("select[name='column_value2']").dataBind({
+                                url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
+                                    , text: "attribute_name"
+                                    , value: "attribute_id"
+                                    , onEachComplete : function(data){
+                                        //trigger display on each complete
+                                        var _$self = $(this);
+                                        var _optVal = _$self.closest(".zRow").find("select[name='operator_value']").attr("selectedvalue");
+                                        if(_optVal!=="BETWEEN") _$self.css({"display":"none"}); else _$self.css({"display":"unset"});
 
-                                }                                
-                                , onChange: function(){
-                                    var __$zRow = this.closest(".zRow");
-                                    var _val = this.find("option:selected").text();
-                                    __$zRow.find("input[name='column_value']").val(_val);
-                                }
-                        });  
-                        
-                        $zRow.find("select[name='column_value_select2']").dataBind({
-                            url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
-                                , text: "attribute_name"
-                                , value: "attirbute_id"
-                                , onEachComplete : function(data){
-                                    var _$self = $(this);
-                                    var _optVal = _$self.closest(".zRow").find("select[name='operator_value']").val();
-                                    if(_optVal!=="BETWEEN") _$self.attr("disabled","disabled"); else _$self.removeAttr("disabled");
-                                    
-                                    
-                                }
-                                , onChange: function(){
-                                    var __$zRow = this.closest(".zRow");
-                                    var _val = this.find("option:selected").text();
-                                    __$zRow.find("input[name='column_value2']").val(_val);
-                                }
-                        });  
-	            }
-	            
-             ,_onCompleteAndChange = function(){
-                _setDdlvalues( this.closest(".zRow") , this.val());
-             }	            
+                                        
+                                    }
+                                    , onChange: function(){
+                                        var __$zRow = this.closest(".zRow");
+                                        var _val = this.find("option:selected").text();
+                                    }
+                            });  
+    	            }
+                    ,_displayListIcon   = function($zRow,value){
+                        var _link = (value =="IN" ?  gtw.new().inList({p1: $zRow.find("#column_name").val() , p2:  value , p3: $zRow.find("#criteria_column_id").val() }).html() :"");
+                        $zRow.find(".lst-icon").html(_link);
+                    }
 	        ;
 	        
 	        _this.data("criteriaId", criteriaId);
@@ -246,11 +245,12 @@ function displayCriteriaColumns(criteriaId,specsId){
                  url            : execURL + "reference_table_columns_sel @specs_id=" + specsId  
                 ,text           : "table_column_name"
                 ,value          : "column_name"
-                ,onChange       :  _onCompleteAndChange
+                ,onChange       :  function(){
+                    _setDdlvalues( this.closest(".zRow") , this.val());
+                }
                 ,onEachComplete : function(data){
                     var _$self = $(this);
-                     _setDdlvalues( _$self.closest(".zRow") , _$self.val() ); 
-                    //console.log("this",this);
+                        _setDdlvalues( _$self.closest(".zRow") , _$self.val() ); 
                 }
             }); 
 
@@ -258,17 +258,38 @@ function displayCriteriaColumns(criteriaId,specsId){
                  url: execURL + "operators_sel"
                 ,text: "operator_name"
                 ,value: "operator_value"
+                ,onEachComplete : function(data){
+                    console.log("onEachComplete2");   
+                    _displayListIcon( $(this).closest(".zRow"), $(this).val() );
+                      
+                }
                 ,onChange: function(){
-                    var _$zRow = this.closest(".zRow");
-                    _$zRow.find("#column_value_select ,#column_value_select2").trigger("onEachComplete");
+                    var _$self = this;
+                    var _$zRow = _$self.closest(".zRow");
+                    var _$column_value1 = _$zRow.find("#column_value");
+                    var _$column_value2 = _$zRow.find("#column_value2");
+                    var _optVal = _$zRow.find("select[name='operator_value']").val();
                     
+                    //trigger display upon user selection
+                    if(["IN","ISNULL",""].includes(_optVal) )    
+                        _$column_value1.css({"display":"none"}); 
+                    else 
+                        _$column_value1.css({"display":"unset"});
+                        
+                        
+                    if(_optVal  !== "BETWEEN" )
+                        _$column_value2.css({"display":"none"}); 
+                    else 
+                        _$column_value2.css({"display":"unset"});
+
+                    
+                    _displayListIcon( this.closest(".zRow"), $(this).val() );
                 }
              });  
 
     	}
     });    
 }  
-
 
 function submitData1(){
     var _$grid =  $("#gridCriteriaColumns");
@@ -290,8 +311,8 @@ function displayCriteriaColumnValues(_operatorVal,_colName,_criteriaColId){
     $(".colval").show();
     var cb = bs({name:"cbFilter1",type:"checkbox"});
     $("#gridCriteriaColumnValues").dataBind({
-         url    : execURL + "criteria_column_values_sel @criteria_column_id=" + _criteriaColId
-        ,width          : 500
+         url    : execURL + "criteria_column_values_sel "  + ( _criteriaColId !==""  ?  "@criteria_column_id=" + _criteriaColId  :"")
+        ,width          : 350
 	    ,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
@@ -315,7 +336,7 @@ function displayCriteriaColumnValues(_operatorVal,_colName,_criteriaColId){
                     $(this).closest(".zRow").find("#is_edited").val("Y");
                 });  
                 this.find("select[name='param_value']").dataBind({
-                    url: execURL + "reference_table_column_values_sel @column_name=" + _colName  
+                    url: execURL + "reference_table_column_values_sel @column_name='" + _colName + "'"  
                         , text: "attribute_name"
                         , value: "attirbute_id"
                 });  
@@ -324,4 +345,4 @@ function displayCriteriaColumnValues(_operatorVal,_colName,_criteriaColId){
 
     });    
 
-}       
+}                
