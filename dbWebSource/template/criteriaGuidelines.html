@@ -7,6 +7,10 @@
         display: none;
     }
     
+    .hide{
+        display :none;
+    }
+    
     .modal-dialog.modal-full{
         
         max-width: none;
@@ -19,38 +23,41 @@
 
 </style>
 
-<div class="row zPanel">
-    <div class="col-5">
-        <div id="grid" class="zGrid"></div>    
-    </div>
-    <div class="col-7 criteria">
-        <div class="row">
-            <div id=gridCriteria class="zGrid"></div>    
+<div class="zPanel">
+    <div class="row col-12">
+        <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+            <div id="grid" class="zGrid"></div>    
         </div>
-        <div style="padding-top:1rem;"> 
-                <button type="button" class="btn btn-primary " id="btnSave">
-                    <i class="far fa-save"></i> Save
-                </button>
+        <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7 criteria">
+            <div class="row">
+                <div class="col-12">
+                    <div id=gridCriteria class="zGrid"></div>    
+                </div>
+                <div class="col-12 pt-1"> 
+                    <button type="button" class="btn btn-primary " id="btnSave">
+                        <i class="far fa-save"></i> Save
+                    </button>
+                </div>
             </div>
+            
+        </div>
     </div>
 </div>
 
 <ul id="localTemplates">
     <li name="modalBody">
         <div class="row">
-            <div class="col-8">
+            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
                 <div class="row">
                     <div id="{{gridId1}}" class="zGrid"> </div>
                 </div>
-                
                 <button type="button" id="btnSave1" onclick="{{onClickSave1}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
                 
             </div>
-            <div class="col-4 colval">
+            <div class="col-sm-12 col-md-12 col-lg-3 col-xl-3 colval">
                 <div class="row">
                     <div id="{{gridId2}}" class="zGrid"> </div>
                 </div>
-                
                 <button type="button" id="btnSave2" onclick="{{onClickSave2}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
             </div>
         </div>
@@ -60,10 +67,15 @@
             <button type="button" id="btnSave" onclick="{{onClickSave}}" class="btn btn-primary mr-auto"><i class="far fa-save"></i> Save</button>
         </div>
     </li>
-
     <li name="formButton">
         
     </li>
+    <li name="inList">
+        <a href='javascript:void(0);' class='btn btn-sm'  onclick='displayCriteriaColumnValues("{{p1}}","{{p2}}");' >
+    	    <i class='fas fa-link'></i>
+    	</a>
+    </li>
+    
 </ul>
 
 
