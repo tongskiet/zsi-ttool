@@ -163,6 +163,12 @@
       min-width: 25px;
       position: relative;
       overflow: hidden;
+      
+      span.text {
+        padding: .1rem .5rem;
+      } 
+
+
     }
     .zRows #table {
       position: relative;
