@@ -54,10 +54,18 @@ a:hover{
 .dl-horizontal dt {
     white-space: normal;
 }
-.lear-logo {
-	color: #F11716;
-	font-size:1.5rem;
+ 
+.navbar-expand .navbar-nav {
+  margin-left: 8px;
 }
+
+.lear-logo {
+  color: #F11716;
+  font-size: 1.5rem;
+  margin-left: 5px;
+  margin-right: 7px;
+}
+
 .mr-1, .mx-1 {
     margin-right: .25rem !important;
     margin-top: .3rem !important;
@@ -77,18 +85,19 @@ a:hover{
       background-color: #1D64B6;
     height: 44px;
 }
+
 .pageTitle {
   background-color: #fff;
   color: black;
-  font-size: 11pt;
-  height: 27px;
-  margin-bottom: 5px;
-  margin-left: -10px;
-  margin-top: -10px;
-  padding-left: 12px;
+  font-size: 1.1em;
+  height: 26px;
+  margin-bottom: 3px;
+  margin-left: -3px;
+  margin-right: -3px;
+  margin-top: -9px;
+  padding-left: 20px;
   padding-top: 2px;
 }
-
 .pageTitle > select{
     border-radius: 3px;
 	border: 1px solid #cccccc;
