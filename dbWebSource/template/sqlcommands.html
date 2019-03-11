@@ -1,0 +1,64 @@
+<style>
+    .ace_editor {
+        min-height: 400px !important;
+        margin: 0;
+    }
+    
+    .modal {
+        color: #000000;
+    }
+    
+    .modal-dialog {
+        max-width: 100%;
+    }
+    
+    #tblResult {
+        height: 500px;
+        overflow: auto;
+        font-size: 9pt;
+    }
+</style>
+
+<div class="main">
+    <div class="col-12">
+        <div class="row">
+            <div id="grid-SqlCommands" class="zGrid"></div>
+        </div>
+        <div class="row">
+            <button id="btnAdd" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAdd">Add</button> &nbsp; 
+            <button id="btnSync" type="button" class="btn btn-primary">Sync</button>
+        </div>
+    </div>
+ 
+</div>
+<ul id="localTemplates">
+    <li name="sqlCmdMdlBody">
+        <div class="row">
+           <input type="hidden" name="is_procedure" id="is_procedure" />
+           <input type="hidden" name="sqlcmd_id" id="sqlcmd_id" />
+           <div class="col-12 col-md-6">
+               <label for="sqlcmd_code">Code</label>
+               <input type="text" name="sqlcmd_code" id="sqlcmd_code" required />
+           </div>
+           <div class="col-12 col-md-6">
+               <label for="is_public">Is Public?</label>
+               <select name="is_public" id="is_public">
+                   <option value="N">N</option>
+                   <option value="Y">Y</option>
+               </select>
+           </div>
+           <div class="col-12 mt-1">
+               <form id="frm">
+                   <input type="hidden" id="sql_content" name="sql_content" required />
+                   
+               </form>
+           </div>
+           <div class="col-12 mt-1">
+               <div id="tblResult" style="display:none;"></div>
+           </div>
+        </div>
+        
+    </li>
+</ul>
+<script src="/ace/src-noconflict/ace.js"></script>
+<script src="/ace/src-noconflict/ext-language_tools.js"></script>
