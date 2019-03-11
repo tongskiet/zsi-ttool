@@ -1,0 +1,26 @@
+CREATE TABLE users(
+user_id	INT IDENTITY(1,1)	NOT NULL
+,logon	NVARCHAR(80)	NULL
+,last_name	NVARCHAR(400)	NULL
+,first_name	NVARCHAR(400)	NULL
+,middle_name	NVARCHAR(400)	NULL
+,password	NVARCHAR(800)	NULL
+,role_id	INT	NULL
+,is_active	VARCHAR(1)	NULL
+,is_admin	VARCHAR(1)	NULL
+,contact_nos	VARCHAR(100)	NULL
+,img_filename	VARCHAR(200)	NULL
+,id_no	NVARCHAR(40)	NULL
+,name_suffix	NVARCHAR(40)	NULL
+,gender	CHAR(1)	NULL
+,email_add	NVARCHAR(1200)	NULL
+,is_contact	CHAR(1)	NULL
+,civil_status	CHAR(1)	NULL
+,is_employee	CHAR(1)	NULL
+,position_id	INT	NULL
+,is_developer	CHAR(1)	NULL
+,last_activity_dt	DATETIME	NULL
+,created_by	INT	NULL
+,created_date	DATETIMEOFFSET	NULL
+,updated_by	INT	NULL
+,updated_date	DATETIMEOFFSET	NULL)
