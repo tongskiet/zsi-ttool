@@ -1364,8 +1364,229 @@ var  ud='undefined'
                 
             };
             $.fn.dataBindGrid2      = function(o){
-                this.arrowUp ="<span class=\"arrow-up\"></span>",
-                this.arrowDown ="<span class=\"arrow-down\"></span>",
+                var _obj                = this
+                    ,_tw                = zsi.easyJsTemplateWriter
+                    ,_o                 = o
+                    ,num_rows           = 0
+                    ,ctr                = 0  
+                    ,_gridWidth         = 0
+                    ,_gridWidthLeft     = 0
+                    ,_gridWidthRight    = 0
+                    ,_ch                = o.dataRows
+                    ,_chRight           = []
+                    ,_chLeft            = []                    
+                    ,_headers
+                    ,_tbl
+                    ,_tableRight
+                    //,dataRows
+                    ,_styles            = []
+                    ,_isGroup           = false
+                    ,bs                 = zsi.bs.ctrl
+                    ,svn                = zsi.setValIfNull
+                    ,clearTables        = function(){
+                         _obj.find("div[id='table']").html("");
+                    }
+                    ,createColumnHeader = function(o){
+                        if(o.headers.length===0) return;
+                        o.headers.html(getdataRows(o.dataTable,o.startGroupId));
+                        if(_isGroup) o.headers.append("<div>&nbsp;</div");
+                        o.headers.find(".item .zSort a").click(function(){
+                            var  $a = $(this)
+                                ,_colNo = $a.attr("sortColNo")
+                                ,_orderNo =0
+                                ,_oldClass = $a.attr("class")
+                            ;
+                            _obj.left=_tableRight.offset().left - _gridWidthLeft;
+                            _obj.find(".sPane").html(_obj.arrows);
+                            
+                            _obj.find(".zSort a").removeAttr("class");
+                            $a.addClass(_oldClass);
+                            
+                            if(typeof $a.attr("class") === ud) $a.addClass("desc");
+                            var className = $a.attr("class");
+                            if(className.indexOf("asc") > -1){
+                                $a.removeClass("asc");
+                                $a.addClass("desc");
+                                $a.find(".sPane").html(_obj.arrowDown);
+                                _orderNo=1;
+                            }
+                            else{
+                                $a.removeClass("desc");
+                                $a.addClass("asc");
+                                $a.find(".sPane").html(_obj.arrowUp);
+                                _orderNo=0;
+                            }
+                            _obj.params.parameters = {col_no : _colNo, order_no:_orderNo};
+                            //if(o.onSortClick) 
+                            //    o.onSortClick(_colNo,_orderNo);
+                            //else 
+                                _obj.dataBindGrid2(_obj.params);
+                        });
+                        if(_isGroup || o.width > _o.width ) o.headers.css({width:(o.width + 20 )});
+                        if (_o.width) o.table.css("width",(o.width + 1 )  + "px");
+                    }
+                    ,trItem             = function(o){
+                        if(o.panelType === "Y" && _chLeft.length > 0) return; 
+                        var _dt =  (o.panelType ==="R"? _chRight : _chLeft ); 
+                        var _table =  (o.panelType ==="R"? _obj.find(_obj.clsPanelR).find("#table") : _obj.find(_obj.clsPanelL).find("#table") ); 
+                        var _$row =  $(new _tw().div({class:"zRow"}).html());
+                        for(var x=0;x<_dt.length;x++){
+                            var _info       = _dt[x] 
+                                ,_style     = 'width:' + (_dt[x].width ) +  'px;'  + _dt[x].style  
+                                ,_content   = '&nbsp;'
+                                ,_$cell =  $(new _tw().div({class:"zCell" +  svn(_info," " + _info.class),style: _style}).html())
+                            ;
+                            if(o.data) {
+                                o.data.recordIndex = o.index;
+                            }
+                            if(_info.onRender){
+                                    _$cell.onRender = _info.onRender;
+                                    _content = _$cell.onRender(o.data);
+                            }
+                            else{
+                                if(typeof _info.type === ud){
+                                     _content = new _tw().span({class:"text",value: svn(o.data,_info.name) }).html()
+                                }
+                                else{ 
+                                    if(typeof _info.displayText !== ud ){
+                                        _content = bs({    name         : _info.name  
+                                                            ,style      : _info.style 
+                                                            ,type       : _info.type  
+                                                            ,value      : svn(o.data ,_info.name ,_info.defaultValue ) 
+                                                            ,displayText: svn(o.data  ,_info.displayText) 
+                                                    });
+                                    }
+                                    else {
+                                        _content = bs({name:_info.name , style:_info.style ,type:_info.type  ,value: svn(o.data  ,_info.name  ,_info.defaultValue )});
+                                    }
+                                }
+                                 
+                                if(x===0 || x ===_o.selectorIndex ){
+                                  if(typeof _o.selectorType !==ud) 
+                                        _content += (o.data !==null ? bs({name: (_o.selectorType ==="checkbox" ? "cb" :  (_o.selectorType==="radio" ? "rad" : "ctrl" )  ),type:_o.selectorType}) : "" );
+                                }                    
+                            }
+            
+                            if( (typeof _info.groupId !== ud ? _info.groupId : 0)  > 0 || _info.onRender || _isGroup === false){
+                                _$cell.html(_content);
+                                _$row.append(_$cell);
+                                
+                                if( o.panelType ==="R" && ! isUD(_o.toggleMasterKey) ){
+                                    _$cell.append(new _tw().div({id:"childPanel" + zsi.replaceIllegalId(svn(o.data,_o.toggleMasterKey)), class:"zExtraRow" }).in().div({class:"zGrid"}).html());
+                                }                    
+                            }
+            
+                        }
+                        _table.append(_$row);
+                        if ( ! isUD(_o.onEachComplete) ) {
+                            _$row.onEachComplete  =  _o.onEachComplete;
+                            _$row.onEachComplete(o);
+                        }   
+            
+                        
+                    }
+                    ,setRowClickEvent   = function(){
+                        
+                        var $rows = _obj.find(".zRow");
+                        $rows.click(function(){
+                            var _i = $(this).index();
+                            $rows.removeClass("active");
+                             _obj.find(".zRow:nth-child("  + (_i + 1) +  ")").addClass("active");
+                        });
+                        
+                        //check on input change if current row is edited.
+                        $rows.find("select, input").on("keyup change", function(){
+                                var $zRow = $(this).closest(".zRow");
+                                $zRow.find("#is_edited").val("Y");
+                        });   
+                        
+                        
+                    }
+                    ,setScrollBars      = function(){
+                        _tableRight.parent().scroll(function() {
+                            var _left = _tableRight.offset().left;
+                            var _top = _tableRight.offset().top;
+                            var _headers = $(_tableRight.closest(".right").find(".zHeaders")[0]);
+                            var _tblLeft = $(this).closest(".right").prev().find("#table");
+                            _headers.offset({left:_left});
+                            _tblLeft.offset({top:_top});
+                        });                         
+                    }
+                    ,getdataRows        = function(d, id){
+                        var  hasChild = function (d,id){
+                            for(var x=0; x<d.length;x++ ){
+                                if(d[x].groupId===id) return true;
+                            }
+                            return false;
+                        };
+                        var loadChild = function (d,id){
+                            var h=""; 
+                            for(var x=0; x<d.length;x++ ){
+                                if(typeof d[x].groupId === ud ||  d[x].groupId==id ) {
+                                    var _hasSort = (typeof d[x].sortColNo !== ud ? true:false);
+                                    var _minusSortWidth  = ( _hasSort ? 15:0);
+                                    var _style = "",_styleTitle="";
+                                    var _level = (typeof d[x].groupId !==ud ? " group" + d[x].groupId : "" );
+                                    var _class = (typeof d[x].class !==ud ? " " + d[x].class : "" );
+                                    var _id = (typeof d[x].id !==ud ? "id=\"" + d[x].id + "\"" : "" );
+                                    var _titleId = (typeof d[x].id !==ud ? "id=\"title" + d[x].id + "\"" : "" );
+                                    var _groupItem = (_isGroup ? " groupItem" : "" );
+                                    if(typeof d[x].width !==ud){
+                                        _style = "style=\"width:" +  d[x].width  + "px;"  + d[x].style + "\"";
+                                       // _styleTitle = "style=\"width:" +  (d[x].width -  _minusSortWidth) + "px;"  + d[x].style + "\"";
+                                        _styleTitle = "style=\""  + d[x].style + "\"";
+                                    }
+                                    
+                                    h+= "<div " + _id + " class='item" + _groupItem + _level + _class + "' " + _style + ">";
+                                    h+= "<div " + _titleId + " class='title" + ( _hasSort ? " hasSort":"") + "' " + _styleTitle + " ><span class=\"text\">" + d[x].text +  "</span></div>"; 
+                                    if( isUD(o.resizable)  ||  o.resizable===true) h+= "<div class='cr'></div>";
+                                    if(typeof d[x].groupId !== ud ) 
+                                        h+= getdataRows(d,d[x].id) ;
+                                    h+=getSortHeader(d[x].sortColNo);
+                                    h+= "</div>";
+                                   
+                                }
+                            }
+                            return h;
+                        };
+                        
+            
+                        return loadChild(d,id);
+            
+                    }
+                    ,getSortHeader      = function(sortColNo){
+             
+                        if(typeof sortColNo !== ud )
+                            return  "<div class=\"zSort\">"
+                                    + "<a href=\"javascript:void(0);\" sortColNo=\"" + sortColNo + "\" >"
+                                        + "<span class=\"sPane\">" + _obj.arrows + "</span>"
+                                    + "</a>"
+                                    + "</div>";
+                        else return "";
+                    }
+                    ,isFreezeItem       = function(o){
+                        return  ( ((typeof o.isFreeze === ud) ||  o.isFreeze ===false) ? false:true ); 
+                    }
+                    ,createBlankRows    = function(o){
+                        if(typeof o.blankRowsLimit !==ud ){
+                            for(var x=0; x < o.blankRowsLimit;x++){
+                                if(_chLeft.length > 0) { trItem({data:null,panelType:"L",index:x});} 
+                                trItem({data:null,panelType:"R",index:x});
+                            }
+                        } 
+                    }
+                    ,rowsCompleted      = function(){
+                        //setRowsKeyUpChange();
+                        createBlankRows(o);
+                        setRowClickEvent();
+                        setScrollBars();
+                        _obj.addClickHighlight(); 
+                        _obj.setColumnResize();
+                    }
+                ;
+                
+                this.arrowUp ="<span class=\"arrow-up\"></span>";
+                this.arrowDown ="<span class=\"arrow-down\"></span>";
                 this.arrows = this.arrowUp + this.arrowDown;   
                 this.clsPanelR = ".right";
                 this.clsPanelL = ".left";
@@ -1496,233 +1717,6 @@ var  ud='undefined'
                     });            
                 };
             
-                var _obj                = this
-                    ,_o                 = o
-                    ,num_rows           = 0
-                    ,ctr                = 0  
-                    ,_gridWidth         = 0
-                    ,_gridWidthLeft     = 0
-                    ,_gridWidthRight    = 0
-                    ,_ch                = o.dataRows
-                    ,_chRight           = []
-                    ,_chLeft            = []                    
-                    ,_headers
-                    ,_tbl
-                    ,_tableRight
-                    //,dataRows
-                    ,_styles            = []
-                    ,_isGroup           = false
-                    ,bs                 = zsi.bs.ctrl
-                    ,svn                = zsi.setValIfNull
-                    ,clearTables        = function(){
-                         _obj.find("div[id='table']").html("");
-                    }
-                    ,createColumnHeader = function(o){
-                        if(o.headers.length===0) return;
-                        o.headers.html(getdataRows(o.dataTable,o.startGroupId));
-                        if(_isGroup) o.headers.append("<div>&nbsp;</div");
-                        o.headers.find(".item .zSort a").click(function(){
-                            var  $a = $(this)
-                                ,_colNo = $a.attr("sortColNo")
-                                ,_orderNo =0
-                                ,_oldClass = $a.attr("class")
-                            ;
-                            _obj.left=_tableRight.offset().left - _gridWidthLeft;
-                            _obj.find(".sPane").html(_obj.arrows);
-                            
-                            _obj.find(".zSort a").removeAttr("class");
-                            $a.addClass(_oldClass);
-                            
-                            if(typeof $a.attr("class") === ud) $a.addClass("desc");
-                            var className = $a.attr("class");
-                            if(className.indexOf("asc") > -1){
-                                $a.removeClass("asc");
-                                $a.addClass("desc");
-                                $a.find(".sPane").html(_obj.arrowDown);
-                                _orderNo=1;
-                            }
-                            else{
-                                $a.removeClass("desc");
-                                $a.addClass("asc");
-                                $a.find(".sPane").html(_obj.arrowUp);
-                                _orderNo=0;
-                            }
-                            _o.parameters.col_no = _colNo;
-                            _o.parameters.order_no=_orderNo;
-                            if(o.onSortClick) 
-                                o.onSortClick(_colNo,_orderNo);
-                            else 
-                                _obj.dataBindGrid2(_obj.params);
-                        });
-                        if(_isGroup || o.width > _o.width ) o.headers.css({width:(o.width + 20 )});
-                        if (_o.width) o.table.css("width",(o.width + 1 )  + "px");
-                    }
-                    ,trItem             = function(o){
-                        if(o.panelType === "Y" && _chLeft.length > 0) return; 
-                        var _dt =  (o.panelType ==="R"? _chRight : _chLeft ); 
-                        var _table =  (o.panelType ==="R"? _obj.find(_obj.clsPanelR).find("#table") : _obj.find(_obj.clsPanelL).find("#table") ); 
-                        
-                        var r       = "";
-                        
-                        r +="<div rowObj class='zRow'>";
-                            for(var x=0;x<_dt.length;x++){
-                                var _content = "", _attr = "", _style = "", _class = "",_nd= (o.data===null ? " no-data ":"");
-                                var _info = _dt[x]; 
-                                if(o.data) {
-                                    o.data.td = {};
-                                    o.data.recordIndex = o.index;
-                                }
-                                if(_info.onRender)
-                                    _content = _info.onRender(o.data);
-                                else{
-                                    if(typeof _info.type === ud)
-                                        _content = "<span class='text'>" + svn(o.data,_info.name)  + "</span>";
-                                    else{ 
-                                        
-                                        if(typeof _info.displayText!==ud){
-                                            _content = bs({    name         : _info.name  
-                                                                ,style      : _info.style 
-                                                                ,type       : _info.type  
-                                                                ,value      : svn(o.data ,_info.name ,_info.defaultValue ) 
-                                                                ,displayText: svn(o.data  ,_info.displayText) 
-                                                        });
-                                        }
-                                        else {
-                                            _content = bs({name:_info.name , style:_info.style ,type:_info.type  ,value: svn(o.data  ,_info.name  ,_info.defaultValue )});
-                                        }
-                                    }
-                                     
-                                    if(x===0 || x ===_o.selectorIndex ){
-                                      if(typeof _o.selectorType !==ud) 
-                                            _content += (o.data !==null ? bs({name: (_o.selectorType ==="checkbox" ? "cb" :  (_o.selectorType==="radio" ? "rad" : "ctrl" )  ),type:_o.selectorType}) : "" );
-                                    }
-                                }
-                                
-                                if(o.data){
-                                    _attr  = (typeof o.data.td.attr  === ud ? "" : " " + o.data.td.attr);
-                                    _class = (typeof o.data.td.class === ud ? "" : " " + o.data.td.class );
-                                    _style = (typeof o.data.td.style === ud ? "" : " style=\"" + o.data.td.style + "\"" );
-                                }
-                                _class +=  (typeof _info.class !== ud ? " " +  _info.class : "");
-                                
-            
-                                if( (typeof _info.groupId !== ud ?_info.groupId : 0)  > 0 || _info.onRender || _isGroup === false)
-                                    r +="<div class=\"zCell" + _nd +  _class + "\"  " + _attr  + " style=\"width:" + (_dt[x].width ) +  "px;"  + _dt[x].style + "\" >" + _content + "</div>";
-                            }
-                        r +="</div>";               
-            
-                        if( o.panelType ==="R" && ! isUD(_o.toggleMasterKey) ){
-                            r +="<div id=\"childPanel" + zsi.replaceIllegalId(svn(o.data,_o.toggleMasterKey)) +   "\" class=\"zExtraRow\"><div class=\"zGrid\"></div></div>";                           
-                        }
-                        
-                        _table.append(r);
-                        var _row=$("div[rowObj]");_row.removeAttr("rowObj");
-                        if ( ! isUD(_o.onEachComplete) ) {
-                            _row._onEachComplete =_o.onEachComplete;
-                            _row._onEachComplete(o);
-                        }                        
-                        
-                    }
-                    ,setRowClickEvent   = function(){
-                        
-                        var $rows = _obj.find(".zRow");
-                        $rows.click(function(){
-                            var _i = $(this).index();
-                            $rows.removeClass("active");
-                             _obj.find(".zRow:nth-child("  + (_i + 1) +  ")").addClass("active");
-                        });
-                        
-                        //check on input change if current row is edited.
-                        $rows.find("select, input").on("keyup change", function(){
-                                var $zRow = $(this).closest(".zRow");
-                                $zRow.find("#is_edited").val("Y");
-                        });   
-                        
-                        
-                    }
-                    ,setScrollBars      = function(){
-                        _tableRight.parent().scroll(function() {
-                            var _left = _tableRight.offset().left;
-                            var _top = _tableRight.offset().top;
-                            var _headers = $(_tableRight.closest(".right").find(".zHeaders")[0]);
-                            var _tblLeft = $(this).closest(".right").prev().find("#table");
-                            _headers.offset({left:_left});
-                            _tblLeft.offset({top:_top});
-                        });                         
-                    }
-                    ,getdataRows= function(d, id){
-                        var  hasChild = function (d,id){
-                            for(var x=0; x<d.length;x++ ){
-                                if(d[x].groupId===id) return true;
-                            }
-                            return false;
-                        };
-                        var loadChild = function (d,id){
-                            var h=""; 
-                            for(var x=0; x<d.length;x++ ){
-                                if(typeof d[x].groupId === ud ||  d[x].groupId==id ) {
-                                    var _hasSort = (typeof d[x].sortColNo !== ud ? true:false);
-                                    var _minusSortWidth  = ( _hasSort ? 15:0);
-                                    var _style = "",_styleTitle="";
-                                    var _level = (typeof d[x].groupId !==ud ? " group" + d[x].groupId : "" );
-                                    var _class = (typeof d[x].class !==ud ? " " + d[x].class : "" );
-                                    var _id = (typeof d[x].id !==ud ? "id=\"" + d[x].id + "\"" : "" );
-                                    var _titleId = (typeof d[x].id !==ud ? "id=\"title" + d[x].id + "\"" : "" );
-                                    var _groupItem = (_isGroup ? " groupItem" : "" );
-                                    if(typeof d[x].width !==ud){
-                                        _style = "style=\"width:" +  d[x].width  + "px;"  + d[x].style + "\"";
-                                       // _styleTitle = "style=\"width:" +  (d[x].width -  _minusSortWidth) + "px;"  + d[x].style + "\"";
-                                        _styleTitle = "style=\""  + d[x].style + "\"";
-                                    }
-                                    
-                                    h+= "<div " + _id + " class='item" + _groupItem + _level + _class + "' " + _style + ">";
-                                    h+= "<div " + _titleId + " class='title" + ( _hasSort ? " hasSort":"") + "' " + _styleTitle + " ><span class=\"text\">" + d[x].text +  "</span></div>"; 
-                                    if( isUD(o.resizable)  ||  o.resizable===true) h+= "<div class='cr'></div>";
-                                    if(typeof d[x].groupId !== ud ) 
-                                        h+= getdataRows(d,d[x].id) ;
-                                    h+=getSortHeader(d[x].sortColNo);
-                                    h+= "</div>";
-                                   
-                                }
-                            }
-                            return h;
-                        };
-                        
-            
-                        return loadChild(d,id);
-            
-                    }
-                    ,getSortHeader   = function(sortColNo){
-             
-                        if(typeof sortColNo !== ud )
-                            return  "<div class=\"zSort\">"
-                                    + "<a href=\"javascript:void(0);\" sortColNo=\"" + sortColNo + "\" >"
-                                        + "<span class=\"sPane\">" + _obj.arrows + "</span>"
-                                    + "</a>"
-                                    + "</div>";
-                        else return "";
-                    }
-                    ,isFreezeItem       = function(o){
-                        return  ( ((typeof o.isFreeze === ud) ||  o.isFreeze ===false) ? false:true ); 
-                    }
-                    ,createBlankRows =  function(o){
-                        if(typeof o.blankRowsLimit !==ud ){
-                            for(var x=0; x < o.blankRowsLimit;x++){
-                                trItem({data:null,panelType:"L",index:x}); 
-                                trItem({data:null,panelType:"R",index:x});
-                            }
-                        } 
-                    }
-                    ,rowsCompleted = function(){
-                        //setRowsKeyUpChange();
-                        createBlankRows(o);
-                        setRowClickEvent();
-                        setScrollBars();
-                        _obj.addClickHighlight(); 
-                        _obj.setColumnResize();
-                    }
-                ;
-            
                 $.each(o.dataRows,function(){
                     if(this.groupId > 0 || typeof this.groupId ===ud){ 
                         if(typeof this.groupId !==ud){ if(_isGroup===false) {_isGroup=true;}}
@@ -1738,36 +1732,30 @@ var  ud='undefined'
             
             
                 if(typeof this.isInitiated === ud){
-                    var _rpp =  ( isUD(o.parameters) ? 0 : isUD(o.parameters.rpp) ? 0  : o.parameters.rpp);
-            
-                    var _footer =  "<div class=\"zPageFooter\"><div class='pagestatus'>Number of records in a current page : <i id='recordsNum'> 0 </i></div>"
-                                +  "<div class='pagectrl'>" + ( _rpp===0 ? "" : "<label> No. of Rows: </label> <input id='rpp' name='rpp' type='text' value='" + _rpp  + "'>" ) 
-                                +  "<label id='page'> Page </label> <select id='pageNo'></select>"
-                                +  "<label id='of'> of 0 </label></div></div>"
-                       ,_head = "";
-                    
-                    if(_chLeft.length > 0)
-                        _head +="<div class=\"zGridPanel left\">"
-                                    +"<div class=\"zHeaders\"></div>"
-                                    +"<div class=\"zRows\">"
-                                        +"<div id=\"table\"  ></div>"
-                                    +"</div>"
-                                    +"<div class=\"zFooter\"></div>"                
-                                   +"</div>"
-                               +"</div>"
-                        
-                    _head +="<div class=\"zGridPanel right\">"
-                                +"<div class=\"zHeaders\"></div>"
-                                +"<div class=\"zRows\">"
-                                    +"<div id=\"table\" ></div>"
-                                +"</div>"
-                                +"<div class=\"zFooter\"></div>"                
-                                +"</div>"
-                            +"</div>"                                
+                    if( isUD(o.parameters) ) o.parameters = {};
+                    var  _p     = o.parameters;
+                         _p.rpp = ( ! isUD(o.rowsPerPage) ?  o.rowsPerPage :  ( ! isUD( _p.rpp) ?  _p.rpp : null ) );
+                         _rpp   = ( _p.rpp !== null ? _p.rpp : 0 );
+                     var _head = ""
+                        ,_getHdr = function(type){
+                            return new _tw().div({class:"zGridPanel " + type}).in().div({class:"zHeaders"}).div({class:"zRows"}).in().div({id:"table"}).out().div({class:"zFooter"}).html();
+                        }
+                        ,_getFtr = function(){
+                             return (typeof o.isPaging !== ud && o.isPaging === true 
+                                    ? new _tw().div({class:"zPageFooter "}).in().div({class:"pagestatus",value:"Number of records in a current page : <i id='recordsNum'> 0 </i>" })
+                                            .div({class:"pagectrl",value:  ( _rpp===0 ? "" :  new _tw().label({value: "No. of Rows:"}).input({id:"rpp",name:"rpp", type:"text",value:_rpp}).html() )  
+                                            +  new _tw().label({id:"page",value:"Page"}).select({id:"pageNo"}).label({id:"of",value:"of 0"}).html()
+                                            }).html() 
+                                    : "");
+                        }          
+                    ;
+                    if(_chLeft.length > 0){ _head += _getHdr("left");} 
+                    _head +=_getHdr("right"); 
+                            
                     this.params = o;
                     this.url = o.url;
                     this.isInitiated = true;
-                    this.html( _head + (typeof o.isPaging !==ud ?  (o.isPaging===true ? _footer :"") :"") );
+                    this.html( _head + _getFtr() );
                     
                     o.isAsync = (typeof o.isAsync !== ud ? o.isAsync : false);
                     _obj.curPageNo = (o.isAsync ===true?1:0);
@@ -1831,7 +1819,7 @@ var  ud='undefined'
                                     num_rows = data.rows.length;
                                     
                                     $.each(data.rows, function (i) {
-                                        trItem({data:this,panelType:"L",index:i}); 
+                                        if(_chLeft.length > 0) { trItem({data:this,panelType:"L",index:i}); } 
                                         trItem({data:this,panelType:"R",index:i});
                                     });
                                     
@@ -1866,7 +1854,7 @@ var  ud='undefined'
                             }          
                     };
                     
-                    if(typeof o.sqlCode!==ud)  {
+                    if(typeof o.sqlCode !== ud)  {
                         if(typeof zsi.config.getDataURL===ud){
                             alert("zsi.config.getDataURL is not defined in AppStart JS.");
                             return;
@@ -1875,8 +1863,16 @@ var  ud='undefined'
                         params.data = JSON.stringify({sqlCode :o.sqlCode,parameters:o.parameters});
                         params.type = "POST";
                     }
-                    else params.url = o.url + ( isUD(o.rowsPerPage) ? "" : ",@rpp=" +  o.rowsPerPage  )
-            
+                    else {
+                        var _strUrl = o.url;
+                        var _pg = o.parameters;
+                        var _setComma = function(url){
+                            return ( url.indexOf("@") > -1 ?  "," : " "); 
+                        }
+                        _strUrl += (_pg.rpp ? _setComma(_strUrl) + "@rpp=" +  _pg.rpp :"");
+                        _strUrl += (_pg.pno ? _setComma(_strUrl) + "@pno=" +  _pg.pno :"");
+                        params.url =_strUrl;
+                    }
                     _obj.bind('refresh',function() {
                         if(zsi.tmr) clearTimeout(zsi.tmr);
                         zsi.tmr =setTimeout(function(){              
@@ -1888,7 +1884,7 @@ var  ud='undefined'
                 }
                 else if(typeof o.rows !== ud){
                     $.each(o.rows, function(i) {
-                        trItem({data:this,panelType:"L",index:i}); 
+                        if(_chLeft.length > 0) { trItem({data:this,panelType:"L",index:i}); } 
                         trItem({data:this,panelType:"R",index:i});                            
                     });
                     rowsCompleted();
@@ -3701,4 +3697,4 @@ $(document).ready(function(){
 });
                                                   
                                                   
-           
+            
