@@ -19,8 +19,22 @@
     .modal-header {
     background-color: #F11716;
     padding:.5rem .5rem !important;
-}
-
+    }
+   #img-box{
+        top:120px;
+        background-color: #fff;
+        height: 250px;
+        width: 450px;
+        left: 650px;
+        position: absolute;
+        display:none;
+        webkit-box-shadow: 30px 30px 7px -1px rgba(0,0,0,0.58);
+        -moz-box-shadow: 30px 30px 7px -1px rgba(0,0,0,0.58);
+        box-shadow: 30px 30px 7px -1px rgba(0,0,0,0.58);
+        border: 2px solid #fff;
+        border-radius: 10px;
+        overflow:hidden;
+    }
 </style>
 
 <div class="zPanel">
@@ -42,6 +56,10 @@
             
         </div>
     </div>
+</div>
+
+<div id="img-box">
+    <img src="/file/viewImage?fileName=no-image.jpg&amp;isThumbNail=y" id="image" >
 </div>
 
 <ul id="localTemplates">

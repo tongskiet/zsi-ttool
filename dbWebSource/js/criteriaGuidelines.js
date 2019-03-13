@@ -7,7 +7,9 @@ var  svn                = zsi.setValIfNull
     ,g$mdl              = null
     ,criteriaId         = ""
     ,modalImageUpload   = "modalWindowImageUpload"
+    ,modalIconUpload   = "modalWindowIconUpload"
     ,gSpecsId           = ""
+    ,gTimeStamp         = 0
 ;
 
 zsi.ready(function(){
@@ -32,8 +34,16 @@ function getTemplates(callback){
         , title     : "Upload Image"
         , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="uploadMenuImage(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Upload</button>'
         //, body      : gtw.new().modalBody({gridId3:"gridUploadImage",uploadImage:"uploadImage();"}).html()  
-    });
+    })
     
+    .bsModalBox({
+          id        : modalIconUpload
+        , sizeAttr  : "modal-md"
+        , title     : "Upload Image"
+        , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="saveFaIcon(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Save</button>'
+        //, body      : gtw.new().modalBody({gridId3:"gridUploadImage",uploadImage:"uploadImage();"}).html()  
+    });
+
     if(callback) callback();
     
 }
@@ -68,38 +78,40 @@ function displayRecords(){
         		    }
         		}	 
         		,{ text:"Image Name 1"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ return "<a href='javascript:void(0);'  onclick='showModalUploadImage(" + svn(d,"menu_id") +",\"" 
-        		                                   + svn(d,"menu_name") + "\");'  >"+ svn(d,"image_name")+"<span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>"; }
+        		    ,onRender : function(d){ 
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		            return (d !== null ? _imgName : "");
+        		    }
         		}	 	 	
         		,{ text:"Image Name 2"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ return "<a href='javascript:void(0);'  onclick='showModalUploadImage(" + svn(d,"menu_id") +",\"" 
-        		                                   + svn(d,"menu_name") + "\");'  >"+ svn(d,"image_name")+"<span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>"; }
+        		    ,onRender : function(d){ 
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _imgName : "");
+        		    }
         		}	 	 	
         		,{ text:"Icon Name"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ return "<a href='javascript:void(0);'  onclick=''>"+ svn(d,"icon_name") +"<span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>"; }
+        		    ,onRender : function(d){ 
+        		        var _faIcon = "<a href='javascript:void(0);'  onclick='showModalAddIcon(" + svn(d,"menu_id") + ",\"" + svn(d,"fa_icon") + "\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-plus' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _faIcon : "");
+        		}
         		}	 	 	
         		
             ]
-            ,onComplete : function(){
-              
-               /* this.find(".zRow").click(function(){
-                    var _menuId = $(this).find("#menu_id").val();
-                    var _specs_id = $(this).find("#specs_id").val();
-          
-                    if(_menuId && _specs_id){
-                       $(".criteria").show();
-                       displayCriteria(_menuId,_specs_id);
-                    }
-                    else{
-                       $("#gridCriteria").find(".zRows").html("");
-                    }
-                });*/
-            }
     });    
 }
 
-function showModalUploadImage(menuId,menuName){
-    gSpecsId = menuId;
+function mouseover(imgId){
+    $("#img-box").css("display","block");
+    $("#img-box img").attr("src",base_url + "file/viewImageDB?sqlCode=T83&imageId=" +  imgId  + "&ts=" + gTimeStamp );
+}
+
+function mouseout(){
+    $("#img-box").css("display","none");
+}
+
+function showModalUploadImage(parentId,imageId,fieldName,menuName){
     var m=$('#' + modalImageUpload);
     m.find(".modal-title").text('Upload Image to' + ' » ' + menuName);
     m.modal("show");
@@ -107,16 +119,35 @@ function showModalUploadImage(menuId,menuName){
         ,function(data){
            m.find('.modal-body').html(data);
            m.find("form").attr("enctype","multipart/form-data");
-           m.find("#prefixKey").val("menu.");
+           m.find("#parent_id").val(parentId);
+           m.find("#image_id").val(imageId);
+           m.find("#field_name").val(fieldName);
         }
     ); 
 }
+
+function showModalAddIcon(parentId,faIcon,menuName){
+    console.log("faIcon",faIcon);
+    var m=$('#' + modalIconUpload);
+    m.find(".modal-title").text('Upload Image to' + ' » ' + menuName);
+    m.modal("show");
+    $.get(base_url + 'page/name/tmplDBAddIcon'
+        ,function(data){
+           m.find('.modal-body').html(data);
+           m.find("#parent_id").val(parentId);
+           m.find("#fa_icon").val(faIcon);
+        }
+    ); 
+}
+
 
 function uploadMenuImage(obj){
     var _frm = $(obj).closest(".modal-content").find("form");
 
     var _file= _frm.find("#file").get(0);
-    
+    var _parent_id =_frm.find("#parent_id").val();
+    var _field_name =_frm.find("#field_name").val();
+           
     if( _file.files.length<1 ) { 
          alert("Please select image.");
         return;
@@ -130,18 +161,17 @@ function uploadMenuImage(obj){
         success: completeHandler = function(data) {
             if(data.isSuccess){
                 console.log("data",data);
-                //submit filename to server
-                /*
-                $.get(base_url  + "sql/exec?p=dbo.images_ins @oem_id=" + gSpecsId
-                                + ",@img_filename='oem." +  _file.files[0].name + "'"
+                $.get(base_url  + "sql/exec?p=dbo.trend_menu_image_upd @tren_menu_id=" + _parent_id 
+                                + ",@" + _field_name + "=" + data.image_id 
+                                + ",@user_id=" + userId 
+                                
                 ,function(data){
                     zsi.form.showAlert("alert");
                     $('#' + modalImageUpload).modal('toggle');
-                    
                     //refresh latest records:
                     displayRecords();
+                    gTimeStamp = new Date().getTime();
                 });
-                */
 
                     
             }else
@@ -159,6 +189,25 @@ function uploadMenuImage(obj){
         processData: false
     }, 'json');
 }
+
+function saveFaIcon(obj){
+    var _frm = $(obj).closest(".modal-content").find("form");
+
+    var _faIcon     = _frm.find("#fa_icon").val();
+    var _parentId   = _frm.find("#parent_id").val();
+ 
+     $.get(base_url  + "sql/exec?p=dbo.trend_menu_image_upd @tren_menu_id=" + _parentId 
+                    + ",@fa_icon=" + _faIcon 
+                    + ",@user_id=" + userId 
+                    
+    ,function(data){
+        zsi.form.showAlert("alert");
+        $('#' + modalImageUpload).modal('toggle');
+        displayRecords();
+    });
+                
+}
+
 
 function displayCriteria(menuId,specsId){
         $("#gridCriteria").dataBind({
@@ -196,10 +245,26 @@ function displayCriteria(menuId,specsId){
         		        }
         		}
         		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ return "<a href='javascript:void(0);'  onclick=''  ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>"; }
+        		    ,onRender : function(d){ 
+        		        var _image1 = "<a href='javascript:void(0);'  onclick=''  ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        if(svn(d,"pcriteria_id"))
+        		            return "";
+        		        else if(d !==null)
+        		            return _image1;
+        		        else 
+        		            return "";
+        		    }
         		}	 	 	
         		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ return "<a href='javascript:void(0);'  onclick=''><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>"; }
+        		    ,onRender : function(d){ 
+        		        var _image2 = "<a href='javascript:void(0);'  onclick=''  ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        if(svn(d,"pcriteria_id"))
+        		            return "";
+        		        else if(d !==null)
+        		            return _image2;
+        		        else 
+        		            return "";
+        		    }
         		}	 	 	
 
 
@@ -474,4 +539,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-}    
+}             
