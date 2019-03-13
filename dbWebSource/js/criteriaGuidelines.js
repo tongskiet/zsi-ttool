@@ -30,7 +30,7 @@ function getTemplates(callback){
           id        : modalImageUpload
         , sizeAttr  : "modal-md"
         , title     : "Upload Image"
-        , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="uploadMenuImage();" class="btn btn-primary"><span class="fas fa-file-upload"></span> Upload</button>'
+        , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="uploadMenuImage(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Upload</button>'
         //, body      : gtw.new().modalBody({gridId3:"gridUploadImage",uploadImage:"uploadImage();"}).html()  
     });
     
@@ -101,38 +101,39 @@ function displayRecords(){
 function showModalUploadImage(menuId,menuName){
     gSpecsId = menuId;
     var m=$('#' + modalImageUpload);
-    
     m.find(".modal-title").text('Upload Image to' + ' » ' + menuName);
     m.modal("show");
-    m.find("form").attr("enctype","multipart/form-data");
-    
-    $.get(base_url + 'page/name/tmplImageUpload'
+    $.get(base_url + 'page/name/tmplImageDbUpload'
         ,function(data){
            m.find('.modal-body').html(data);
-            $("#frm_" + modalImageUpload).find("#prefixKey").val("menu.");
+           m.find("form").attr("enctype","multipart/form-data");
+           m.find("#prefixKey").val("menu.");
         }
     ); 
 }
 
-function uploadMenuImage(){
-    var frm = $("#frm_" + modalImageUpload);
-    var fileOrg=frm.find("#file").get(0);
+function uploadMenuImage(obj){
+    var _frm = $(obj).closest(".modal-content").find("form");
+
+    var _file= _frm.find("#file").get(0);
     
-    if( fileOrg.files.length<1 ) { 
+    if( _file.files.length<1 ) { 
          alert("Please select image.");
         return;
     }
-    var formData = new FormData( frm.get(0));
+    var formData = new FormData( _frm.get(0));
     $.ajax({
-        url: base_url + 'file/UploadImage',  //server script to process data
+        url: base_url + 'file/UploadImageDb',  //server script to process data
         type: 'POST',
 
         //Ajax events
         success: completeHandler = function(data) {
             if(data.isSuccess){
+                console.log("data",data);
                 //submit filename to server
+                /*
                 $.get(base_url  + "sql/exec?p=dbo.images_ins @oem_id=" + gSpecsId
-                                + ",@img_filename='oem." +  fileOrg.files[0].name + "'"
+                                + ",@img_filename='oem." +  _file.files[0].name + "'"
                 ,function(data){
                     zsi.form.showAlert("alert");
                     $('#' + modalImageUpload).modal('toggle');
@@ -140,6 +141,7 @@ function uploadMenuImage(){
                     //refresh latest records:
                     displayRecords();
                 });
+                */
 
                     
             }else
@@ -472,4 +474,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-} 
+}    
