@@ -32,18 +32,6 @@ tt-menu a {
             height: inherit;
             width: inherit;
 
-            .cover-fade .label-single{
-                top:76px;   
-            }
-
-            .cover-fade .label-double{
-                top:64px;
-            }
-
-            .cover-fade .label-triple{
-                top:54px;
-            }                        
-
             .img {
                 position: absolute;
                 height: inherit;
@@ -52,7 +40,7 @@ tt-menu a {
                 top: 0;
             }
 
-            .label-double {
+            .text {
                 font-size: 0.75em;
                 color: #fff;
                 font-weight: bold;
