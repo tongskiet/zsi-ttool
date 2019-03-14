@@ -6,6 +6,7 @@
 @import "ztable";
 @import "zpanel";
 @import "zsearch";
+@import "ttool-menus";
 @import "bs-navbar";
 @import "bs-navtabs";
 @import "report";
@@ -490,39 +491,6 @@ a.dropdown-item > img.mx-auto.d-block.menu-icon:hover{
 	margin-top: -8px;
 }
 
-.tt-menu {
-     
-}
-.menu-item {
-    float: left;
-	text-align:center;
-}
-.tt-menu a{
-    background-color: #494749;
-    color: #fff;
-    border-radius: 8px;
-    height: inherit;
-    width: 89px;
-    height: 80px;
-    margin: 5px;
-	float:left;
-	text-decoration: none;
-}
-.tt-menu a:hover{
-    background-color: red;
-    color: #fff;
-}
-
-.tt-menu a i{
-    font-size: 38px;
-    line-height: 78px;
-}
-
-.menu-item{	
-}
-.dd-checkbox-menu {
-     
-}
 .dd-checkbox-menu {
     float: left;
 	padding:10px;    

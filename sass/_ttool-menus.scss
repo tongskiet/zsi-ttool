@@ -1,0 +1,82 @@
+tt-menu a {
+    margin: 0;
+    padding: 0;
+    border-radius: 5px;
+    background: none;
+    position: relative;
+}
+.menu-content{
+    margin:5px 0 0 0;
+    float:none;
+    overflow:hidden;
+
+    .hw {
+        width: 90px;
+        height: 90px;
+    }
+
+    .menu-item {
+        float: left;
+        margin: 0px 0px 5px 6px;
+        overflow: hidden;
+        border-radius:6px;
+        &:hover .imgFade{
+            opacity: 0;
+            transition: 0.3s;
+        }    
+
+        a {
+            position: relative;
+            text-decoration: none;
+            float: inherit;
+            height: inherit;
+            width: inherit;
+
+            .cover-fade .label-single{
+                top:76px;   
+            }
+
+            .cover-fade .label-double{
+                top:64px;
+            }
+
+            .cover-fade .label-triple{
+                top:54px;
+            }                        
+
+            .img {
+                position: absolute;
+                height: inherit;
+                width: inherit;    
+                left: 0;
+                top: 0;
+            }
+
+            .label-double {
+                font-size: 0.75em;
+                color: #fff;
+                font-weight: bold;
+                padding-left: 3px;
+                line-height: 13px;
+                padding-top: 2px;
+                display: table-cell;
+                vertical-align: bottom;
+                height: inherit;
+                width: inherit;
+                position: relative;
+                padding-bottom: 3px;
+            }                        
+
+        }         
+
+    }
+     
+}
+ 
+ 
+.dropdown-menu-left{
+    width:303px !important;
+}
+
+ 
+
