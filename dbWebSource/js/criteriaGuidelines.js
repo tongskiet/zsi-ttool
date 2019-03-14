@@ -1,15 +1,16 @@
-var  svn                = zsi.setValIfNull
-    ,bs                 = zsi.bs.ctrl
-    ,bsButton           = zsi.bs.button
-    ,proc_url           = base_url + "common/executeproc/"
-    ,gMdlId             = "modalCriteriaColums"
-    ,gtw                = null
-    ,g$mdl              = null
-    ,criteriaId         = ""
-    ,modalImageUpload   = "modalWindowImageUpload"
-    ,modalIconUpload   = "modalWindowIconUpload"
-    ,gSpecsId           = ""
-    ,gTimeStamp         = 0
+var  svn                        = zsi.setValIfNull
+    ,bs                         = zsi.bs.ctrl
+    ,bsButton                   = zsi.bs.button
+    ,proc_url                   = base_url + "common/executeproc/"
+    ,gMdlId                     = "modalCriteriaColums"
+    ,gtw                        = null
+    ,g$mdl                      = null
+    ,criteriaId                 = ""
+    ,modalImageUpload           = "modalWindowImageUpload"
+    ,modalIconUpload            = "modalWindowIconUpload"
+    ,modalCriteriaImageUpload   = "modalwindowCriteriaImageUpload"
+    ,gSpecsId                   = ""
+    ,gTimeStamp                 = 0
 ;
 
 zsi.ready(function(){
@@ -17,6 +18,7 @@ zsi.ready(function(){
     getTemplates(function(){
         displayRecords();
     });
+    
 });
 
 function getTemplates(callback){
@@ -42,15 +44,23 @@ function getTemplates(callback){
         , title     : "Upload Image"
         , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="saveFaIcon(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Save</button>'
         //, body      : gtw.new().modalBody({gridId3:"gridUploadImage",uploadImage:"uploadImage();"}).html()  
-    });
+    })
 
+    .bsModalBox({
+          id        : modalCriteriaImageUpload
+        , sizeAttr  : "modal-md"
+        , title     : "Upload Image"
+        , footer    : '<div class="col-11 ml-auto"><button type="button" onclick="uploadCriteriaImage(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Upload</button>'
+        //, body      : gtw.new().modalBody({gridId3:"gridUploadImage",uploadImage:"uploadImage();"}).html()  
+    });
+    
     if(callback) callback();
     
 }
 
 function displayRecords(){ 
     $("#grid").dataBind({
-        url            : execURL + "trend_menus_sel "
+             sqlCode        : "T72"
             ,width          : 700
     	    ,height         : $(document).height() - 250
     	    ,selectorType   : "checkbox"
@@ -77,14 +87,14 @@ function displayRecords(){
 		                      + svn(d,"menu_name");
         		    }
         		}	 
-        		,{ text:"Image Name 1"      , width:100     , style:"text-align:center;" 
+        		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
         		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		            return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
-        		,{ text:"Image Name 2"      , width:100     , style:"text-align:center;" 
+        		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
         		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
@@ -107,6 +117,11 @@ function mouseover(imgId){
     $("#img-box img").attr("src",base_url + "file/viewImageDB?sqlCode=T83&imageId=" +  imgId  + "&ts=" + gTimeStamp );
 }
 
+function mouseoverCriteria(imgId){
+    $("#img-box").css("display","block");
+    $("#img-box img").attr("src",base_url + "file/viewImageDB?sqlCode=C89&imageId=" +  imgId  + "&ts=" + gTimeStamp );
+}
+
 function mouseout(){
     $("#img-box").css("display","none");
 }
@@ -127,15 +142,29 @@ function showModalUploadImage(parentId,imageId,fieldName,menuName){
 }
 
 function showModalAddIcon(parentId,faIcon,menuName){
-    console.log("faIcon",faIcon);
     var m=$('#' + modalIconUpload);
-    m.find(".modal-title").text('Upload Image to' + ' » ' + menuName);
+    m.find(".modal-title").text('Upload Icon to' + ' » ' + menuName);
     m.modal("show");
     $.get(base_url + 'page/name/tmplDBAddIcon'
         ,function(data){
            m.find('.modal-body').html(data);
            m.find("#parent_id").val(parentId);
            m.find("#fa_icon").val(faIcon);
+        }
+    ); 
+}
+
+function showModalUploadCriteriaImage(parentId,imageId,fieldName,title){
+    var m=$('#' + modalCriteriaImageUpload);
+    m.find(".modal-title").text('Upload Image to' + ' » ' + title);
+    m.modal("show");
+    $.get(base_url + 'page/name/tmplImageDbUpload'
+        ,function(data){
+           m.find('.modal-body').html(data);
+           m.find("form").attr("enctype","multipart/form-data");
+           m.find("#parent_id").val(parentId);
+           m.find("#image_id").val(imageId);
+           m.find("#field_name").val(fieldName);
         }
     ); 
 }
@@ -193,25 +222,76 @@ function uploadMenuImage(obj){
 function saveFaIcon(obj){
     var _frm = $(obj).closest(".modal-content").find("form");
 
-    var _faIcon     = _frm.find("#fa_icon").val();
+    var _faIcon     = _frm.find("#fa_icon_name").val();
     var _parentId   = _frm.find("#parent_id").val();
  
      $.get(base_url  + "sql/exec?p=dbo.trend_menu_image_upd @tren_menu_id=" + _parentId 
-                    + ",@fa_icon=" + _faIcon 
+                    + ",@fa_icon='" + _faIcon + "'"
                     + ",@user_id=" + userId 
                     
     ,function(data){
         zsi.form.showAlert("alert");
-        $('#' + modalImageUpload).modal('toggle');
+        $('#' + modalIconUpload).modal('toggle');
         displayRecords();
     });
                 
 }
 
+function uploadCriteriaImage(obj){
+    var _frm = $(obj).closest(".modal-content").find("form");
+
+    var _file= _frm.find("#file").get(0);
+    var _parent_id =_frm.find("#parent_id").val();
+    var _field_name =_frm.find("#field_name").val();
+           
+    if( _file.files.length<1 ) { 
+         alert("Please select image.");
+        return;
+    }
+    var formData = new FormData( _frm.get(0));
+    $.ajax({
+        url: base_url + 'file/UploadImageDb',  //server script to process data
+        type: 'POST',
+
+        //Ajax events
+        success: completeHandler = function(data) {
+            if(data.isSuccess){
+                console.log("data",data);
+                $.get(base_url  + "sql/exec?p=dbo.criteria_image_upd @criteria_id=" + _parent_id 
+                                + ",@" + _field_name + "=" + data.image_id 
+                                + ",@user_id=" + userId 
+                                
+                ,function(data){
+                    zsi.form.showAlert("alert");
+                    $('#' + modalCriteriaImageUpload).modal('toggle');
+                    //refresh latest records:
+                    displayRecords();
+                    gTimeStamp = new Date().getTime();
+                });
+
+                    
+            }else
+                alert(data.errMsg);
+            
+        },
+        error: errorHandler = function() {
+            console.log("error");
+        },
+        // Form data
+        data: formData,
+        //Options to tell JQuery not to process data or worry about content-type
+        cache: false,
+        contentType: false,
+        processData: false
+    }, 'json');
+}
 
 function displayCriteria(menuId,specsId){
         $("#gridCriteria").dataBind({
-             url: execURL + "criterias_sel @trend_menu_id=" + menuId 
+             sqlCode        : "C12"
+            ,parameters     : {
+                                trend_menu_id: menuId
+                            }
             ,width          : 1000
     	    ,height         : $(document).height() - 250
             ,blankRowsLimit : 10
@@ -246,7 +326,8 @@ function displayCriteria(menuId,specsId){
         		}
         		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
-        		        var _image1 = "<a href='javascript:void(0);'  onclick=''  ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+                        var _mouseMoveEvent = "onmouseover='mouseoverCriteria(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
+        		        var _image1       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		        if(svn(d,"pcriteria_id"))
         		            return "";
         		        else if(d !==null)
@@ -257,7 +338,8 @@ function displayCriteria(menuId,specsId){
         		}	 	 	
         		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
-        		        var _image2 = "<a href='javascript:void(0);'  onclick=''  ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
+        		        var _image2         = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		        if(svn(d,"pcriteria_id"))
         		            return "";
         		        else if(d !==null)
@@ -279,9 +361,11 @@ function displayCriteria(menuId,specsId){
                 $.each( $("[name='criteria_id'") ,function(){
                     var _$select = $(this).closest(".zRow").find("select[name='pcriteria_id']");
                     _$select.dataBind({
-                        url: execURL + "criteria_group_sel" + (this.value ? " @criteria_id=" + this.value : "")  
-                            , text: "criteria_title"
-                            , value: "criteria_id"
+                        //url: execURL + "criteria_group_sel" + (this.value ? " @criteria_id=" + this.value : "")  
+                              sqlCode       : "C11"
+                            , parameters    : {criteria_id : this.value}
+                            , text          : "criteria_title"
+                            , value         : "criteria_id"
                     });
 
 
@@ -304,7 +388,10 @@ function showModalCriteriaColumns(criteriaId,specsId,name) {
 
 function displayCriteriaColumns(criteriaId,specsId){
     $("#gridCriteriaColumns").dataBind({
-         url    : execURL + "criteria_columns_sel @criteria_id=" + criteriaId 
+         sqlCode        : "C9"
+        ,parameters     : {
+                            criteria_id : criteriaId 
+                        }
         ,width          : 900
 	    ,height         : 400
         ,blankRowsLimit :5
@@ -470,7 +557,10 @@ function displayCriteriaColumns(criteriaId,specsId){
 function displayCriteriaColumnValues(colName,criteriaColId){
     $(".colval").show();
     $("#gridCriteriaColumnValues").dataBind({
-         url    : execURL + "criteria_column_values_sel "  + ( criteriaColId !==""  ?  "@criteria_column_id=" + criteriaColId  :"")
+         sqlCode        : "C7"
+        ,parameters     : {
+                            criteria_column_id : criteriaColId
+                        }
         ,width          : 350
 	    ,height         : 400
         ,blankRowsLimit :5
@@ -539,4 +629,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-}             
+}               
