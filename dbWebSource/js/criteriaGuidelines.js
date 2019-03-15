@@ -11,6 +11,8 @@ var  svn                        = zsi.setValIfNull
     ,modalCriteriaImageUpload   = "modalwindowCriteriaImageUpload"
     ,gSpecsId                   = ""
     ,gTimeStamp                 = 0
+    ,gClsMma                    ="mouse-move-area"
+
 ;
 
 zsi.ready(function(){
@@ -19,6 +21,17 @@ zsi.ready(function(){
         displayRecords();
     });
     
+});
+
+$(document).mousemove(function(e){
+    var _$o = $(e.target);
+    var _$mma = _$o.hasClass(gClsMma) ? _$o : _$o.closest("." + gClsMma);
+    var _$imgBox = $("#img-box");
+    if(_$mma.length >0  && _$mma.find("a").length > 0 ){
+        _$imgBox.css({top:e.pageY + 20,left:e.pageX  - (_$imgBox.width() /2)   });
+    }else{
+        _$imgBox.css({display:"none"});
+    }
 });
 
 function getTemplates(callback){
@@ -89,13 +102,15 @@ function displayRecords(){
         		}	 
         		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
-                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout=''";
         		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		            return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
         		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
         		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		        return (d !== null ? _imgName : "");
@@ -326,6 +341,7 @@ function displayCriteria(menuId,specsId){
         		}
         		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseoverCriteria(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
         		        var _image1       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		        if(svn(d,"pcriteria_id"))
@@ -338,6 +354,7 @@ function displayCriteria(menuId,specsId){
         		}	 	 	
         		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
         		        var _image2         = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		        if(svn(d,"pcriteria_id"))
@@ -629,4 +646,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-}               
+}                  
