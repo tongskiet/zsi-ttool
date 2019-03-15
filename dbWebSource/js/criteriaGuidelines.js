@@ -74,13 +74,13 @@ function getTemplates(callback){
 function displayRecords(){ 
     $("#grid").dataBind({
              sqlCode        : "T72"
-            ,width          : 700
+            ,width          : 520
     	    ,height         : $(document).height() - 250
     	    ,selectorType   : "checkbox"
             ,blankRowsLimit:5
             ,isPaging : false
             ,dataRows       :[
-        		{ text:"Menu Name"         , width:375     , style:"text-align:left;"
+        		{ text:"Menu Name"         , width:275     , style:"text-align:left;"
         		    ,onRender : function(d){
         		        var _menuId = svn(d,"menu_id");
         		        var _specsId = svn(d,"specs_id");
@@ -100,7 +100,7 @@ function displayRecords(){
 		                      + svn(d,"menu_name");
         		    }
         		}	 
-        		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
+        		,{ text:"Image 1"      , width:70     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
         		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout=''";
@@ -108,7 +108,7 @@ function displayRecords(){
         		            return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
-        		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
+        		,{ text:"Image 2"      , width:70     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
         		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
@@ -116,7 +116,7 @@ function displayRecords(){
         		        return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
-        		,{ text:"Icon Name"      , width:100     , style:"text-align:center;" 
+        		,{ text:"Icon Name"      , width:80     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
         		        var _faIcon = "<a href='javascript:void(0);'  onclick='showModalAddIcon(" + svn(d,"menu_id") + ",\"" + svn(d,"fa_icon") + "\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-plus' style='font-size:12pt;' ></span> </a>";
         		        return (d !== null ? _faIcon : "");
@@ -409,11 +409,11 @@ function displayCriteriaColumns(criteriaId,specsId){
         ,parameters     : {
                             criteria_id : criteriaId 
                         }
-        ,width          : 900
+        ,width          : 950
 	    ,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
-    		 { text: "Column Name"   , width:300 , style:"text-align:left;" 
+    		 { text: "Column Name"   , width:250 , style:"text-align:left;" 
     		     ,onRender : function(d){return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
     		                                +   bs({name:"criteria_id"  ,type:"hidden",value: criteriaId })
     		                                +   bs({name:"is_edited",type:"hidden" })
@@ -421,7 +421,7 @@ function displayCriteriaColumns(criteriaId,specsId){
     		                               
     		        }
     		 }
-    		 ,{ text: "Operator Name" ,  width:150, style:"text-align:left;" 
+    		 ,{ text: "Operator Name" ,  width:140, style:"text-align:left;" 
     		     ,onRender: function(d){
     		         return bs({name:"operator_value",  type:"select", value: svn(d,"operator_value")});
     		     }
@@ -431,7 +431,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                        return "<span class='lst-icon'> &nbsp;<span>";
         	        }
     		  }
-    		 ,{ text: "Column Value1"     , width:150           , style:"text-align:left;" 
+    		 ,{ text: "Column Value1"     , width:130           , style:"text-align:left;" 
     		     ,onRender : function(d){
     		         if(svn(d,"operator_value") === ""){
     		           return bs({name:"column_value"      , type:"select" , value: svn(d,"column_value") ,class:"hide"});   
@@ -441,9 +441,15 @@ function displayCriteriaColumns(criteriaId,specsId){
     		         } 
     		     }
     		 }
-    		 ,{ text: "Column Value2"     , width:150          , style:"text-align:left;"  
+    		 ,{ text: "Column Value2"     , width:130          , style:"text-align:left;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value2"    , type:"select" , value: svn(d,"column_value2")}); 
+    		     }
+    		     
+    		 }
+    		 ,{ text: "Column Value3"     , width:130          , style:"text-align:left;"  
+    		     ,onRender : function(d){
+    		         return bs({name:"column_value3"    , type:"input" , value: svn(d,"column_value3")}); 
     		     }
     		     
     		 }
@@ -646,4 +652,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-}                  
+}                   
