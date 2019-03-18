@@ -72,9 +72,10 @@ function getTemplates(callback){
 }
 
 function displayRecords(){ 
+    var flag = "";
     $("#grid").dataBind({
              sqlCode        : "T72"
-            ,width          : 520
+            ,width          : 660
     	    ,height         : $(document).height() - 250
     	    ,selectorType   : "checkbox"
             ,blankRowsLimit:5
@@ -86,12 +87,13 @@ function displayRecords(){
         		        var _specsId = svn(d,"specs_id");
         		        this.css('cursor', 'pointer');
         		        this.click(function(){
-            		        if(_menuId && _specsId){
-                               $(".criteria").show();
-                               displayCriteria(_menuId,_specsId);
+        		            if(_menuId && _specsId){
+                                $(".criteria").show();
+                                displayCriteria(_menuId,_specsId);
                             }
-                            else{
-                               $("#gridCriteria").find(".zRows").html("");
+        		  	        else{
+                                $(".criteria").hide();
+                               //$("#gridCriteria").find(".zRows").html("");
                             }
         		        });
                             
@@ -116,9 +118,25 @@ function displayRecords(){
         		        return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
+        		,{ text:"Image 3"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image3_id") +  "\");' onmouseout=''";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image3_id") + "\",\"image3_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		            return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
+        		,{ text:"Image 4"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image4_id") +  "\");' onmouseout='mouseout();'";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image4_id") + "\",\"image4_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
         		,{ text:"Icon Name"      , width:80     , style:"text-align:center;" 
         		    ,onRender : function(d){ 
-        		        var _faIcon = "<a href='javascript:void(0);'  onclick='showModalAddIcon(" + svn(d,"menu_id") + ",\"" + svn(d,"fa_icon") + "\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-plus' style='font-size:12pt;' ></span> </a>";
+        		        var _faIcon = "<a href='javascript:void(0);' class='btn btn-sm;'  onclick='showModalAddIcon(" + svn(d,"menu_id") + ",\"" + svn(d,"fa_icon") + "\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-plus-circle' style='font-size:12pt;' ></span> </a>";
         		        return (d !== null ? _faIcon : "");
         		}
         		}	 	 	
@@ -652,4 +670,4 @@ function submitData2(){
             displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
             }
         });
-}                   
+}                     
