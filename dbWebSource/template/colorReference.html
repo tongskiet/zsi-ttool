@@ -2,7 +2,6 @@
     #grid{
         width: 100%;
     }
-    
     .zGrid .item .title {
         height: 22px;
         line-height: 19px;
@@ -18,21 +17,18 @@
    
 
 </style>
-
-<script src='/javascript/name/zsiSearch'></script>
-
-    <form method="post" id="frm">
-        <div class="zPanel">
-            <div class="col-12">     
-                <div id="grid" class="zGrid mb-2"></div>
-            </div>
-            <div class="col-2">     
-                <button type="button" class="btn btn-primary " id="btnSave">
-                    <i class="far fa-save"></i> Save
-                </button>
-                <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
-                	<i class="fas fa-trash-alt"></i> Delete
-                </button>    
-            </div>
+<form method="post" id="frm">
+    <div class="zPanel">
+        <div class="col-12">     
+            <div id="grid" class="zGrid mb-2"></div>
         </div>
-    </form>
+        <div class="col-2">     
+            <button type="button" class="btn btn-primary " id="btnSave">
+                <i class="far fa-save"></i> Save
+            </button>
+            <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
+            	<i class="fas fa-trash-alt"></i> Delete
+            </button>    
+        </div>
+    </div>
+</form>

@@ -14,24 +14,22 @@
     .tablePanel {
         overflow-y:auto;
     }
-   
-
 </style>
 
-<script src='/javascript/name/zsiSearch'></script>
-
-    <form method="post" id="frm">
-        <div class="zPanel">
-            <div class="row">    
-                <div id="grid" class="zGrid"></div>
-            </div>
-             <div style="padding-top:1rem;"> 
-                <button type="button" class="btn btn-primary " id="btnSave">
-                    <i class="far fa-save"></i> Save
-                </button>
-                <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
-                	<i class="fas fa-trash-alt"></i> Delete
-                </button>    
-            </div>
+<form method="post" id="frm">
+    <div class="zPanel">
+        <div class="col-12">    
+            <div id="grid" class="zGrid mb-2"></div>
         </div>
-    </form>
+        
+        <div  class="col-12"> 
+            <button type="button" class="btn btn-primary " id="btnSave">
+                <i class="far fa-save"></i> Save
+            </button>
+            <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
+            	<i class="fas fa-trash-alt"></i> Delete
+            </button>    
+        </div>
+        
+    </div>
+</form>

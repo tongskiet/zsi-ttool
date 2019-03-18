@@ -1,15 +1,24 @@
-<div > 
-        <div class="zPanel">
-            <div id="grid" class="zGrid">   
-            </div>    
-        
-            <div class="buttonGroup">
-                <button type="button" class="btn btn-primary btn-sm" id="btnSave">
-                	<span class="glyphicon glyphicon-floppy-disk"></span> Save
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" id="btnDelete">
-                	<span class="glyphicon glyphicon-trash"></span> Delete
-                </button>    
-            </div>
+<style>
+    #grid{
+    width: 100%;
+}
+.zRows {
+    height:100%;
+}
+</style>
+
+<form method="post" id="frm">
+    <div class="zPanel">
+        <div class="col-12">     
+            <div id="grid" class="zGrid mb-2"></div>
         </div>
-</div>
+        <div class="col-12"> 
+            <button type="button" class="btn btn-primary " id="btnSave">
+                <i class="far fa-save"></i> Save
+            </button>
+            <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
+            	<i class="fas fa-trash-alt"></i> Delete
+            </button>    
+        </div>
+    </div>
+</form>

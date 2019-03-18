@@ -33,41 +33,25 @@
     height: 22px;
     line-height: 19px;
 }
+ .zGrid .zHeaders .zSort {
+        
+    }
+.tablePanel {
+        overflow-y:auto;
+    }
+   
 </style>
 
-<div class="zPanel">  
+ <div class="zPanel">  
     <form method="post" id="frm">
-        <div class="form-horizontal clearfix" style="margin-bottom:5px">
-            <label class=" col-xs-3 col-sm-2 col-md-1 control-label">Role</label>
-            <div class="col-xs-7 col-sm-4 col-md-2 col-lg-2" >
-                <select name="role_filter" id="role_filter" class="form-control input-sm"></select>
-            </div>
-            <label class="col-xs-3 col-sm-1 col-md-1 control-label">Rank</label>
-            <div class="col-xs-7 col-sm-4 col-md-2 col-lg-2" >
-                <select name="rank_filter" id="rank_filter" class="form-control input-sm"></select>
-            </div>
-            <label class=" col-xs-3 col-sm-2 col-md-1 control-label">Organization</label>
-            <div class="col-xs-7 col-sm-4 col-md-2 col-lg-2" >
-                <select name="organization_filter" id="organization_filter" class="form-control input-sm"></select>
-            </div>
-            <div class="col-xs-10 col-sm-5 col-md-2 col-lg-2" >
-                <input name="keyword_filter" id="keyword_filter" placeholder="Keyword" class="form-control input-sm">
-            </div>
-            <div class="col-xs-2 col-sm-1" >
-                <button type="button" class="btn btn-primary btn-sm" id="btnGo">
-                	<span class="glyphicon glyphicon-search"></span>
-                </button>
-            </div>
-        </div> 
+        <div id="grid" class="zGrid mb-2"></div> 
 
-        <div id="grid" class="zGrid"></div> 
-        <div class="buttonGroup">
-            <button type="button" class="btn btn-primary btn-sm" id="btnSave">
-            	<span class="glyphicon glyphicon-floppy-disk"></span> Save
-            </button>
-        </div>
+        <button type="button" class="btn btn-primary " id="btnSave">
+            <i class="far fa-save"></i> Save
+        </button>
+        
     </form>
-</div>
+ </div>
 <div id="user-box">
     <img src="/file/viewImage?fileName=no-image.jpg&amp;isThumbNail=y" id="userImage" >
 </div>
