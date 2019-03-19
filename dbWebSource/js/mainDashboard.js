@@ -9,7 +9,6 @@ var gObjWireSummaryByRegion=[];
 var gObjSWAll = [];
 var gObjSWRegion = [];
 var gObjSWModelYear = [];
-var gObjWiresCountDtl = [];
 
 var gObjSWDtlAll = [];
 var gObjSWDtlRegion = [];
@@ -22,11 +21,13 @@ var gByModelYear = [];
 var gPrmCriteriaId = "";
 var gPrmReportTypeId = "";
 var gTW;
+var gMYRange = "";
 
 zsi.ready(function(){
     gTW = new zsi.easyJsTemplateWriter("#chart_container");
     
     getAllWires(function(){
+        getMYRange();
         displaySWMap();
         am4core.unuseTheme(am4themes_dark); 
         am4core.useTheme(am4themes_animated); //Initialized amchart Theme
@@ -73,6 +74,7 @@ zsi.ready(function(){
             $("#chart_container").empty();
             
             getAllWires(function(){
+                getMYRange();
                 displaySWMap();
                 am4core.unuseTheme(am4themes_dark); 
                 am4core.useTheme(am4themes_animated); //Initialized amchart Them
@@ -194,6 +196,7 @@ function getBigWires(callback){
     });
 }
 
+//---------------------EXCLUDED------------------------------// 
 function getDataWireSummaryBy(category, callback){
     var param = "";
     if(category==="region"){
@@ -316,6 +319,7 @@ function getDataSmallWiresDtl(callback){
         });
     });
 }
+// ----------------------------------------------------------//
 
 function displayChartWireSummary(){
     gTW.chartDiv({ 
@@ -385,7 +389,7 @@ function displayChartSmallWires(){
 function displayChartSmallWiresDtl(){
     gTW.chartDiv({ 
         id:"chartSWDtl", 
-        title:"Summary of each Wire Sizes equal & below 0.50", 
+        title:"Summary of each Wire sizes below 0.50", 
         by_model_year_id: "chartSWDtlByMY",
         by_region_id: "chartSWDtlByRegion",
         each_model_year_id: "chartSWDtlEachMY",
@@ -462,32 +466,19 @@ function setTrendResult(o){
     }
 }
 
-function setDataSmallWires(data){
-    var result = [];
-    $.each(data.groupBy(["MODEL_YEAR"]), function(i,v) {
-        var year = v.items[0].MODEL_YEAR;
-        var jsonData = {};
-            jsonData.year = year.toString();
-            
-        var res = data.filter(function (item) {
-        	return item.MODEL_YEAR == year;
-        });
+function getMYRange(){
+    var _data = $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i, v) {} );
+    if(_data.length > 0){
+        var _first = _data[0].name;
         
-        $.each(data.groupBy(["REGION_NAME"]), function(i,v) {
-            var res2 = res.filter(function (item) {
-            	return item.REGION_NAME ==  v.items[0].REGION_NAME;
-            });
-
-            if( res2.length > 0 ){
-                jsonData["region" + i] = res2[0].total_small_wires;
-            }else{
-                jsonData["region" + i] = 0;
-            }
-        });
-        result.push(jsonData);
-    });
-    
-    return result;
+        if(_data.length > 1){
+            var _last = _data[_data.length - 1].name;
+            
+            gMYRange = "MY" + _first + " - MY" + _last;
+        }else{
+            gMYRange = "MY" + _first;
+        } 
+    }
 }
 
 // ---------------------- All Wires --------------------------//
@@ -576,6 +567,14 @@ function displaySWMap(){
     
     var hs = polygonTemplate.states.create("highlight");
     hs.properties.fillOpacity = 1;
+    
+    var label = chart.createChild(am4core.Label);
+        label.text = gMYRange;
+        label.fontSize = 18;
+        label.align = "center";
+        label.isMeasured = false;
+        label.x = 20;
+        label.y = 20;
     
     // ----------------------------------------------------------
     am4core.useTheme(am4themes_animated);
@@ -1345,7 +1344,7 @@ function displayWireSummaryEachRegionPie(callback){
 
 function displaySWByModelYearPie(callback){
     var chart = am4core.create("chartSWByMY", am4charts.PieChart3D);
-    chart.data = gByModelYear; //gObjSWModelYear;
+    chart.data = gByModelYear;
     chart.numberFormatter.numberFormat = "#";
     
     var series = chart.series.push(new am4charts.PieSeries());
@@ -1415,7 +1414,7 @@ function displaySWByRegionPie(callback){
 
 function displaySWByRegionBar(callback){
     var chart = am4core.create("chartSWByRegion", am4charts.XYChart);
-    chart.data = gByRegion; //gObjSWRegion;
+    chart.data = gByRegion;
 
     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.renderer.grid.template.location = 0;
@@ -1443,12 +1442,36 @@ function displaySWByRegionBar(callback){
 }
  
 function displaySWAll(callback){
+    var _result = [];
+    $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i,v) {
+        var year = v.name;
+        var jsonData = {};
+            jsonData.year = year.toString();
+            
+        var res = gAll.filter(function (item) {
+        	return item.MODEL_YEAR == year;
+        });
+        
+        $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) {
+            var res2 = res.filter(function (item) {
+            	return item.REGION_NAME ==  v.name;
+            });
+
+            if( res2.length > 0 ){
+                jsonData["region" + i] = res2[0].total_small_wires;
+            }else{
+                jsonData["region" + i] = 0;
+            }
+        });
+        _result.push(jsonData);
+    });
+    
     var _tw = new zsi.easyJsTemplateWriter("#footerSWAll")
             .chartCardWrapper({ id:"chartSWAll", title:"Overall" });
             
      // Create chart instance
     var chart = am4core.create("chartSWAll", am4charts.XYChart);
-    chart.data = setDataSmallWires(gAll);
+    chart.data = _result;
 
     // Create axes
     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -1488,8 +1511,8 @@ function displaySWAll(callback){
           //categoryLabel.label.truncate = false;
      }
 
-    $.each(gAll.groupBy(["REGION_NAME"]), function(i,v) { 
-        createSeries("region" + i, v.items[0].REGION_NAME);
+    $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) { 
+        createSeries("region" + i, v.name);
     });
 
     chart.legend = new am4charts.Legend();
@@ -1805,8 +1828,10 @@ function displaySWDtlByMY(callback){
     var _trend = "";
     var lastObj = _result[_result.length - 1];
     $.each(lastObj, function(k, v){
-        var key = k.replace("_",".");
-        if($.isNumeric( key )) _trend += key + '<br>';
+        var _key = k.replace("_",".");
+        if($.isNumeric( _key ) && v !== 0){
+            _trend += _key + '<br>';
+        }
     });
     
     var _tw = new zsi.easyJsTemplateWriter("#chartSWDtlByMY")
@@ -1823,7 +1848,6 @@ function displaySWDtlByMY(callback){
 function displaySWDtlByRegion(callback){
     var _result = [];
     $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) { 
-        console.log(v);
         var _region = v.name;
         var _jsonData = {};
             _jsonData.region = _region
@@ -1887,8 +1911,10 @@ function displaySWDtlByRegion(callback){
     var _trend = "";
     var _lastObj = _result[_result.length - 1];
     $.each(_lastObj, function(k, v){
-        var key = k.replace("_",".");
-        if($.isNumeric( key )) _trend += key + '<br>';
+        var _key = k.replace("_",".");
+        if($.isNumeric( _key ) && v !== 0){
+            _trend += _key + '<br>';
+        }
     });
     
     var _tw = new zsi.easyJsTemplateWriter("#chartSWDtlByRegion")
@@ -2021,7 +2047,7 @@ function displaySWDtlEachMYPie(callback){
             .chartCard({ id: _divID, title: _modelYear, class:"w-100", header:"text-dark"});
         
         $.each(gAll.groupBy(["wires"]), function(i,v) { 
-            var _wireGuage = v.wires;
+            var _wireGuage = v.name;
             var _jsonData = {};
                 _jsonData.model_year = _modelYear
                 _jsonData.wire_guage = _wireGuage;
@@ -2114,4 +2140,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-            
+              
