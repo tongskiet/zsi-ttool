@@ -19,7 +19,7 @@ SET NOCOUNT ON
    DECLARE @where nvarchar(4000)
    DECLARE @group nvarchar(4000) 
    DECLARE @comma varchar(1)=''
-   DECLARE @cols VARCHAR(50)=''
+   DECLARE @cols VARCHAR(4000)=''
    DECLARE @criteria_cols VARCHAR(500)=''
    DECLARE @model_year_fr INT 
    DECLARE @model_year_to int 
@@ -28,16 +28,17 @@ SET NOCOUNT ON
    DECLARE @and   nvarchar(4000)=''
    DECLARE @and2  nvarchar(MAX)=''
    DECLARE @criteria_col_id int
-   DECLARE @col_name NVARCHAR(100)
+   DECLARE @col_name NVARCHAR(500)
    DECLARE @operator_value nvarchar(20)
    DECLARE @col_value nvarchar(100)
    DECLARE @col_value2 nvarchar(100)
    DECLARE @small_wire_gauge decimal(6,2)
+   DECLARE @wcol INT;
 
    CREATE TABLE #col_values (
 		id					int identity
 		,criteria_column_id int
-		,column_name        nvarchar(100)
+		,column_name        nvarchar(500)
 		,operator_value     nvarchar(20)
 		,col_value          nvarchar(100)
 		,col_value2         nvarchar(100)
@@ -52,6 +53,10 @@ SET NOCOUNT ON
    
 	SET @and = @and + ' AND MODEL_YEAR BETWEEN ' + CAST(isnull(@model_year_fr,@model_year_to) AS VARCHAR(20)) + ' AND ' + CAST(isnull(@model_year_to,@model_year_fr) AS VARCHAR(20))  
 
+    SELECT @wcol = COUNT(*) FROM #col_values WHERE column_name='WIRE_GAUGE'
+	IF @wcol = 0
+	   SELECT @small_wire_gauge=wire_gauge FROM dbo.reference_small_wire_gauge
+
 	SELECT @rec = COUNT(*) FROM #col_values
 	WHILE @ctr < @rec
 	BEGIN
@@ -64,36 +69,56 @@ SET NOCOUNT ON
 		,@col_value2        =col_value2        
 		FROM #col_values where id=@ctr;
 
-		IF @operator_value = 'ISNULL'
+		IF @operator_value = 'ISNOTNULL'
 		   SET @and2 = @and2 + ' AND ISNULL(' + @col_name + ','''') <> '''' '
         ELSE
 		BEGIN
-		IF @operator_value =  'BETWEEN' 
-			SET @and2 = @and2 + ' AND ' + @col_name + ' ' +  @operator_value + ' ' + @col_value + ' AND ' + @col_value2 
-        ELSE
-		BEGIN
-			DECLARE @ERRNUM INT
-			DECLARE @cval   DECIMAL(5,2)
-		    IF @operator_value <>  'IN' 
-			BEGIN
-				BEGIN TRY
-					SET @cval = convert(decimal(5,2),@col_value)
-				END TRY
-				BEGIN CATCH
-					SELECT @ERRNUM = ERROR_NUMBER() 
-				END CATCH
-                IF ISNULL(@ERRNUM,0) <> 0 
- 			        SET @and2 = @and2 + ' AND ' + @col_name + ' ' + @operator_value + ''''+ rtrim(@col_value) +''''
-                ELSE
-				    SET @and2 = @and2 + ' AND ' + @col_name + ' ' + @operator_value + @col_value 
-
-            END
+			IF @operator_value = 'ISNULL'
+			   SET @and2 = @and2 + ' AND ISNULL(' + @col_name + ','''') = '''' '
             ELSE
-			    SET @and2 = @and2 + ' AND ' + @col_name + ' IN (' +   STUFF((SELECT concat(''',''',attribute_value) 
-			                                                                FROM dbo.criteria_column_values
-			                             					                WHERE criteria_column_id = @criteria_col_id
-					                                                            FOR XML PATH('')),2,2,'') + ''')'
-		END
+			BEGIN 
+			IF @operator_value =  'BETWEEN' 
+				BEGIN
+					IF @col_name = 'WIRE_GAUGE'
+					   SET @and2 = @and2 + ' AND ' + CAST(@col_name AS DECIMAL(8,2)) + ' ' +  @operator_value + ' ' + @col_value + ' AND ' + @col_value2 
+					ELSE
+					   SET @and2 = @and2 + ' AND ' + @col_name + ' ' +  @operator_value + ' ' + @col_value + ' AND ' + @col_value2 
+                END
+			ELSE
+				BEGIN
+					DECLARE @ERRNUM INT
+					DECLARE @cval   DECIMAL(5,2)
+					IF @operator_value <>  'IN' 
+					BEGIN
+						BEGIN TRY
+							SET @cval = cast(@col_value as decimal(5,2))
+						END TRY
+						BEGIN CATCH
+							SELECT @ERRNUM = ERROR_NUMBER() 
+						END CATCH
+						IF @col_name = 'WIRE_GAUGE'
+						   SET @col_name = concat('CAST(',@col_name,' AS DECIMAL(8,2))')
+						IF ISNULL(@ERRNUM,0) <> 0 
+							SET @and2 = @and2 + ' AND ' + @col_name + ' ' + @operator_value + ' '''+ rtrim(@col_value) +''''
+						ELSE
+							SET @and2 = @and2 + ' AND ' + @col_name + ' ' + @operator_value + ' ' + @col_value 
+					END
+					ELSE
+					BEGIN
+						IF @operator_value = 'IN'
+							SET @and2 = @and2 + ' AND ' + @col_name + ' IN (' +   STUFF((SELECT concat(''',''',attribute_value) 
+																						FROM dbo.criteria_column_values
+			                             												WHERE criteria_column_id = @criteria_col_id
+																						FOR XML PATH('')),2,2,'') + ''')'
+						ELSE	
+							SET @and2 = @and2 + ' AND ' + @col_name + ' NOT IN (' +   STUFF((SELECT concat(''',''',attribute_value) 
+																						FROM dbo.criteria_column_values
+			                             												WHERE criteria_column_id = @criteria_col_id
+																						FOR XML PATH('')),2,2,'') + ''')'
+
+					END
+				END
+			END
 		END
    END
 
@@ -118,56 +143,61 @@ SET NOCOUNT ON
    IF @byRegion = 'Y' OR @byMY = 'Y'
       SET @group = ' GROUP BY ' + @cols 
 
-   SELECT @small_wire_gauge=wire_gauge FROM dbo.reference_small_wire_gauge
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='N',@criteria_id=7, @report_type_id=1
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='N',@criteria_id=9, @report_type_id=1
    IF @report_type_id = 1 -- complex 1 sum small/sum others
 	   BEGIN
-		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
-		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
 	      SET @stmt = @stmt +  @group + ' UNION ' + @stmt2 +  @group
 		  SET @stmt = 'SELECT ' + @cols + ', sum(big_wire_count) total_big_wires, sum(small_wire_count) total_small_wires, (sum(big_wire_count) + sum(small_wire_count)) total_wire_count  FROM (' + @stmt + ') x GROUP BY ' + @cols + ' ORDER BY ' + @cols
+		  print @stmt;
 	   END
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=7, @report_type_id=2
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=10, @report_type_id=2
      IF @report_type_id = 2 -- complex 2  detailed small wires / sum other wires
 	   BEGIN
-		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count, CONVERT(decimal(5,2),WIRE_GAUGE) wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
-		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count, 0 wires' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count, CAST(wire_gauge as DECIMAL(5,2)) wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count, 0 wires' + concat(dbo.isNotNull(@cols,','),@cols) + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
 		  SET @stmt = @stmt +  @group + ', wire_gauge UNION ' + @stmt2 +  @group 
-		  SET @stmt = 'SELECT ' + @cols + ', sum(big_wire_count) total_big_wires, sum(small_wire_count) total_small_wires, (sum(big_wire_count) + sum(small_wire_count)) total_wire_count, wires  FROM (' + @stmt + ') x GROUP BY wires ' + concat(dbo.isNotNull(@cols,','),@cols) + '  ORDER BY ' + @cols
+		  SET @stmt = 'SELECT ' + @cols + ', sum(big_wire_count) total_big_wires, sum(small_wire_count) total_small_wires, (sum(big_wire_count) + sum(small_wire_count)) total_wire_count, wires  FROM (' + @stmt + ') x WHERE wires <> 0 GROUP BY wires ' + concat(dbo.isNotNull(@cols,','),@cols) + '  ORDER BY ' + @cols
 	   END
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=7, @report_type_id=3
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=9, @report_type_id=3
      IF @report_type_id = 3 -- complex 2  detailed other wires / sum small wires
 	   BEGIN
-		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count, 0 wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
-		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count, CONVERT(decimal(5,2),WIRE_GAUGE) wires' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt  = 'SELECT COUNT(WIRE_GAUGE) small_wire_count, 0 big_wire_count, 0 wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) < '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		  SET @stmt2 = 'SELECT 0 small_wire_count, COUNT(WIRE_GAUGE) big_wire_count, CAST(wire_gauge as DECIMAL(5,2)) wires' + concat(dbo.isNotNull(@cols,','),@cols)  + ' FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) >= '+ CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
 		  SET @stmt = @stmt +  @group + ' UNION ' + @stmt2 +  @group + ',wire_gauge'
-		  SET @stmt = 'SELECT ' + @cols + ', sum(big_wire_count) total_big_wires, sum(small_wire_count) total_small_wires, (sum(big_wire_count) + sum(small_wire_count)) total_wire_count, wires  FROM (' + @stmt + ') x GROUP BY wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' ORDER BY ' + @cols
+		  SET @stmt = 'SELECT ' + @cols + ', sum(big_wire_count) total_big_wires, sum(small_wire_count) total_small_wires, (sum(big_wire_count) + sum(small_wire_count)) total_wire_count, wires  FROM (' + @stmt + ') x WHERE wires <> 0 GROUP BY wires ' + concat(dbo.isNotNull(@cols,','),@cols)  + ' ORDER BY ' + @cols
 	   END
 
     SET @cols = isnull(@criteria_cols,'') + concat(dbo.isNotNull(@criteria_cols,','),@cols)
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=9, @report_type_id=4
+
+
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=8, @report_type_id=4
 	IF @report_type_id = 4 -- Sum of small wires
 	BEGIN
-		set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) < ' + CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+	    IF @wcol = 0 
+		   set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) < ' + CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+        ELSE
+		  set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.wires_v WHERE 1=1 ' + @and + isnull(@and2,'')
 		set @stmt = @stmt + ' GROUP BY ' + @cols + ' ORDER BY ' + @cols
-		
+		print @stmt;
 	END
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=7, @report_type_id=5 
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=10, @report_type_id=5 
 	IF @report_type_id = 5 -- Sum of other wires 
 	BEGIN
-		set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.cutsheets_v WHERE CONVERT(decimal(5,2),WIRE_GAUGE) >= ' + CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
+		set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.wires_v WHERE CAST(wire_gauge as DECIMAL(5,2)) >= ' + CAST(@small_wire_gauge as VARCHAR(20)) + @and + isnull(@and2,'')
 		set @stmt = @stmt + ' GROUP BY ' + @cols + ' ORDER BY ' + @cols
    END
 
---[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=7, @report_type_id=6   
+--[dynamic_wires_usage_summary] @byMY='Y', @byRegion='Y',@criteria_id=10, @report_type_id=6   
    IF @report_type_id = 6
    BEGIN
-      set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.cutsheets_v WHERE ISNULL(CONVERT(decimal(5,2),WIRE_GAUGE),0)<>0 ' + @and + isnull(@and2,'')
+      set @stmt = 'SELECT COUNT(WIRE_GAUGE) wire_count ' + concat(dbo.isNotNull(@cols,','),@cols) + '  FROM dbo.wires_v WHERE ISNULL(CAST(wire_gauge as DECIMAL(5,2)),0)<>0 ' + @and + isnull(@and2,'')
 	  set @stmt = @stmt + ' GROUP BY ' + @cols + ' ORDER BY ' + @cols
    END
 
@@ -178,7 +208,4 @@ END
 -- select * from dbo.criteria_columns
 -- select * from dbo.criterias
 -- delete from criteria_columns where isnull(column_name,'')=''
-
-
-
 

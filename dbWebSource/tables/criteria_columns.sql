@@ -6,6 +6,7 @@ criteria_column_id	INT IDENTITY(1,1)	NOT NULL
 ,is_output	CHAR(1)	NULL
 ,column_value	NVARCHAR(100)	NULL
 ,column_value2	NVARCHAR(100)	NULL
+,column_value3	NVARCHAR(100)	NULL
 ,created_by	INT	NULL
 ,created_date	DATETIME	NULL
 ,updated_by	INT	NULL
