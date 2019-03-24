@@ -32,15 +32,23 @@ begin
   
   IF NOT @self_backup IS NULL   
  BEGIN  
-     
-     SET @stmt = @stmt + ' AND updated_by=' + CONVERT(varchar(50),@user_id) + ' and not page_name like ''%test%'' '  
-  SET @stmt = @stmt + ' OR (created_by= ' + CONVERT(varchar(50), @user_id) + ' and updated_by is null and not page_name like ''%test%'')'  
+	IF @self_backup = 0
+		BEGIN 	
+			SET @stmt = @stmt + ' AND NOT page_name like ''%test%''' 	
+		END
+	ELSE IF @self_backup = 1
+		BEGIN
+			 SET @stmt = @stmt + ' AND updated_by=' + CONVERT(varchar(50),@user_id) + ' and not page_name like ''%test%'' '  
+			 SET @stmt = @stmt + ' OR (created_by= ' + CONVERT(varchar(50), @user_id) + ' and updated_by is null and not page_name like ''%test%'')'  
+		END
  END  
   
-     SET @stmt = @stmt + ' order by page_name';  
-  
-    EXEC (@stmt);  
+ SET @stmt = @stmt + ' order by page_name';  
+ PRINT @stmt
+
+ EXEC (@stmt);  
 END  
   
+
 
 
