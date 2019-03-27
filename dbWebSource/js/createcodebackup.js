@@ -91,8 +91,11 @@ function btnCreateWebBackupAll(){
 function btnDownloadAppCodeWebOnly(){
     window.location.href =  base_url + "file/downloadAppCodes?isSelfBackup=Y";
 }
-
 function btnDownloadAppCodeAll(){
+    window.location.href =  base_url + "file/downloadAppCodes?isSelfBackup=N";
+}
+
+function btnDownloadAppCodeAllWithDb(){
     window.location.href =  base_url + "file/downloadAppCodes?isSelfBackup=N&dbFolders=tables,views,procedures_functions,table_types";
 }
 
@@ -123,4 +126,4 @@ function btnCreateProceduresBackup(){
 }   
 
 
-       
+            

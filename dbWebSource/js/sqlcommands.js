@@ -1,3 +1,4 @@
+var gMdlId = "modalAdd";
 $(document).ready(function() {
     var  _tw =  zsi.easyJsTemplateWriter
         ,$modal
@@ -7,7 +8,7 @@ $(document).ready(function() {
         ,$is_public
         ,tbl = "#tblResult"
         ,modalTemplate = { 
-                  id    : 'modalAdd'
+                  id    : gMdlId
                 , title : 'Add SQL Command'
                 , body : new _tw().sqlCmdMdlBody().html()
                 , footer: '<button id="btnSave" type="button" class="btn btn-primary">Save</button><button id="btnRun" type="button" class="btn btn-primary">Run</button>' 
@@ -26,7 +27,7 @@ $(document).ready(function() {
         });
     });
     
-    $('#modalAdd').on('show.bs.modal', function (e) {
+    $('#' + gMdlId).on('show.bs.modal', function (e) {
         $code.val("");
         $is_public.val("N");
     });
@@ -86,14 +87,14 @@ $(document).ready(function() {
     });
     
     function getTemplate(callBack) {
-        $("#modalAdd").remove();
+        $("#"+ gMdlId).remove();
         $(".container-fluid.page").append( new _tw().bsModalBox( modalTemplate).html() );
-        $modal = $("#modalAdd");
+        $modal = $("#" + gMdlId);
         $is_procedure = $modal.find('#is_procedure');
         $id = $modal.find('#sqlcmd_id');
         $code = $modal.find('#sqlcmd_code');
         $is_public = $modal.find('#is_public');
-        $modal.find("#frm").append('<pre id="editor"></pre>');
+        $modal.find("form").append('<pre id="editor"></pre>');
         if (typeof callBack === "function") callBack();
     }
     
@@ -142,7 +143,7 @@ $(document).ready(function() {
         });
     }
     
-    function displaySqlCommands() {
+    function displaySqlCommands(callBack) {
         $("#grid-SqlCommands").dataBind({
             url : procURL + 'sql_commands_sel'
             ,width: $(window).width() - 10
@@ -185,6 +186,7 @@ $(document).ready(function() {
                         initAceEditor((_rowInfo.is_procedure === 'N' ? false : true));
                     });
                 });
+                if(callBack) callBack();
             }
         });
     }
