@@ -32,6 +32,7 @@ zsi.initDatePicker  = function(){
    if( $dtPicker.length > 0) $dtPicker.datetimepicker({ format: "m/d/Y H:i"});
 };   
 
+
 $.fn.dateTimePicker=function(o){
     if(typeof o ===ud) o = {}; 
     if(typeof o.format !==ud)  o.format ="m/d/Y H:i";
@@ -50,6 +51,33 @@ var isMenuItemsSaved = readCookie("isMenuItemsSaved");
 
 
 $.ajaxSetup({ cache: false });
+
+function displayTrendToolMenus(){
+
+    var _tw = new zsi.easyJsTemplateWriter();    
+
+    $.get(execURL + "trend_menus_sel", function(data){
+
+        d = data.rows;
+        
+        $(".menu-content").html(function(){
+            $.each(d, function(){
+                _tw.ttStandardMenu({
+                      link      : "#"
+                    , imageId1  : this.image2_id 
+                    , imageId2  : this.image1_id
+                    , label     : this.menu_name.toUpperCase()
+                    , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
+                    // , event     : "onClick"
+                    // , fnc       : "displaySubCategory("+this.menu_id+","+this.specs_id+")"
+                });
+            });
+            return _tw.html();
+        });
+
+    });
+    
+}
 
 if(isMenuItemsSaved ==="N"){
     if(isLocalStorageSupport()) localStorage.clear();
@@ -215,23 +243,6 @@ function highlightCurrentMenu(){
     });
 }
 
-function getProjectAccess(callBack){
-    if(typeof projectId !== ud){
-        $.get(
-             base_url + "sql/exec?p=user_project_access " + projectId
-            ,function(data){
-                projectAccess = data.rows[0];
-                if(typeof callBack !== ud) {
-                    callBack(projectAccess);
-                }
-                return;
-            }
-        );
-    }
-    else
-        if(typeof callBack !== ud)  callBack();
-}
-
 
 function getPageURL(pageName){
     return base_url + "page/" + pageName;
@@ -249,10 +260,14 @@ function getOptionsURL(code){
     return base_url + "selectoption/code/" + code ;
 }
 
+$(document).ready(function(){
+   displayTrendToolMenus();
+});
 
 zsi.ready = function(callBack){
    $(document).ready(function(){
-        getProjectAccess(callBack);
+        //getProjectAccess(callBack);
+        callBack();
    });
 };
 
@@ -280,4 +295,4 @@ function readCookie(name) {
 function deleteCookie(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
-                                   
+                                          
