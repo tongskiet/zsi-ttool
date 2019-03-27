@@ -22,7 +22,7 @@ BEGIN
 		VALUES( 
 				@js_name
 				,@js_name
-				,2 --default is: _layout
+				,dbo.setMasterPageId(@js_name)
 				,@user_id
 				,GETDATE()
 		)
