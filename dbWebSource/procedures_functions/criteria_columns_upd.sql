@@ -21,6 +21,7 @@ SET NOCOUNT ON
 			 ,operator_value = b.operator_value
 			 ,column_value  = b.column_value
 			 ,column_value2  = b.column_value2
+			 ,column_value3  = b.column_value3
 			 ,is_output     = b.is_output
 		     ,updated_by    = @user_id
 			 ,updated_date  = GETDATE()
@@ -36,6 +37,7 @@ SET NOCOUNT ON
 		,operator_value
 		,column_value
 		,column_value2
+		,column_value3
 		,is_output
 		,created_by
 		,created_date
@@ -47,6 +49,7 @@ SET NOCOUNT ON
 		,operator_value
 		,column_value
 		,column_value2
+		,column_value3
 		,is_output
     	,@user_id
 	    ,GETDATE()

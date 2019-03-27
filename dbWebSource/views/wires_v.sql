@@ -1,23 +1,20 @@
-
-CREATE VIEW [dbo].[wires_v]
+CREATE VIEW dbo.wires_v
 AS
-SELECT        dbo.projects_v.region_name, lear_bms03.dbo.cutsheets.PROJECT_ID, lear_bms03.dbo.cutsheets.PROJECT_NAME, lear_bms03.dbo.cutsheets.OEM_ID, lear_bms03.dbo.cutsheets.LINE_NO, 
-                         lear_bms03.dbo.cutsheets.HARNESS_NAME, lear_bms03.dbo.cutsheets.DEVICE_NAME, lear_bms03.dbo.cutsheets.TO_DEVICE_NAME, lear_bms03.dbo.cutsheets.GSYSTEM, lear_bms03.dbo.cutsheets.GSUBSYSTEM, 
-                         lear_bms03.dbo.cutsheets.GDEVICE, lear_bms03.dbo.cutsheets.TO_GSYSTEM, lear_bms03.dbo.cutsheets.TO_GSUBSYSTEM, lear_bms03.dbo.cutsheets.TO_GDEVICE, lear_bms03.dbo.cutsheets.CIRCUIT_NAME, 
-                         lear_bms03.dbo.cutsheets.GROUND_CIRCUIT, lear_bms03.dbo.cutsheets.COLOR, lear_bms03.dbo.cutsheets.WIRE_TYPE, lear_bms03.dbo.cutsheets.WIRE_GAUGE, lear_bms03.dbo.cutsheets.OEM_STANDARD, 
-                         lear_bms03.dbo.cutsheets.WIRE_LENGTH, lear_bms03.dbo.cutsheets.OPTION_CODE, lear_bms03.dbo.cutsheets.WIRE_FUNCTION, lear_bms03.dbo.cutsheets.CIRCUIT_SUBSYSTEM, 
-                         lear_bms03.dbo.cutsheets.INTEGRATED_FUNCTIONS, lear_bms03.dbo.cutsheets.CONTROLLING_MODULES, lear_bms03.dbo.cutsheets.TWISTED_WIRES, lear_bms03.dbo.cutsheets.INHOUSE_SHIELDED_CABLES, 
-                         lear_bms03.dbo.cutsheets.TWIST_NAME, lear_bms03.dbo.cutsheets.IMAGE_NAME, lear_bms03.dbo.cutsheets.INLINE_TO, lear_bms03.dbo.cutsheets.CTSGFR_CODE, lear_bms03.dbo.cutsheets.CTSGFRCODE_SUFFIX, 
-                         lear_bms03.dbo.cutsheets.PINOUT, lear_bms03.dbo.cutsheets.CLASSIFICATION, lear_bms03.dbo.cutsheets.INLINE_CONN_COLOR, lear_bms03.dbo.cutsheets.INLINE_CONN_CAVITIES, 
-                         lear_bms03.dbo.cutsheets.INLINE_CONN_DESIGN_OPPORTUNITY, lear_bms03.dbo.cutsheets.INLINE_CONNECTION_FIXING_METHOD, lear_bms03.dbo.cutsheets.GENDER, lear_bms03.dbo.cutsheets.FAKRA_ORIENTATION, 
-                         lear_bms03.dbo.cutsheets.CONNECTOR_SEALING, lear_bms03.dbo.cutsheets.SEAL, lear_bms03.dbo.cutsheets.SEALING_CONFIGURATION, lear_bms03.dbo.cutsheets.CONNECTOR_TYPES, 
-                         lear_bms03.dbo.cutsheets.NO_OF_CAVITIES, lear_bms03.dbo.cutsheets.TPA, lear_bms03.dbo.cutsheets.CPA, lear_bms03.dbo.cutsheets.ENGAGEMENT_METHOD, lear_bms03.dbo.cutsheets.GREASE_ON_CONNECTOR, 
-                         lear_bms03.dbo.cutsheets.TPA_METHOD, lear_bms03.dbo.cutsheets.SHORTING_BAR_ON_CONNECTOR, lear_bms03.dbo.cutsheets.STRAIN_RELIEF_METHOD, lear_bms03.dbo.cutsheets.SPECIAL_CONNECTORS, 
-                         lear_bms03.dbo.cutsheets.CONNECTOR_PART_NUMBER, lear_bms03.dbo.cutsheets.CONNECTOR_SUPPLIER, lear_bms03.dbo.cutsheets.MALE, lear_bms03.dbo.cutsheets.FEMALE, 
-                         lear_bms03.dbo.cutsheets.TERMINAL_TAB_SIZE_BY_CONNECTOR, lear_bms03.dbo.cutsheets.RING_EYELET_TYPE, lear_bms03.dbo.cutsheets.RING_EYELET_SEALING, lear_bms03.dbo.cutsheets.BOOT_COVERING, 
-                         lear_bms03.dbo.cutsheets.BATTERY_LUG, lear_bms03.dbo.cutsheets.CRIMPED_METHOD, lear_bms03.dbo.cutsheets.FIXATION, lear_bms03.dbo.cutsheets.ANTI_ROTATIONAL_EYELET, lear_bms03.dbo.cutsheets.HOLE_SIZE, 
-                         lear_bms03.dbo.cutsheets.OUTER_DIAMETER, lear_bms03.dbo.cutsheets.LTYPE, lear_bms03.dbo.cutsheets.CASE_GROUND_MODULE, lear_bms03.dbo.cutsheets.PLATING, lear_bms03.dbo.cutsheets.PRIMARY_LOCKING, 
-                         lear_bms03.dbo.cutsheets.SYMMETRICAL_DESIGN, lear_bms03.dbo.cutsheets.TERMINAL_PART_NUMBER, lear_bms03.dbo.cutsheets.TERMINAL_SUPPLIER, lear_bms03.dbo.cutsheets.SEALING, 
-                         lear_bms03.dbo.cutsheets.SPLICE_METHOD, lear_bms03.dbo.cutsheets.COVERING, lear_bms03.dbo.cutsheets.SPLICE_CONFIGURATION, lear_bms03.dbo.cutsheets.INTERIOR, lear_bms03.dbo.cutsheets.EXTERIOR, 
-                         lear_bms03.dbo.cutsheets.TO_IMAGE_NAME, lear_bms03.dbo.cutsheets.TO_INLINE_TO, lear_bms03.dbo.cutsheets.TO_CTSGFR_CODE, lear_bms03.dbo.cutsheets.TO_CTSGFRCODE_SUFFIX, 
-                         lear_bms03.d
+SELECT        PROJECT_ID, PROJECT_NAME, OEM_ID, LINE_NO, HARNESS_NAME, DEVICE_NAME, GDEVICE, TO_GDEVICE, TO_DEVICE_NAME, GSYSTEM, GSUBSYSTEM, TO_GSYSTEM, TO_GSUBSYSTEM, CIRCUIT_NAME, 
+                         GROUND_CIRCUIT, COLOR, WIRE_TYPE, WIRE_GAUGE, OEM_STANDARD, WIRE_LENGTH, OPTION_CODE, WIRE_FUNCTION, CIRCUIT_SUBSYSTEM, INTEGRATED_FUNCTIONS, CONTROLLING_MODULES, TWISTED_WIRES, 
+                         INHOUSE_SHIELDED_CABLES, TWIST_NAME, IMAGE_NAME, INLINE_TO, CTSGFR_CODE, CTSGFRCODE_SUFFIX, PINOUT, CLASSIFICATION, INLINE_CONN_COLOR, INLINE_CONN_CAVITIES, 
+                         INLINE_CONN_DESIGN_OPPORTUNITY, INLINE_CONNECTION_FIXING_METHOD, GENDER, FAKRA_ORIENTATION, CONNECTOR_SEALING, SEAL, SEALING_CONFIGURATION, CONNECTOR_TYPES, NO_OF_CAVITIES, TPA, CPA, 
+                         ENGAGEMENT_METHOD, GREASE_ON_CONNECTOR, TPA_METHOD, SHORTING_BAR_ON_CONNECTOR, STRAIN_RELIEF_METHOD, SPECIAL_CONNECTORS, CONNECTOR_PART_NUMBER, CONNECTOR_SUPPLIER, MALE, 
+                         FEMALE, TERMINAL_TAB_SIZE_BY_CONNECTOR, RING_EYELET_TYPE, RING_EYELET_SEALING, BOOT_COVERING, BATTERY_LUG, CRIMPED_METHOD, FIXATION, ANTI_ROTATIONAL_EYELET, HOLE_SIZE, 
+                         OUTER_DIAMETER, LTYPE, CASE_GROUND_MODULE, PLATING, PRIMARY_LOCKING, SYMMETRICAL_DESIGN, TERMINAL_PART_NUMBER, TERMINAL_SUPPLIER, SEALING, SPLICE_METHOD, COVERING, 
+                         SPLICE_CONFIGURATION, INTERIOR, EXTERIOR, TO_IMAGE_NAME, TO_INLINE_TO, TO_CTSGFR_CODE, TO_CTSGFRCODE_SUFFIX, TO_PINOUT, TO_CLASSIFICATION, TO_INLINE_CONN_COLOR, TO_INLINE_CONN_CAVITIES, 
+                         TO_INLINE_CONN_DESIGN_OPPORTUNITY, TO_INLINE_CONNECTION_FIXING_METHOD, TO_GENDER, TO_FAKRA_ORIENTATION, TO_CONNECTOR_SEALING, TO_SEAL, TO_SEALING_CONFIGURATION, 
+                         TO_CONNECTOR_TYPES, TO_NO_OF_CAVITIES, TO_TPA, TO_CPA, TO_ENGAGEMENT_METHOD, TO_GREASE_ON_CONNECTOR, TO_TPA_METHOD, TO_SHORTING_BAR_ON_CONNECTOR, TO_STRAIN_RELIEF_METHOD, 
+                         TO_SPECIAL_CONNECTORS, TO_CONNECTOR_PART_NUMBER, TO_CONNECTOR_SUPPLIER, TO_MALE, TO_FEMALE, TO_TERMINAL_TAB_SIZE_BY_CONNECTOR, TO_RING_EYELET_TYPE, TO_RING_EYELET_SEALING, 
+                         TO_BOOT_COVERING, TO_BATTERY_LUG, TO_CRIMPED_METHOD, TO_FIXATION, TO_ANTI_ROTATIONAL_EYELET, TO_HOLE_SIZE, TO_OUTER_DIAMETER, TO_LTYPE, TO_CASE_GROUND_MODULE, TO_PLATING, 
+                         TO_PRIMARY_LOCKING, TO_SYMMETRICAL_DESIGN, TO_TERMINAL_PART_NUMBER, TO_TERMINAL_SUPPLIER, TO_SEALING, TO_SPLICE_METHOD, TO_COVERING, TO_SPLICE_CONFIGURATION, TO_INTERIOR, 
+                         TO_EXTERIOR, WIRE_INSULATION, CABLE_WEIGHT, WIRE_TEMPERATURE, WIRE_INSULATION_THICKNESS, STRAND_CONFIGURATION, HIGH_FLEX_WIRE, CONDUCTOR_TYPE, LOCAL_INTERCONNECT_NETWORK, 
+                         LOCAL_AREA_NETWORK, CONTROLLER_AREA_NETWORK, MEDIA_ORIENTED_SYSTEMS_TRANSPORT, ETHERNET, FLEX_RAY, SPECIAL_WIRE_COMPONENT_ASSEMBLIES, SPECIAL_WIRE_NAME, LOOP_BACK, 
+                         WIRE_DIAMETER, REQUIREMENTS, CNP, CNPV, oem_name, region_name, region_id, origin_country_id, market_id, vehicle_type_id, vehicle_type_name, model_year
+FROM            lear_bm31.dbo.cutsheets_v
+WHERE        (ISNULL(CAST(WIRE_GAUGE AS DECIMAL(8, 5)), 0) <> 0)

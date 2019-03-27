@@ -10,15 +10,20 @@ BEGIN
   SET NOCOUNT ON
   DECLARE @stmt NVARCHAR(MAX) = '';
   SET @stmt = 'select * from dbo.page_templates_v  WHERE 1=1 '
-
   IF NOT @self_backup IS NULL
 	 BEGIN 	
-		select a.*,b.page_name,b.page_title from dbo.page_templates a inner join dbo.pages b on a.page_id=b.page_id
-		WHERE a.updated_by= @user_id and not b.page_name like '%test%' 		
-			OR (a.created_by= @user_id and a.updated_by is null and not b.page_name like '%test%')
-		RETURN; 
+		 IF @self_backup = 0
+			 BEGIN 	
+				SET @stmt = @stmt + ' AND NOT page_name like ''%test%''' 	
+			 END
+		 ELSE IF @self_backup = 1
+			 BEGIN
+				select a.*,b.page_name,b.page_title from dbo.page_templates a inner join dbo.pages b on a.page_id=b.page_id
+				WHERE a.updated_by= @user_id and not b.page_name like '%test%' 		
+					OR (a.created_by= @user_id and a.updated_by is null and not b.page_name like '%test%')
+				RETURN;
+			 END 
 	 END
-	
   IF(@page_name IS NOT NULL )		 
 		BEGIN
 			select top 1 p.page_name,p.page_title,p.page_id, pt.* from dbo.pages p
@@ -39,4 +44,5 @@ BEGIN
 
 END
  
+
 

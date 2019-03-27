@@ -1,6 +1,7 @@
 CREATE PROCEDURE [dbo].[criteria_column_values_sel]
 (
-   @criteria_column_id			INT = null
+    @user_id			INT = null
+   ,@criteria_column_id	INT = null
 )
 AS
 BEGIN

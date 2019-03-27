@@ -1,6 +1,7 @@
 CREATE PROCEDURE [dbo].[criterias_sel]
 (
-    @trend_menu_id  INT = NULL
+    @user_id		INT = null
+   ,@trend_menu_id  INT = NULL
    ,@criteria_id	INT = null
    ,@pcriteria_id	INT = NULL
 )

@@ -1,0 +1,84 @@
+<style>
+     .web-backup{
+        padding:10px;
+        border:solid 1pt #efefef;
+        margin-bottom:5px;
+     }
+     .db-backup{
+        padding:10px;
+        border:solid 1pt #efefef;
+     }
+     
+     .restore-backup{
+        padding:10px;
+        border:solid 1pt #efefef;
+        margin-top: 5px;
+     }   
+     
+</style>
+
+<div class="zPanel"> 
+    <div class="buttonGroup">
+        
+        <div class="web-backup" >
+            <h1>Web Backup</h1>
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateWebBackupSelf();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Web Backup(self)
+            </button>
+            
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateWebBackupAll();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Web Backup(all)
+            </button>    
+            
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnDownloadAppCodeWebOnly();">
+            	<span class="glyphicon glyphicon-hdd"></span> Download Web Codes (Self)
+            </button>            
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnDownloadAppCodeAll();">
+            	<span class="glyphicon glyphicon-hdd"></span> Download Web Codes (All)
+            </button>            
+
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnDownloadAppCodeAllWithDb();">
+            	<span class="glyphicon glyphicon-hdd"></span> Download Web Codes All (w/ db sql scripts)
+            </button>            
+
+            
+        </div>
+        
+         <div class="db-backup" >
+            <h1>Database Backup</h1>
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateTableBackup();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Backup Table
+            </button>    
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateTableTypesBackup();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Backup Table Types
+            </button>    
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateViewsBackup();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Backup Views
+            </button>    
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnCreateProceduresBackup();">
+            	<span class="glyphicon glyphicon-hdd"></span> Create Backup Procedure
+            </button>    
+        </div>
+         <div class="restore-backup" >
+            <h1>Restore Backup</h1>
+            <button type="button" class="btn btn-primary btn-sm" onclick="btnUploadRestoreBackup();">
+            	<span class="glyphicon glyphicon-hdd"></span> Upload & Restore
+            </button>    
+        </div>
+
+    </div>
+</div>
+
+<ul id="localTemplates">
+    <li name="tmplUploadFile">
+        <div class="form-horizontal">
+            <input name="prefixKey" id="prefixKey" type="hidden"  >
+            <div class="form-group">  
+                <label class="col-xs-3  control-label">File</label>
+                <div class=" col-xs-3">
+                    <input name="file" id="file" type="file" accept='application/zip'  class="browse btn btn-primary" >
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>

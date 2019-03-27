@@ -7,10 +7,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Console</title>
-    <script src="@Url.Content("~/")Scripts/jquery-1.12.0.min.js"></script>
-    <link href="@Url.Content("~/")Content/bootstrap.css" rel="stylesheet" />
-    <link href="@Url.Content("~/")Content/bootstrap-theme.min.css" rel="stylesheet" />
-    <link href="@Url.Content("~/")Content/site.css" rel="stylesheet" />    
+    <script src="@Url.Content("~/")Scripts/jquery.min.js"></script>
+    <link href='@Url.Content("~/")css/app.min.css' rel="stylesheet" />
+    <link href='@Url.Content("~/")css/zsi-trendtool.css' rel="stylesheet" />  
     <script>
         var base_url = '@Url.Content("~/")';
     </script>
@@ -95,13 +94,20 @@
     function runSQL() {
         var text = editor.getSelectedText();
         if (text === "") text = editor.getSession().getValue();
-        $.post(base_url + "sql/exec?p=" + escape(text), DisplayRecords)
-        .error(function (xhr) {
-            $(tbl).html(xhr.responseText);
-        })
-        .success(function () {
-            $(tbl).append("<br /><br />SQL command has been executed.");
-        });
+
+		$.ajax({
+			  type: 'POST'
+			 ,dataType: "json"
+			 ,url: base_url + "sql/exec?p=" + escape(text)			 
+			 ,success: DisplayRecords
+			 ,error: function(xhr)
+			 {
+				$(tbl).html(xhr.responseText);
+			 }
+			 ,complete:function(){
+				$(tbl).append("<br /><br />SQL command has been executed.");
+			 }
+		 });
 
     }
 

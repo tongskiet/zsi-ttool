@@ -1,4 +1,3 @@
-
 CREATE PROCEDURE [dbo].[trend_tool_image_upd] (
 	 @user_id		   int = null
     ,@image_id         int = null
@@ -40,4 +39,3 @@ RETURN @id;
 END;
 
  
-

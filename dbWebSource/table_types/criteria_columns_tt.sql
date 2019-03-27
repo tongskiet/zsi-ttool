@@ -6,4 +6,5 @@ criteria_column_id	INT	NULL
 ,operator_value	NVARCHAR(40)	NULL
 ,column_value	NVARCHAR(100)	NULL
 ,column_value2	NVARCHAR(100)	NULL
+,column_value3	NVARCHAR(100)	NULL
 ,is_output	NVARCHAR(40)	NULL)
