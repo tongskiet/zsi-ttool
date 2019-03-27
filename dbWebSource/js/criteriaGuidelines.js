@@ -3,6 +3,7 @@ var  svn                        = zsi.setValIfNull
     ,bsButton                   = zsi.bs.button
     ,proc_url                   = base_url + "common/executeproc/"
     ,gMdlId                     = "modalCriteriaColums"
+    ,gMdlWGR                    = "modalWireGaugeReferences"
     ,gtw                        = null
     ,g$mdl                      = null
     ,criteriaId                 = ""
@@ -24,6 +25,10 @@ var  svn                        = zsi.setValIfNull
     ,gPrmReportTypeId           = null
     ,gMYRange                   = ""
     ,gHarnessName               = ""
+    ,gRegionNames               = []
+    ,gModelYears                = []
+    ,gMYFrom                    = ""
+    ,gMYTo                      = ""
 ;
 
 zsi.ready(function(){
@@ -53,7 +58,12 @@ function getTemplates(callback){
         , title     : "Criteria Columns"
         , body      : gtw.new().modalBody({gridId1:"gridCriteriaColumns",gridId2:"gridCriteriaColumnValues",onClickSave1:"submitData1();",onClickSave2:"submitData2();"}).html()  
     })
-    
+    .bsModalBox({
+          id        : gMdlWGR
+        , sizeAttr  : "modal-lg"
+        , title     : "Wire Gauge References"
+        , body      : gtw.new().modalBodyWGR({gridWGR:"gridWireGaugeReferences",onClickSaveWGR:"submitDataWGR();"}).html()  
+    })
     .bsModalBox({
           id        : modalImageUpload
         , sizeAttr  : "modal-md"
@@ -83,35 +93,45 @@ function getTemplates(callback){
         , sizeAttr  : "modal-full"
         , title     : "Chart"
         , footer    : ""
-         , body      : '<div id="chart_container"></div>'//'<div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">'
-        //                     +'<div class="mr-auto py-2 font-weight-bold" id="chart_range"></div>'
-        //                     +'<div class="btn-toolbar mb-2 mb-md-0">'
-        //                         +'<div class="input-group ">'
-        //                             +'<div class="input-group-prepend">'
-        //                                 +'<div class="input-group-text">'
-        //                                     +'<input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year">'
-        //                                     +'<span class="pl-1">Include Current Year</span>'
-        //                                 +'</div>'
-        //                             +'</div>'
-        //                             +'<div class="input-group-prepend">'
-        //                                 +'<span class="input-group-text">No. of Years :</span>'
-        //                             +'</div>'
-        //                             +'<input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years">'
-        //                             +'<div class="input-group-prepend">'
-        //                                 +'<span class="input-group-text">Chart Type :</span>'
-        //                             +'</div>'
-        //                             +'<select class="custom-select" id="chart_type">'
-        //                                 +'<option selected>Choose...</option>'
-        //                                 +'<option value="Pie Chart">Pie Chart</option>'
-        //                                 +'<option value="Bar Graph" selected>Bar Graph</option>'
-        //                             +'</select>'
-        //                             +'<div class="input-group-append">'
-        //                                 +'<button class="btn btn-dark" type="button" id="btnSearch" onclick="filterChart();">Go</button>'
-        //                             +'</div>'
-        //                         +'</div>'
-        //                     +'</div>'
-        //                 +'</div>'
-        //                +'<div id="chart_container"></div>'
+         , body      : '<div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">'
+                            +'<div class="mr-auto py-2 font-weight-bold" id="chart_range"></div>'
+                            +'<div class="btn-toolbar mb-2 mb-md-0" id="chart_filter">'
+                                +'<div class="input-group ">'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">Category :</span>'
+                                    +'</div>'
+                                    +'<select class="custom-select" id="category" style="width:120px">'
+                                        +'<option selected>Choose...</option>'
+                                        +'<option value="Per Model Year">Per Model Year</option>'
+                                        +'<option value="Per Region">Per Region</option>'
+                                        +'<option value="Per Vehicle Type">Per Vehicle Type</option>'
+                                        +'<option value="Per OEM">Per OEM</option>'
+                                    +'</select>'
+                                    +'<div class="input-group-prepend">'
+                                        +'<div class="input-group-text">'
+                                            +'<input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year">'
+                                            +'<span class="pl-1">Include Current Year</span>'
+                                        +'</div>'
+                                    +'</div>'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">No. of Years :</span>'
+                                    +'</div>'
+                                    +'<input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years" style="width:50px">'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">Chart Type :</span>'
+                                    +'</div>'
+                                    +'<select class="custom-select" id="chart_type" style="width:120px">'
+                                        +'<option selected>Choose...</option>'
+                                        +'<option value="Pie Chart">Pie Chart</option>'
+                                        +'<option value="Bar Graph" selected>Bar Graph</option>'
+                                    +'</select>'
+                                    +'<div class="input-group-append">'
+                                        +'<button class="btn btn-dark" type="button" id="btnSearch" onclick="filterChart();">Go</button>'
+                                    +'</div>'
+                                +'</div>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div id="chart_container"></div>'
     });
     
     if(callback) callback();
@@ -128,7 +148,7 @@ function displayRecords(){
             ,blankRowsLimit:5
             ,isPaging : false
             ,dataRows       :[
-        		{ text:"Menu Name"         , width:275     , style:"text-align:left;"
+        		{ text:"Menu Name"         , width:250     , style:"text-align:left;"
         		    ,onRender : function(d){
         		        var _menuId = svn(d,"menu_id");
         		        var _specsId = svn(d,"specs_id");
@@ -187,6 +207,12 @@ function displayRecords(){
         		        return (d !== null ? _faIcon : "");
         		}
         		}	 	 	
+        		,{ text:"" ,width:35 , style:"text-align:left;"
+        		        ,onRender   :   function(d){
+        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalWireGaugeReferences(\""+ svn(d,"menu_id") +"\",\""+ svn(d,"specs_id") +"\",\""+ svn(d,"menu_name") +"\");'  ><i class='fas fa-link'></i> </a>";
+        		            return (d !==null ? _link : "" );
+        		        }
+        		}
         		
             ]
     });    
@@ -248,6 +274,138 @@ function showModalUploadCriteriaImage(parentId,imageId,fieldName,title){
         }
     ); 
 }
+
+
+function showModalWireGaugeReferences(menuId,specsId,menuName) {
+  //  $(".colval").hide();
+    g$mdl = $("#" + gMdlWGR); 
+    g$mdl.find(".modal-title").text("Menu Name  » " + menuName ) ;
+    g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
+    displayWireGaugeReferences(menuId,specsId);
+
+}  
+
+function displayWireGaugeReferences(menuId,specsId){
+     var rownum=0;
+     $("#gridWireGaugeReferences").dataBind({
+	     url            : execURL + "wire_gauge_references_sel"
+	    ,width          : 510
+	    ,height         : $(document).height() - 200
+	    ,selectorIndex  : 1
+	    ,startGroupId   : 0
+        ,blankRowsLimit : 5
+        ,dataRows       : [
+                            {  id:  1  ,groupId: 0      , text  : "<div class='centered'>Wire Gauge </div>"           , style :   "text-align:center;"}	 
+            		        ,{ id:  2  ,groupId: 0      , text  : "<div class='centered'>Color</div>"                 , style :   "text-align:left;" }
+            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centr'>JASO</div>"                     , style :   "text-align:center;" }	 
+    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centr'>ISO</div>"                      , style :   "text-align:center;" }	 
+    		                
+    		                ,{  id          : 100
+                                , groupId   : 1    		      
+                                , text      : ""     
+            		            , name      : "wire_gauge"  
+            		            , type      : "input"           
+            		            , width     : 150      
+            		            , style     : "text-align:left;"  
+            		            
+            		        }
+            		        ,{  id          : 101
+                                , groupId   : 2    		      
+                                , text      : ""     
+            		            , name      : "color_id"  
+            		            , type      : "select"           
+            		            , width     : 117      
+            		            , style     : "text-align:left;"  
+            		        }
+            		        
+            		        ,{  id          : 102
+                                , groupId   : 3    		      
+                                , text      : "<div class='centr'>LL</div>"     
+            		            , name      : "jaso_lower_limit"  
+            		            , type      : "input"           
+            		            , width     : 55      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"jaso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_lower_limit")});
+    		                        }
+            		            
+            		        }
+            		        ,{  id          : 103
+                                , groupId   : 3    		      
+                                , text      : "<div class='centr'>UL</div>"     
+            		            , name      : "jaso_upper_limit"  
+            		            , type      : "input"           
+            		            , width     : 55      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"jaso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_upper_limit")});
+    		                        }
+            		            
+            		        }
+            		        ,{  id          : 104
+                                , groupId   : 4    		      
+                                , text      : "<div class='centr'>LL</div>"     
+            		            , width     : 55      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
+    		                        } 
+            		        
+            		            
+            		        }
+            		        ,{  id          : 105
+                                , groupId   : 4  		      
+                                , text      : "<div class='centr'>UL</div>"     
+            		            , type      : "input"           
+            		            , width     : 55      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")})
+    		                                + bs({name:"is_edited" , type:"hidden" , value: svn(d,"is_edited")}) ;
+    		                       } 
+            		        }
+    		    
+            		        
+	                    ]
+    	    ,onComplete: function(){
+        	    $("input, select").on("change keyup ", function(){
+                        $(this).closest(".zRow").find("#is_edited").val("Y");
+                });       
+                $("select[name='color_id']").dataBind({
+                    url: execURL + "color_references_sel"
+                        ,text   : "color_name"
+                        ,value  : "color_id"
+                });    
+                zsi.initInputTypesAndFormats();
+        }  
+    });    
+}
+
+function submitDataWGR(){
+    var _$grid =  $("#gridWireGaugeReferences");
+       _$grid.jsonSubmit({
+             procedure: "wire_gauge_references_upd"
+           // ,optionalItems: ["is_output"]
+         //   ,notInclude: "#column_value_select, #column_value_select2"
+            ,onComplete: function (data) {
+                if(data.isSuccess===true) {
+                    zsi.form.showAlert("alert");
+                    displayWireGaugeReferences(_$grid.data("menuId"), _$grid.data("specsId"));
+                }
+            }
+            
+        });
+}  
+$("#btnSave").click(function () {
+   $("#grid").jsonSubmit({
+             procedure: "wire_gauge_references_upd"
+            , onComplete: function (data) {
+                $("#grid").clearGrid();
+                if(data.isSuccess===true) zsi.form.showAlert("alert");
+                displayRecords();
+            }
+    });
+});
 
 
 function uploadMenuImage(obj){
@@ -400,7 +558,7 @@ function displayCriteria(menuId,specsId){
         		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
         		,{ text:"" ,width:35 , style:"text-align:left;"
         		        ,onRender   :   function(d){
-        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
+        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"menu_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
         		            return (d !==null ? _link : "" );
         		        }
         		}
@@ -731,16 +889,24 @@ function showModalChart(criteriaId,name) {
     g$mdl = $("#" + modalChart); 
     g$mdl.find(".modal-title").text( name ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
-    displayChart();
+    
+    if($.trim(name) === "New Wire Tech"){
+        $("#chart_filter").hide();
+        displayNewWireTech();
+    }else{
+        $("#chart_filter").show();
+        displayChart();
+    }
+    gtw = new zsi.easyJsTemplateWriter("#chart_container").new();
 } 
 
 function displayChart(){
     am4core.useTheme(am4themes_animated);
-    gtw = new zsi.easyJsTemplateWriter("#chart_container").new();
+    
     //gtw.chartFilter({ model_year: gMYRange });
     getAllWires(function(){
-        getMYRange();
-        gtw.div({class:"font-weight-bold", value:gMYRange})
+        setMYRange();
+        //gtw.div({class:"font-weight-bold", value:gMYRange})
         displayChartWireSummary();
         displayChartSmallWires();
          
@@ -752,9 +918,9 @@ function displayChart(){
                     getSmallWiresDtl(function(){
                         displayChartSmallWiresSubDtl();
                     });
-                }, 3000); 
+                }, 2500); 
             });
-        }, 3000);  
+        }, 2500);  
     });
 }
 
@@ -838,6 +1004,9 @@ function getDataAll(callback){
     }, function(all){
         gAll = all;
         
+        gRegionNames = all.groupBy(["REGION_NAME"]);
+        gModelYears = all.groupBy(["MODEL_YEAR"]);
+
         if(callback) callback(all);
     });
 }
@@ -954,8 +1123,12 @@ function displayChartWireSummary(){
         by_region_id: "chartWireSummaryByRegion",
         each_model_year_id: "chartWireSummaryEachMY",
         each_region_id: "chartWireSummaryEachRegion",
+        div_header_id: "chartWireSummaryAll",
+        div_header_class: "chart-div border-dark",
         div_middle_id: "chartTrendResult"
     });
+    
+    displayWireSummaryAll();
     
     if( gPrmChartType==="Pie Chart" ){
         $("#chartWireSummaryByMY, #chartWireSummaryByRegion").removeClass();
@@ -969,9 +1142,9 @@ function displayChartWireSummary(){
     }else{
         displayWireSummaryByMYBar(function(){
             displayWireSummaryByRegionBar(function(){
-                displayWireSummaryEachMYBar(function(){
-                    displayWireSummaryEachRegionBar();
-                });
+                //displayWireSummaryEachMYBar(function(){
+                //    displayWireSummaryEachRegionBar();
+                //});
             });
         });
     }
@@ -985,8 +1158,12 @@ function displayChartSmallWires(){
         by_region_id: "chartSWByRegion",
         each_model_year_id: "chartSWEachMY",
         each_region_id: "chartSWEachRegion",
+        div_header_id: "chartSWAllBar",
+        div_header_class: "chart-div border-dark",
         div_footer_id: "footerSWAll"
     });
+    
+    displaySWAll();
     
     if( gPrmChartType==="Pie Chart" ){
         displaySWByModelYearPie(function(){
@@ -1001,11 +1178,11 @@ function displayChartSmallWires(){
     }else{
         displaySWByModelYearBar(function(){
             displaySWByRegionBar(function(){
-                displaySWAll(function(){
-                    displaySWEachModelYearBar(function(){
-                        displaySWEachRegionBar();
-                    });
-                });
+                //displaySWAll(function(){
+                    //displaySWEachModelYearBar(function(){
+                    //    displaySWEachRegionBar();
+                    //});
+                //});
             });
         });
     }
@@ -1019,8 +1196,12 @@ function displayChartSmallWiresDtl(){
         by_model_year_id: "chartSWDtlByMY",
         by_region_id: "chartSWDtlByRegion",
         each_model_year_id: "chartSWDtlEachMY",
-        each_region_id: "chartSWDtlEachRegion"
+        each_region_id: "chartSWDtlEachRegion",
+        div_header_id: "chartSWDtlAll",
+        div_header_class: "chart-div border-dark",
     });
+    
+    displaySWDtlAll();
     
     displaySWDtlByMY(function(){
         displaySWDtlByRegion(function(){
@@ -1029,9 +1210,9 @@ function displayChartSmallWiresDtl(){
                     displaySWDtlEachRegionPie();
                 });
             }else{
-                displaySWDtlEachMYBar(function(){
-                    displaySWDtlEachRegionBar();
-                });
+                //displaySWDtlEachMYBar(function(){
+                //    displaySWDtlEachRegionBar();
+                //});
             }
         }); 
     });
@@ -1142,23 +1323,139 @@ function setTrendResult(o){
     }
 }
 
-function getMYRange(){
-    //var _data = $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i, v) {} );
-    gMYRange = "";
-    if(gByModelYear.length > 0){
-        var _first = gByModelYear[0].MODEL_YEAR;
+function setMYRange(){
+    if(gModelYears.length > 0){
+        var _from = gModelYears[0].name;
+        var _to = _from;
         
-        if(gByModelYear.length > 1){
-            var _last = gByModelYear[gByModelYear.length - 1].MODEL_YEAR;
+        if(gModelYears.length > 1){
+            _to = gModelYears[gModelYears.length - 1].name;
             
-            gMYRange = "MY" + _first + " - MY" + _last;
+            gMYRange = "MY" + _from + " - MY" + _to;
         }else{
-            gMYRange = "MY" + _first;
+            gMYRange = "MY" + _from;
         } 
+        
+        gMYFrom = _from;
+        gMYTo = _to;
     }
+    $("#chart_range").html(gMYRange);
 }
 
 // ---------------------- All Wires --------------------------//
+function displayWireSummaryAll(callback){
+    var _data = [];
+    $.each(gAll.groupBy(["REGION_NAME"]), function(i, r) { 
+        $.each(gModelYears, function(x, my) {
+            var _region = r.name;
+            var _my = my.name;
+            var _big = 0; //Big Wires
+            var _small = 0; //Small Wires
+            var _res = r.items.filter(function (item) {
+            	return item.MODEL_YEAR == _my;
+            });
+
+            if( _res.length > 0 ) {
+                _big = _res[0].total_big_wires;
+                _small = _res[0].total_small_wires;
+            }
+            
+            _data.push({
+                REGION_NAME : _region,
+                MODEL_YEAR : +_my,
+                category : _my +"("+ _region +")",
+                total_big_wires :  +_big,
+                total_small_wires :  +_small
+            });
+        });
+    });
+    
+    var chart = am4core.create("chartWireSummaryAll", am4charts.XYChart);
+    chart.data = _data;
+    chart.colors.step = 2;
+    chart.padding(30, 30, 10, 30);
+
+    var title = chart.titles.create();
+    title.text =  "Usage per Model year";
+    title.fontSize = 12;
+    title.fontWeight = 800;
+    title.marginBottom = 10;
+    
+    chart.legend = new am4charts.Legend();
+    chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.pointer;
+    chart.numberFormatter.numberFormat = "#";
+    
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "category";
+    //categoryAxis.title.text = "Wire Category";
+    //categoryAxis.title.fontWeight = 800;
+    categoryAxis.renderer.minGridDistance = 60;
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.interactionsEnabled = false;
+    categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+        return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+    });
+    
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.max = 100;
+    valueAxis.strictMinMax = true;
+    valueAxis.calculateTotals = true;
+    
+    valueAxis.renderer.minGridDistance = 20;
+    valueAxis.renderer.minWidth = 35;
+    valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+      return text + "%";
+    });
+    
+    var series1 = chart.series.push(new am4charts.ColumnSeries());
+    series1.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+    series1.columns.template.column.strokeOpacity = 1;
+    series1.name = "% of Below 0.50";
+    series1.dataFields.categoryX = "category";
+    series1.dataFields.valueY = "total_small_wires";
+    series1.dataFields.valueYShow = "totalPercent";
+    series1.dataItems.template.locations.categoryX = 0.5;
+    series1.stacked = true;
+    series1.tooltip.pointerOrientation = "vertical";
+    series1.tooltip.dy = - 20;
+    
+    var bullet1 = series1.bullets.push(new am4charts.LabelBullet());
+    bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+    bullet1.locationY = 0.5;
+    bullet1.label.fill = am4core.color("#ffffff");
+    bullet1.interactionsEnabled = false;
+    
+    var series2 = chart.series.push(series1.clone());
+    series2.name = "% of Above 0.50";
+    series2.dataFields.valueY = "total_big_wires";
+    series2.fill = chart.colors.next();
+    series2.stroke = series2.fill;
+    
+    setLegendSize(chart);
+    //setTrendResult(_data);
+    
+    var createLabel = function(category, endCategory, label) {
+        var range = categoryAxis.axisRanges.create();
+        range.category = category;
+        range.endCategory = endCategory;
+        range.label.dataItem.text = label;
+        range.label.dy = 15;
+        range.label.fontWeight = "bold";
+        range.axisFill.fill = am4core.color("#396478");
+        range.axisFill.fillOpacity = 0.1;
+        range.locations.category = 0.1;
+        range.locations.endCategory = 0.9;
+    };
+    
+    $.each(gRegionNames, function(i, r) { 
+        var _region = "("+ r.name +")";
+
+        createLabel(gMYFrom + _region, gMYTo + _region, r.name);
+    });
+    
+    if(callback) callback();
+}
 
 function displayWireSummaryByMYBar(callback){
     var _data = gByModelYear;
@@ -1166,7 +1463,7 @@ function displayWireSummaryByMYBar(callback){
     chart.data = _data;
     chart.colors.step = 2;
     chart.padding(30, 30, 10, 30);
-    
+
     var title = chart.titles.create();
     title.text =  "Usage per Model year";
     title.fontSize = 12;
@@ -1278,13 +1575,13 @@ function displayWireSummaryByMYPie(callback){
 }
 
 function displayWireSummaryByRegionBar(callback){
-    var result = gByRegion;
+    var data = gByRegion;
     var chart = am4core.create("chartWireSummaryByRegion", am4charts.XYChart);
-    chart.data = result;
+    chart.data = data;
     chart.colors.step = 2;
     chart.padding(30, 30, 10, 30);
-    
-     var title = chart.titles.create();
+
+    var title = chart.titles.create();
     title.text =  "Usage per Region";
     title.fontSize = 12;
     title.fontWeight = 800;
@@ -1725,6 +2022,91 @@ function displayWireSummaryEachRegionPie(callback){
 
 // ---------------------- Small Wires: report_type_id(1) --------------------------//
 
+function displaySWAll(callback){
+    var _result = [];
+    $.each(gAll.groupBy(["REGION_NAME"]), function(i,v) { 
+        var _obj = {};
+            _obj.category = v.name;
+
+        gByModelYear.forEach(function(x) {
+            var _my = x.MODEL_YEAR;
+            var _cat = 0; //Small Wires
+            
+            var res = v.items.filter(function (item) {
+            	return item.MODEL_YEAR == _my;
+            });
+            
+            if( res.length > 0 ) {
+                _cat = res[0].total_small_wires;
+            }
+            
+            _obj["cat_" + _my] =  +_cat ;
+        });
+        
+        _result.push(_obj);
+    });
+
+    var chart = am4core.create("chartSWAllBar", am4charts.XYChart);
+    chart.data = _result;
+    chart.maskBullets = false;
+    //chart.colors.step = 3;
+
+    // Create axes
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "category";
+    categoryAxis.numberFormatter.numberFormat = "#";
+    //categoryAxis.title.text = "Wire 0.50 and Below";
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.cellStartLocation = 0.1;
+    categoryAxis.renderer.cellEndLocation = 0.9;
+    categoryAxis.renderer.labels.template.fontWeight = "bold";
+    categoryAxis.renderer.labels.template.dy = 15;
+    
+    var  valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.title.text = "Count";
+    
+    // Create series
+    function createSeries(field, name) {
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = field;
+        series.dataFields.categoryX = "category";
+        series.name = name;
+        series.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')}";
+        
+        // var bullet = series.bullets.push(new am4charts.LabelBullet());
+        // bullet.label.text = "{valueY.formatNumber('#,###')}";
+        // bullet.locationY = 0.5;
+        // bullet.label.fill = am4core.color("#ffffff");
+        // bullet.interactionsEnabled = false;
+        
+        var bullet2 = series.bullets.push(new am4charts.LabelBullet());
+        bullet2.label.text = name;
+        bullet2.label.truncate = false;
+        bullet2.label.hideOversized = false;
+        bullet2.label.verticalCenter = "bottom";
+        bullet2.label.dy = 18;
+        bullet2.locationY = 1;
+     }
+
+    gByModelYear.forEach(function(x) {
+        var _name = x.MODEL_YEAR;
+        var _field = "cat_"+ _name;
+        
+        createSeries(_field, _name);
+    });
+    
+    // Add cursor
+    chart.cursor = new am4charts.XYCursor();
+    
+    // Add legend
+    chart.legend = new am4charts.Legend();
+    
+    setLegendSize(chart);
+    
+    if(callback) callback();
+}
+
 function displaySWByModelYearPie(callback){
     var chart = am4core.create("chartSWByMY", am4charts.PieChart3D);
     chart.data = gByModelYear;
@@ -1823,86 +2205,86 @@ function displaySWByRegionBar(callback){
     if(callback) callback();
 }
  
-function displaySWAll(callback){
-    var _result = [];
-    $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i,v) {
-        var year = v.name;
-        var jsonData = {};
-            jsonData.year = year.toString();
+// function displaySWAll(callback){
+//     var _result = [];
+//     $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i,v) {
+//         var year = v.name;
+//         var jsonData = {};
+//             jsonData.year = year.toString();
             
-        var res = gAll.filter(function (item) {
-        	return item.MODEL_YEAR == year;
-        });
+//         var res = gAll.filter(function (item) {
+//         	return item.MODEL_YEAR == year;
+//         });
         
-        $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) {
-            var res2 = res.filter(function (item) {
-            	return item.REGION_NAME ==  v.name;
-            });
+//         $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) {
+//             var res2 = res.filter(function (item) {
+//             	return item.REGION_NAME ==  v.name;
+//             });
 
-            if( res2.length > 0 ){
-                jsonData["region" + i] = res2[0].total_small_wires;
-            }else{
-                jsonData["region" + i] = 0;
-            }
-        });
-        _result.push(jsonData);
-    });
+//             if( res2.length > 0 ){
+//                 jsonData["region" + i] = res2[0].total_small_wires;
+//             }else{
+//                 jsonData["region" + i] = 0;
+//             }
+//         });
+//         _result.push(jsonData);
+//     });
     
-    var _tw = new zsi.easyJsTemplateWriter("#footerSWAll")
-            .chartCardWrapper({ id:"chartSWAll", title:"Overall" });
+//     var _tw = new zsi.easyJsTemplateWriter("#footerSWAll")
+//             .chartCardWrapper({ id:"chartSWAll", title:"Overall" });
             
-     // Create chart instance
-    var chart = am4core.create("chartSWAll", am4charts.XYChart);
-    chart.data = _result;
+//      // Create chart instance
+//     var chart = am4core.create("chartSWAll", am4charts.XYChart);
+//     chart.data = _result;
 
-    // Create axes
-    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "year";
-    categoryAxis.numberFormatter.numberFormat = "#";
-    categoryAxis.title.text = "Region";
-    categoryAxis.renderer.grid.template.location = 0;
-    categoryAxis.renderer.minGridDistance = 20;
+//     // Create axes
+//     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+//     categoryAxis.dataFields.category = "year";
+//     categoryAxis.numberFormatter.numberFormat = "#";
+//     categoryAxis.title.text = "Region";
+//     categoryAxis.renderer.grid.template.location = 0;
+//     categoryAxis.renderer.minGridDistance = 20;
     
-    var  valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.title.text = "Count";
+//     var  valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+//     valueAxis.title.text = "Count";
     
-    // Create series
-    function createSeries(field, name) {
-        var series = chart.series.push(new am4charts.ColumnSeries());
-        series.dataFields.valueY = field;
-        series.dataFields.categoryX = "year";
-        series.name = name;
-        series.columns.template.tooltipText = "{name}: [bold]{valueY.formatNumber('#,###')}[/]";
-        series.tooltip.pointerOrientation = "vertical";
+//     // Create series
+//     function createSeries(field, name) {
+//         var series = chart.series.push(new am4charts.ColumnSeries());
+//         series.dataFields.valueY = field;
+//         series.dataFields.categoryX = "year";
+//         series.name = name;
+//         series.columns.template.tooltipText = "{name}: [bold]{valueY.formatNumber('#,###')}[/]";
+//         series.tooltip.pointerOrientation = "vertical";
         
-        var valueLabel = series.bullets.push(new am4charts.LabelBullet());
-          valueLabel.label.text = "{valueX.formatNumber('#,###')}";
-          valueLabel.label.verticalCenter = "bottom";
-          //valueLabel.label.horizontalCenter = "bottom";
-          //valueLabel.label.dx = 10;
-          //valueLabel.label.hideOversized = false;
-          //valueLabel.label.truncate = false;
+//         var valueLabel = series.bullets.push(new am4charts.LabelBullet());
+//           valueLabel.label.text = "{valueX.formatNumber('#,###')}";
+//           valueLabel.label.verticalCenter = "bottom";
+//           //valueLabel.label.horizontalCenter = "bottom";
+//           //valueLabel.label.dx = 10;
+//           //valueLabel.label.hideOversized = false;
+//           //valueLabel.label.truncate = false;
         
-          var categoryLabel = series.bullets.push(new am4charts.LabelBullet());
-          categoryLabel.label.text = "{name}";
-          categoryLabel.label.verticalCenter = "bottom";
-          //categoryLabel.label.horizontalCenter = "bottom";
-          //categoryLabel.label.dx = -10;
-          categoryLabel.label.fill = am4core.color("#fff");
-          //categoryLabel.label.hideOversized = false;
-          //categoryLabel.label.truncate = false;
-     }
+//           var categoryLabel = series.bullets.push(new am4charts.LabelBullet());
+//           categoryLabel.label.text = "{name}";
+//           categoryLabel.label.verticalCenter = "bottom";
+//           //categoryLabel.label.horizontalCenter = "bottom";
+//           //categoryLabel.label.dx = -10;
+//           categoryLabel.label.fill = am4core.color("#fff");
+//           //categoryLabel.label.hideOversized = false;
+//           //categoryLabel.label.truncate = false;
+//      }
 
-    $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) { 
-        createSeries("region" + i, v.name);
-    });
+//     $.each(gByRegion.groupBy(["REGION_NAME"]), function(i,v) { 
+//         createSeries("region" + i, v.name);
+//     });
 
-    chart.legend = new am4charts.Legend();
+//     chart.legend = new am4charts.Legend();
 
-    setLegendSize(chart);
+//     setLegendSize(chart);
     
-    if(callback) callback();
-}
+//     if(callback) callback();
+// }
 
 function displaySWEachModelYearPie(callback){
     gByModelYear.forEach(function(o){
@@ -2133,6 +2515,125 @@ function displaySWEachRegionBar(callback){
 
 // ---------------------- Small Wire Details: report_type_id(2) -------------------//
 
+function displaySWDtlAll(callback){
+    var _data = [];
+    $.each(gAll.groupBy(["REGION_NAME"]), function(i,r) { 
+        $.each(gModelYears, function(x, my) { 
+            var _my = my.name;
+            var _region = r.name;
+            var _obj = {};
+            _obj.year = +_my;
+            _obj.region = _region;
+            _obj.category = _my +"("+ _region +")";
+            
+            $.each(gAll.groupBy(["wires"]), function(y, w) { 
+                var _count = 0;
+                var _wire = w.name;
+                var _wireNew = _wire.replace(".","_");
+                var _res = r.items.filter(function (item) {
+                	return item.wires == _wire && item.MODEL_YEAR == _my;
+                });
+                
+                if( _res.length > 0 ) {
+                    _count = _res[0].total_small_wires;
+                }
+                _obj[_wireNew] =  +_count ;
+            });
+            _data.push(_obj);
+        });
+    });
+    
+    var chart = am4core.create("chartSWDtlAll", am4charts.XYChart);
+    chart.data = _data;
+    chart.maskBullets = false;
+    
+    // Create axes
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "category";
+    categoryAxis.numberFormatter.numberFormat = "#";
+    //categoryAxis.title.text = "Wire 0.50 and Below";
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+        return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+    });
+    
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.title.text = "Count";
+    
+    // Create series
+    var createSeries = function(field, name, color) {
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = field;
+        series.dataFields.categoryX = "category";
+        series.name = name;
+        //series.tooltip.disabled = true;
+        series.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')}";
+        series.fill = color;
+
+        // var bullet = series.bullets.push(new am4charts.LabelBullet());
+        // bullet.label.text = "{valueY.formatNumber('#,###')}";
+        // bullet.locationY = 0.5;
+        // //bullet.label.fill = am4core.color("#ffffff");
+        // bullet.interactionsEnabled = false;
+        // bullet.label.truncate = false;
+        // bullet.label.hideOversized = false;
+        // bullet.label.dy = -20;
+        // //bullet.locationY = 0;
+        // bullet.label.verticalCenter = "bottom";
+        // //bullet.rotation = 270;
+        // //bullet.valign = "middle";
+        
+        // var bullet2 = series.bullets.push(new am4charts.LabelBullet());
+        // bullet2.label.text = name;
+        // bullet2.label.truncate = false;
+        // bullet2.label.hideOversized = false;
+        // bullet2.label.verticalCenter = "bottom";
+        // bullet2.label.dy = 15;
+        // bullet2.locationX = 0.5;
+        // bullet2.locationY = 1;
+        // bullet2.rotation = 270;
+    };
+     
+    var createLabel = function(category, endCategory, label) {
+        var range = categoryAxis.axisRanges.create();
+        range.category = category;
+        range.endCategory = endCategory;
+        range.label.dataItem.text = label;
+        range.label.dy = 18;
+        range.label.fontWeight = "bold";
+        range.axisFill.fill = am4core.color("#396478");
+        range.axisFill.fillOpacity = 0.1;
+        range.locations.category = 0.1;
+        range.locations.endCategory = 0.9;
+    };
+
+    var colorSet = new am4core.ColorSet();
+    $.each(gAll.groupBy(["wires"]), function(x, w) { 
+        var _wire = w.name;
+        var _wireNew = _wire.replace(".","_");
+        var _field = _wireNew;
+        
+        createSeries(_field, _wire, colorSet.next());
+    });  
+    
+    $.each(gRegionNames, function(i, r) { 
+        var _region = "("+ r.name +")";
+
+        createLabel(gMYFrom + _region, gMYTo + _region, r.name);
+    });
+    
+    //Add cursor
+    chart.cursor = new am4charts.XYCursor();
+    
+    //Add legend
+    chart.legend = new am4charts.Legend();
+    
+    setLegendSize(chart);
+    
+    if(callback) callback();
+}
+
 function displaySWDtlByMY(callback){
     var _result = [];
     $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i,v) { 
@@ -2173,7 +2674,7 @@ function displaySWDtlByMY(callback){
     valueAxis.title.text = "Count";
     
     // Create series
-    function createSeries(field, name) {
+    var createSeries = function(field, name) {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field;
         series.dataFields.categoryX = "model_year";
@@ -2503,7 +3004,7 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-// -------------------- Small Wire Sub Details: report_type_id(4)------------------//
+// -------------------- Small Wire Sub Details: report_type_id(3)------------------//
 
 function displaySWSubDtlByMY(callback){
     var _result = [];
@@ -2875,4 +3376,106 @@ function displaySWSubDtlEachRegionPie(callback){
     
     if(callback) callback();
 }
- 
+
+//------------------- New Wire Tech ---------------------------------//
+
+function getDataNewWireTech(callback){
+    var _my = new Date().getFullYear() - 2;
+    var _wireGuage = "0.75";
+    $.get(execURL + "wire_tech_lower_upper_limits @model_year="+ _my +",@wire_gauge='"+ _wireGuage +"'"
+    , function(data){
+        var dataRows = [];
+        if(data.rows.length > 0){
+          dataRows = data.rows;
+        }
+        if(callback) callback(dataRows);
+    });
+}
+
+function displayNewWireTech(){
+    am4core.useTheme(am4themes_animated);
+    getDataNewWireTech(function(data){
+        var chartId = "chartNewWireTech";
+        gtw.div({id:chartId, class:"chart-div", style:"max-height: 550px"});
+    
+        var chart = am4core.create(chartId, am4charts.XYChart);
+        
+        var wireLL = data.reduce(function(prev, curr) {
+                        return prev.wire_ll < curr.wire_ll ? prev.wire_ll : curr.wire_ll;
+                    });
+                    
+        var wireUL = data.reduce(function(prev, curr) {
+                        return prev.wire_ul < curr.wire_ul ? prev.wire_ul : curr.wire_ul;
+                    });
+
+        // Add data
+        chart.data = data;
+        
+        chart.numberFormatter.numberFormat = "#.#####";
+        
+        // Create axes
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "wire_type";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.labels.template.horizontalCenter = "right";
+        categoryAxis.renderer.labels.template.verticalCenter = "middle";
+        categoryAxis.renderer.labels.template.rotation = 310;
+
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.min = 0.0000;
+        valueAxis.max = wireUL;
+        valueAxis.title.text = "Avg. Weight";
+        valueAxis.renderer.minGridDistance = 10;
+        //valueAxis.renderer.numberFormatter.numberFormat = "#.#####";
+        valueAxis.numberFormatter = new am4core.NumberFormatter();
+        valueAxis.numberFormatter.numberFormat = "#.#####";
+        
+         var axisTooltip = valueAxis.tooltip;
+        //axisTooltip.background.fill = am4core.color("#07BEB8");
+        // axisTooltip.background.strokeWidth = 0;
+        // axisTooltip.background.cornerRadius = 3;
+        // axisTooltip.background.pointerLength = 0;
+        // axisTooltip.dy = 5;
+        axisTooltip.numberFormatter = new am4core.NumberFormatter();
+        axisTooltip.numberFormatter.numberFormat = "#.#####";
+        
+        var axisTooltip = valueAxis.tooltip;
+        
+        // Create series
+        var series = chart.series.push(new am4charts.LineSeries());
+        series.dataFields.valueY = "avg_weight";
+        series.dataFields.categoryX = "wire_type";
+        series.name = "Avg. Weight";
+        series.tooltipText = "{name}: [bold]{valueY}[/]";
+        
+        // Create value axis range
+        var range = valueAxis.axisRanges.create();
+        range.value = wireUL;
+        range.grid.stroke = am4core.color("#396478");
+        range.grid.strokeWidth = 2;
+        range.grid.strokeOpacity = 1;
+        range.label.inside = true;
+        range.label.text = "Upper Limit";
+        range.label.fill = range.grid.stroke;
+        //range.label.align = "right";
+        range.label.verticalCenter = "bottom";
+        
+        var range2 = valueAxis.axisRanges.create();
+        range2.value = wireLL;
+        range2.grid.stroke = am4core.color("#A96478");
+        range2.grid.strokeWidth = 2;
+        range2.grid.strokeOpacity = 1;
+        range2.label.inside = true;
+        range2.label.text = "Lower Limit";
+        range2.label.fill = range2.grid.stroke;
+        //range2.label.align = "right";
+        range2.label.verticalCenter = "bottom";
+        
+        // Add cursor
+        chart.cursor = new am4charts.XYCursor();
+        
+        // Add legend
+        //chart.legend = new am4charts.Legend();
+    });
+}

@@ -2140,4 +2140,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-              
+               
