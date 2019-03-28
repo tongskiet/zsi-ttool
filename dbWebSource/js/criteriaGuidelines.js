@@ -289,7 +289,7 @@ function displayWireGaugeReferences(menuId,specsId){
      var rownum=0;
      $("#gridWireGaugeReferences").dataBind({
 	     url            : execURL + "wire_gauge_references_sel"
-	    ,width          : 510
+	    ,width          : $("#gridWireGaugeReferences").closest(".modal-body").width() 
 	    ,height         : $(document).height() - 200
 	    ,selectorIndex  : 1
 	    ,startGroupId   : 0
@@ -314,7 +314,7 @@ function displayWireGaugeReferences(menuId,specsId){
                                 , text      : ""     
             		            , name      : "color_id"  
             		            , type      : "select"           
-            		            , width     : 117      
+            		            , width     : 130      
             		            , style     : "text-align:left;"  
             		        }
             		        
@@ -323,7 +323,7 @@ function displayWireGaugeReferences(menuId,specsId){
                                 , text      : "<div class='centr'>LL</div>"     
             		            , name      : "jaso_lower_limit"  
             		            , type      : "input"           
-            		            , width     : 55      
+            		            , width     : 120      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_lower_limit")});
@@ -335,7 +335,7 @@ function displayWireGaugeReferences(menuId,specsId){
                                 , text      : "<div class='centr'>UL</div>"     
             		            , name      : "jaso_upper_limit"  
             		            , type      : "input"           
-            		            , width     : 55      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_upper_limit")});
@@ -345,7 +345,7 @@ function displayWireGaugeReferences(menuId,specsId){
             		        ,{  id          : 104
                                 , groupId   : 4    		      
                                 , text      : "<div class='centr'>LL</div>"     
-            		            , width     : 55      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
@@ -357,7 +357,7 @@ function displayWireGaugeReferences(menuId,specsId){
                                 , groupId   : 4  		      
                                 , text      : "<div class='centr'>UL</div>"     
             		            , type      : "input"           
-            		            , width     : 55      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")})
@@ -2067,7 +2067,7 @@ function displaySWAll(callback){
     valueAxis.title.text = "Count";
     
     // Create series
-    function createSeries(field, name) {
+    var createSeries = function(field, name) {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field;
         series.dataFields.categoryX = "category";
@@ -2751,7 +2751,7 @@ function displaySWDtlByRegion(callback){
     valueAxis.title.text = "Count";
     
     // Create series
-    function createSeries(field, name) {
+    var createSeries = function(field, name) {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field;
         series.dataFields.categoryX = "region";
@@ -3046,7 +3046,7 @@ function displaySWSubDtlByMY(callback){
     valueAxis.title.text = "Count";
     
     // Create series
-    function createSeries(field, name) {
+    var createSeries = function(field, name) {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field;
         series.dataFields.categoryX = "model_year";
@@ -3123,7 +3123,7 @@ function displaySWSubDtlByRegion(callback){
     valueAxis.title.text = "Count";
     
     // Create series
-    function createSeries(field, name) {
+    var createSeries = function(field, name) {
         var series = chart.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field;
         series.dataFields.categoryX = "region";
@@ -3479,3 +3479,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
+  

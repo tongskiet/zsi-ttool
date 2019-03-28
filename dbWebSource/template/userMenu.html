@@ -72,6 +72,67 @@
 .users-menu-item a:hover .userLabel span{
     opacity:1;
 }
+.userForm{
+    display:table;
+    /*border:solid 1px black;*/
+    background-color: white;
+    margin-top: 6px;
+    border-radius:5px;
+    overflow:hidden;
+    width:100%;
+    
+}
+.cursorContextMenu{
+    cursor: context-menu;
+}
+.menuMargin{
+    margin: 8px 8px 8px 7px;
+}
+.graphForm, .imageHolder{
+    /*border:solid 1px black;*/
+    float:left;
+    display:table-cell;
+}
+.imageHolder{
+    /*width:376px;*/
+    height:auto;
+    
+    width:auto;
+    
+
+}
+.graphForm{
+    /*width:376px;*/
+    padding:8px 8px 8px 7px;
+    height:376px;
+    width: auto;
+    
+}
+.userForm:after{
+    clear:both
+    content: "";
+    display: table;;
+}
+
+/* ---------CHART STYLE--------- */
+#chart_container {
+    min-height: 350px;
+}
+.chart-div {
+  width: 100%;
+  max-height: 350px;
+  height: 100vh;
+  border: 1px solid #333;
+}
+.chart-div-sub {
+    width: 100%;
+    max-height: 100%;
+}
+.card-header {
+    background-color: rgba(0,0,0,.03);
+}
+/* ---------END CHART STYLE--------- */
+
 /*.users-menu-item a{*/
 /*    border:1px solid blue;*/
 /*}*/
@@ -96,26 +157,115 @@
 /*    background-image:url('/images/menu/menu-electrical-vehicle-architecture-colored.png');*/
 /*}*/
 </style>
-			<ul class="navbar-nav">
-				<li class="nav-item dropdown no-arrow">
-					<div class="tt-menu dropdown-menu dropdown-menu-users-left show">
-						<div class="users-menu-content">
-						</div>
-					</div>
-				</li>
-			</ul>
 
+<ul class="navbar-nav users">
+	<li class="nav-item dropdown no-arrow">
+		<div class="tt-menu dropdown-menu dropdown-menu-users-left show">
+			<div class="users-menu-content">
+			</div>
+		</div>
+	</li>
+</ul>
+
+<div id="container"></div>
 
 <ul id="localTemplates">
     <li name="usersMenu" >
         <div class="users-menu-item">
-		    <a href="{{link}}" {{event}}="{{fnc}}">
+		    <a href="{{link}}" onClick="{{onClick}}">
 		        <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}" >
 		        <img class="userImgFade"src="/file/viewimagedb?sqlcode=t83&imageid={{imageId4}}">
 		        <div class="userLabel" style="{{style}}"><span>{{label}}</span></div>
 		    </a>
 		</div>
     </li>
+    <li name="usersMenuGraph">
+        <div class="userForm d-flex">
+            <div class="imageHolder">
+        	    <div class="users-menu-item menuMargin">
+        	        <a class="cursorContextMenu" href="{{link}}" onClick="{{onClick}}">
+        	            <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}">
+        	            <img class="userImgFade" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId4}}">
+        	            <div class="userLabel"><span>{{label}}</span></div>
+        	        </a>
+        	    </div>
+        	    
+        	</div>
+        	<div class="graphForm flex-grow-1 overflow-auto" id="{{chartId}}"></div>
+        </div>
+    </li>
+    <li name="chartDiv">
+        <div id="{{id}}">
+            <div class="bg-secondary text-white px-3 py-2 {{title_class}}">{{title}}</div>
+            <div class="bg-white rounded shadow-sm px-3 py-2 mb-2">
+                <div id="{{div_header_id}}" class="{{div_header_class}}"></div>
+                <div class="d-flex">
+                    <div class="p-1 flex-fill w-50">
+                        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Model Year</b></h6>
+                        <div id="{{by_model_year_id}}" class="chart-div"></div>
+                        <hr class="my-2">
+                    </div>
+                    <div class="p-1 flex-fill w-50">
+                        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Region</b></h6>
+                        <div id="{{by_region_id}}" class="chart-div"></div>
+                        <hr class="my-2">
+                    </div>
+                </div>
+                <div id="{{div_middle_id}}"></div>
+                <div class="d-flex">
+                    <div class="p-1 flex-fill w-50">
+                        <div id="{{each_model_year_id}}" class="chart-div-sub"></div>
+                    </div>
+                    <div class="p-1 flex-fill w-50">
+                        <div id="{{each_region_id}}" class="chart-div-sub"></div>
+                    </div>
+                </div>
+                <div id="{{div_footer_id}}"></div>
+            </div>
+        </div>
+    </li>
+    <li name="chartCardWrapper">
+        <div class="my-2 bg-white">
+            <h6 class="border-bottom border-gray pb-2 mb-3 {{title_class}}"><b>{{title}}</b></h6>
+            <div class="media">
+                <div id="{{id}}" class="chart-div"></div>
+            </div>
+        </div>
+    </li>
+    <li name="chartCard">
+        <div class="card border-dark mb-1 {{class}}" style="{{style}}">
+          <div class="card-header {{header}} p-2">{{title}}</div>
+          <div class="card-body p-2">
+            <div id="{{id}}" class="row h-100"></div>
+          </div>
+        </div>
+    </li>
+    <li name="trendResult">
+        <div class="w-100 mb-2">
+           <div class="bg-danger text-white px-2 py-1">Result</div>
+           <div class="d-flex bg-white rounded shadow-sm px-3 pb-2">
+                <div class="p-2 flex-fill w-50">
+                    <div class="font-weight-bold text-uppercase">TREND :</div> 
+                    <div class="px-3">{{{trend}}}</div> 
+                </div>
+                <div class="p-2 flex-fill w-50">
+                    <div class="font-weight-bold text-uppercase">OPPORTUNITIES/ EVOLUTION :</div> 
+                    <div class="px-3">{{{opportunity}}}</div> 
+                </div>
+            </div>
+        </div>
+    </li>
 </ul>
+
+<script src="../amcharts4/core.js"></script>
+<script src="../amcharts4/charts.js"></script>
+<script src="../amcharts4/maps.js"></script>
+<script src="../amcharts4/themes/dark.js"></script>    
+<script src="../amcharts4/themes/animated.js"></script>   
+<script src="../amcharts4/geodata/worldLow.js"></script>    
+<script src="../amcharts4/geodata/continentsLow.js"></script>  
+<script src="../amcharts4/geodata/region/world/asiaLow.js"></script>    
+<script src="../amcharts4/geodata/region/world/europeLow.js"></script>    
+<script src="../amcharts4/geodata/region/world/northAmericaLow.js"></script>   
 
 
