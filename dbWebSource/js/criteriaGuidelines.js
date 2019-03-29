@@ -163,8 +163,7 @@ function displayRecords(){
                                //$("#gridCriteria").find(".zRows").html("");
                             }
         		        });
-                            
-		                return  bs({name:"menu_id" ,type:"hidden" ,value:svn(d,"menu_id") })
+                        return  bs({name:"menu_id" ,type:"hidden" ,value:svn(d,"menu_id") })
 		                      + bs({name:"specs_id" ,type:"hidden" ,value:svn(d,"specs_id") })
 		                      + svn(d,"menu_name");
         		    }
@@ -210,7 +209,8 @@ function displayRecords(){
         		,{ text:"" ,width:35 , style:"text-align:left;"
         		        ,onRender   :   function(d){
         		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalWireGaugeReferences(\""+ svn(d,"menu_id") +"\",\""+ svn(d,"specs_id") +"\",\""+ svn(d,"menu_name") +"\");'  ><i class='fas fa-link'></i> </a>";
-        		            return (d !==null ? _link : "" );
+        		            var _returnValue = (svn(d,"menu_id") === 1 ? _link : "");
+        		            return (d !==null ? _returnValue : "" );
         		        }
         		}
         		
@@ -396,7 +396,8 @@ function submitDataWGR(){
             
         });
 }  
-$("#btnSave").click(function () {
+/*
+ $("#btnSave").click(function () {
    $("#grid").jsonSubmit({
              procedure: "wire_gauge_references_upd"
             , onComplete: function (data) {
@@ -406,7 +407,7 @@ $("#btnSave").click(function () {
             }
     });
 });
-
+*/
 
 function uploadMenuImage(obj){
     var _frm = $(obj).closest(".modal-content").find("form");
@@ -558,7 +559,7 @@ function displayCriteria(menuId,specsId){
         		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
         		,{ text:"" ,width:35 , style:"text-align:left;"
         		        ,onRender   :   function(d){
-        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"menu_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
+        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
         		            return (d !==null ? _link : "" );
         		        }
         		}
@@ -3479,4 +3480,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-  
+     
