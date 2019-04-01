@@ -1,0 +1,29 @@
+<style>
+    #grid{
+        width: 100%;
+    }
+    
+    .zGrid .item .title {
+        height: 22px;
+        line-height: 19px;
+        text-align:left;
+    }
+    
+    .tablePanel {
+        overflow-y:auto;
+    }
+</style>
+<form method="post" id="frm">
+    <div class="zPanel">
+        <div id="grid" class="zGrid mb-2"></div>
+        <button type="button" class="btn btn-primary " id="btnSave">
+            <i class="far fa-save"></i> Save
+        </button>
+        <button type="button" onclick="return checkDelete();" class="btn btn-primary " id="btnDelete">
+        	<i class="fas fa-trash-alt"></i> Delete
+        </button>    
+    </div>
+</form>
+
+<script src="/Scripts/handlebars-v3.0.0.js"></script>
+<script src="/Scripts/colResizable-1.5.min.js"></script>
