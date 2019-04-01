@@ -32,9 +32,14 @@ var  svn                        = zsi.setValIfNull
 ;
 
 zsi.ready(function(){
+     $(".zPanel").css({
+            height:$(window).height()-100
+        });  
+        
   gtw = new zsi.easyJsTemplateWriter();
     getTemplates(function(){
         displayRecords();
+        displayRecordsMech();
     });
     
 });
@@ -60,7 +65,7 @@ function getTemplates(callback){
     })
     .bsModalBox({
           id        : gMdlWGR
-        , sizeAttr  : "modal-lg"
+        , sizeAttr  : "modal-full"
         , title     : "Wire Gauge References"
         , body      : gtw.new().modalBodyWGR({gridWGR:"gridWireGaugeReferences",onClickSaveWGR:"submitDataWGR();"}).html()  
     })
@@ -143,12 +148,93 @@ function displayRecords(){
     $("#grid").dataBind({
              sqlCode        : "T72"
             ,width          : 660
-    	    ,height         : $(document).height() - 250
+    	    ,height         : 200
     	    ,selectorType   : "checkbox"
-            ,blankRowsLimit:5
+            //,blankRowsLimit:5
             ,isPaging : false
             ,dataRows       :[
-        		{ text:"Menu Name"         , width:250     , style:"text-align:left;"
+        		{ text:"Electrical Menu"         , width:250     , style:"text-align:left;"
+        		    ,onRender : function(d){
+        		        var _menuId = svn(d,"menu_id");
+        		        var _specsId = svn(d,"specs_id");
+        		        this.css('cursor', 'pointer');
+        		        this.click(function(){
+        		            if(_menuId && _specsId){
+                                $(".criteria").show();
+                                displayCriteria(_menuId,_specsId);
+                            }
+        		  	        else{
+                                $(".criteria").hide();
+                               //$("#gridCriteria").find(".zRows").html("");
+                            }
+        		        });
+                        return  bs({name:"menu_id" ,type:"hidden" ,value:svn(d,"menu_id") })
+		                      + bs({name:"specs_id" ,type:"hidden" ,value:svn(d,"specs_id") })
+		                      + svn(d,"menu_name");
+        		    }
+        		}	 
+        		,{ text:"Image 1"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout=''";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		            return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
+        		,{ text:"Image 2"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
+        		,{ text:"Image 3"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image3_id") +  "\");' onmouseout=''";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image3_id") + "\",\"image3_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		            return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
+        		,{ text:"Image 4"      , width:70     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        this.addClass(gClsMma);
+                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image4_id") +  "\");' onmouseout='mouseout();'";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image4_id") + "\",\"image4_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _imgName : "");
+        		    }
+        		}	 	 	
+        		,{ text:"Icon Name"      , width:80     , style:"text-align:center;" 
+        		    ,onRender : function(d){ 
+        		        var _faIcon = "<a href='javascript:void(0);' class='btn btn-sm;'  onclick='showModalAddIcon(" + svn(d,"menu_id") + ",\"" + svn(d,"fa_icon") + "\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-plus-circle' style='font-size:12pt;' ></span> </a>";
+        		        return (d !== null ? _faIcon : "");
+        		}
+        		}	 	 	
+        		,{ text:"" ,width:35 , style:"text-align:left;"
+        		        ,onRender   :   function(d){
+        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalWireGaugeReferences(\""+ svn(d,"menu_id") +"\",\""+ svn(d,"specs_id") +"\",\""+ svn(d,"menu_name") +"\");'  ><i class='fas fa-link'></i> </a>";
+        		            var _returnValue = (svn(d,"menu_id") === 1 ? _link : "");
+        		            return (d !==null ? _returnValue : "" );
+        		        }
+        		}
+        		
+            ]
+    });    
+}
+
+function displayRecordsMech(){ 
+    var flag = "";
+    $("#gridMech").dataBind({
+             sqlCode        : "T72"
+             ,parameters     : {menu_type : "M" }
+            ,width          : 660
+    	    ,height         : 250
+    	    ,selectorType   : "checkbox"
+            //,blankRowsLimit:5
+            ,isPaging : false
+            ,dataRows       :[
+        		{ text:"Mechanical Menu"         , width:250     , style:"text-align:left;"
         		    ,onRender : function(d){
         		        var _menuId = svn(d,"menu_id");
         		        var _specsId = svn(d,"specs_id");
@@ -275,7 +361,6 @@ function showModalUploadCriteriaImage(parentId,imageId,fieldName,title){
     ); 
 }
 
-
 function showModalWireGaugeReferences(menuId,specsId,menuName) {
   //  $(".colval").hide();
     g$mdl = $("#" + gMdlWGR); 
@@ -297,8 +382,9 @@ function displayWireGaugeReferences(menuId,specsId){
         ,dataRows       : [
                             {  id:  1  ,groupId: 0      , text  : "<div class='centered'>Wire Gauge </div>"           , style :   "text-align:center;"}	 
             		        ,{ id:  2  ,groupId: 0      , text  : "<div class='centered'>Color</div>"                 , style :   "text-align:left;" }
-            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centr'>JASO</div>"                     , style :   "text-align:center;" }	 
-    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centr'>ISO</div>"                      , style :   "text-align:center;" }	 
+            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centered'>JASO</div>"                     , style :   "text-align:center;" }	 
+    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centered'>ISO</div>"                      , style :   "text-align:center;" }	 
+    		                ,{ id:  5  ,groupId: 0      , text  : "<div class='centered'>Combined JASO/ISO</div>"                      , style :   "text-align:center;" }	 
     		                
     		                ,{  id          : 100
                                 , groupId   : 1    		      
@@ -344,28 +430,49 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 104
                                 , groupId   : 4    		      
-                                , text      : "<div class='centr'>LL</div>"     
+                                , text      : "<div class='centr'>Lower Limit</div>"     
             		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
-    		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
+            		                
+            		                console.log(this);
+    		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_lower_limit")});
     		                        } 
             		        
             		            
             		        }
             		        ,{  id          : 105
                                 , groupId   : 4  		      
-                                , text      : "<div class='centr'>UL</div>"     
+                                , text      : "<div class='centr'>Upper Limit</div>"     
             		            , type      : "input"           
             		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
-    		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")})
+    		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
+    		                       } 
+            		        }
+    		                ,{  id          : 106
+                                , groupId   : 5    		      
+                                , text      : "<div class='centr'>Lower Limit</div>"     
+            		            , width     : 105      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"combined_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_lower_limit")});
+    		                        } 
+            		        
+            		            
+            		        }
+            		        ,{  id          : 107
+                                , groupId   : 5  		      
+                                , text      : "<div class='centr'>Upper Limit</div>"     
+            		            , type      : "input"           
+            		            , width     : 105      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"combined_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_upper_limit")})
     		                                + bs({name:"is_edited" , type:"hidden" , value: svn(d,"is_edited")}) ;
     		                       } 
             		        }
-    		    
-            		        
 	                    ]
     	    ,onComplete: function(){
         	    $("input, select").on("change keyup ", function(){
@@ -376,6 +483,12 @@ function displayWireGaugeReferences(menuId,specsId){
                         ,text   : "color_name"
                         ,value  : "color_id"
                 });    
+                $("input[name='iso_lower_limit']").keyup(function(){
+                    
+                });
+                $("input[name='iso_upper_limit']").keyup(function(){
+                    
+                });
                 zsi.initInputTypesAndFormats();
         }  
     });    
@@ -650,12 +763,17 @@ function displayCriteriaColumns(criteriaId,specsId){
     		                               
     		        }
     		 }
-    		 ,{ text: "Operator Name" ,  width:140, style:"text-align:left;" 
+    		 ,{ text: "Alias Name" ,  width:125, style:"text-align:left;" 
+    		     ,onRender: function(d){
+    		         return bs({name:"alias_name",  type:"input", value: svn(d,"alias_name")});
+    		     }
+    		 }
+    		 ,{ text: "Operator Name" ,  width:125, style:"text-align:left;" 
     		     ,onRender: function(d){
     		         return bs({name:"operator_value",  type:"select", value: svn(d,"operator_value")});
     		     }
     		 }
-    		 ,{ text: ""              ,width:25      , style:"text-align:left;"
+    		 ,{ text: "List Values"              ,width:80      , style:"text-align:center;"
     		        ,onRender   :   function(d){
                        return "<span class='lst-icon'> &nbsp;<span>";
         	        }
@@ -676,9 +794,21 @@ function displayCriteriaColumns(criteriaId,specsId){
     		     }
     		     
     		 }
-    		 ,{ text: "Column Value3"     , width:130          , style:"text-align:left;"  
+    		 ,{ text: "Column Value3"     , width:130           , style:"text-align:left;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value3"    , type:"input" , value: svn(d,"column_value3")}); 
+    		     }
+    		     
+    		 }
+    		 ,{ text: "Math Function"     , width:100           , style:"text-align:left;"  
+    		     ,onRender : function(d){
+    		         return bs({name:"math_function"    , type:"select" , value: svn(d,"math_function")}); 
+    		     }
+    		     
+    		 }
+    		 ,{ text: "Math Function2"     , width:105          , style:"text-align:left;"  
+    		     ,onRender : function(d){
+    		         return bs({name:"math_function2"    , type:"select" , value: svn(d,"math_function2")}); 
     		     }
     		     
     		 }
@@ -802,7 +932,10 @@ function displayCriteriaColumns(criteriaId,specsId){
                 }
              });  
 
-    	}
+    	
+	         $("select[name='math_function']").dataBind( "mathfunction");        
+	         $("select[name='math_function2']").dataBind( "mathfunction");        
+	    }
     });    
 }  
 
@@ -891,7 +1024,7 @@ function showModalChart(criteriaId,name) {
     g$mdl.find(".modal-title").text( name ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
     
-    if($.trim(name) === "New Wire Tech"){
+    if($.trim(name) === "New Technology on wire Conductor"){
         $("#chart_filter").hide();
         displayNewWireTech();
     }else{
@@ -3383,7 +3516,7 @@ function displaySWSubDtlEachRegionPie(callback){
 function getDataNewWireTech(callback){
     var _my = new Date().getFullYear() - 2;
     var _wireGuage = "0.75";
-    $.get(execURL + "wire_tech_lower_upper_limits @model_year="+ _my +",@wire_gauge='"+ _wireGuage +"'"
+    $.get(execURL + "wire_tech_weight_lower_upper_limits @model_year="+ _my +",@wire_gauge='"+ _wireGuage +"'"
     , function(data){
         var dataRows = [];
         if(data.rows.length > 0){
@@ -3480,4 +3613,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-     
+         
