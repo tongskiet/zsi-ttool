@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../Stickem/screen.css">
 <style>
 
 .tt-menu a:hover{
@@ -103,8 +104,8 @@
 }
 .graphForm{
     /*width:376px;*/
-    padding:8px 8px 8px 7px;
-    height:376px;
+    margin:8px 8px 8px 7px;
+    min-height:376px;
     width: auto;
     
 }
@@ -120,7 +121,7 @@
 }
 .chart-div {
   width: 100%;
-  max-height: 350px;
+  max-height: 380px;
   height: 100vh;
   border: 1px solid #333;
 }
@@ -128,9 +129,7 @@
     width: 100%;
     max-height: 100%;
 }
-.card-header {
-    background-color: rgba(0,0,0,.03);
-}
+
 /* ---------END CHART STYLE--------- */
 
 /*.users-menu-item a{*/
@@ -180,8 +179,8 @@
 		</div>
     </li>
     <li name="usersMenuGraph">
-        <div class="userForm d-flex">
-            <div class="imageHolder">
+        <div class="userForm d-flex stickem-container">
+            <div class="imageHolder stickem">
         	    <div class="users-menu-item menuMargin">
         	        <a class="cursorContextMenu" href="{{link}}" onClick="{{onClick}}">
         	            <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}">
@@ -189,44 +188,55 @@
         	            <div class="userLabel"><span>{{label}}</span></div>
         	        </a>
         	    </div>
-        	    
         	</div>
         	<div class="graphForm flex-grow-1 overflow-auto" id="{{chartId}}"></div>
         </div>
     </li>
+    <li name="chart">
+        <div class="card rounded-0 border-0 {{card_class}}" id="{{card_id}}">
+            <div class="card-header rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
+            <div class="card-body p-0 mt-1">
+                <div class="{{body_class}}" id="{{body_id}}"></div>  
+            </div>
+        </div>
+    </li>
     <li name="chartDiv">
         <div id="{{id}}">
-            <div class="bg-secondary text-white px-3 py-2 {{title_class}}">{{title}}</div>
-            <div class="bg-white rounded shadow-sm px-3 py-2 mb-2">
-                <div id="{{div_header_id}}" class="{{div_header_class}}"></div>
-                <div class="d-flex">
-                    <div class="p-1 flex-fill w-50">
-                        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Model Year</b></h6>
-                        <div id="{{by_model_year_id}}" class="chart-div"></div>
-                        <hr class="my-2">
-                    </div>
-                    <div class="p-1 flex-fill w-50">
-                        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Region</b></h6>
-                        <div id="{{by_region_id}}" class="chart-div"></div>
-                        <hr class="my-2">
-                    </div>
+            <div class="bg-light px-3 py-2 h6 mb-0 font-weight-bold {{title_class}}">{{title}}</div>
+            <div class="bg-white rounded-0">
+                <div id="{{header_id}}" class="{{header_class}}"></div>
+                <div id="d-flex">
+                    <div id="{{chart_my_id}}" class="chart-div mb-1 {{chart_my_class}}"></div>
+                    <div id="{{chart_region_id}}" class="chart-div mb-1 {{chart_region_class}}"></div>
                 </div>
-                <div id="{{div_middle_id}}"></div>
-                <div class="d-flex">
-                    <div class="p-1 flex-fill w-50">
-                        <div id="{{each_model_year_id}}" class="chart-div-sub"></div>
-                    </div>
-                    <div class="p-1 flex-fill w-50">
-                        <div id="{{each_region_id}}" class="chart-div-sub"></div>
-                    </div>
-                </div>
-                <div id="{{div_footer_id}}"></div>
+                <!--<div class="d-flex">-->
+                <!--    <div class="p-1 flex-fill w-100">-->
+                <!--        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Model Year</b></h6>-->
+                <!--        <div id="{{by_model_year_id}}" class="chart-div"></div>-->
+                <!--        <hr class="my-2">-->
+                <!--    </div>-->
+                <!--    <div class="p-1 flex-fill w-100">-->
+                <!--        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Region</b></h6>-->
+                <!--        <div id="{{by_region_id}}" class="chart-div"></div>-->
+                <!--        <hr class="my-2">-->
+                <!--    </div>-->
+                <!--</div>-->
+                <!--<div id="{{div_middle_id}}"></div>-->
+                <!--<div class="d-flex">-->
+                <!--    <div class="p-1 flex-fill w-50">-->
+                <!--        <div id="{{each_model_year_id}}" class="chart-div-sub"></div>-->
+                <!--    </div>-->
+                <!--    <div class="p-1 flex-fill w-50">-->
+                <!--        <div id="{{each_region_id}}" class="chart-div-sub"></div>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <div id="{{footer_id}}" class="{{footer_id}}"></div>
             </div>
         </div>
     </li>
     <li name="chartCardWrapper">
         <div class="my-2 bg-white">
-            <h6 class="border-bottom border-gray pb-2 mb-3 {{title_class}}"><b>{{title}}</b></h6>
+            <h6 class="border-bottom border-gray pb-2 mb-3 h6 {{title_class}}"><b>{{title}}</b></h6>
             <div class="media">
                 <div id="{{id}}" class="chart-div"></div>
             </div>
@@ -234,7 +244,7 @@
     </li>
     <li name="chartCard">
         <div class="card border-dark mb-1 {{class}}" style="{{style}}">
-          <div class="card-header {{header}} p-2">{{title}}</div>
+          <div class="card-header {{header}} p-2 h6">{{title}}</div>
           <div class="card-body p-2">
             <div id="{{id}}" class="row h-100"></div>
           </div>
@@ -242,14 +252,14 @@
     </li>
     <li name="trendResult">
         <div class="w-100 mb-2">
-           <div class="bg-danger text-white px-2 py-1">Result</div>
+           <div class="bg-danger text-white px-2 py-1 h6">Result</div>
            <div class="d-flex bg-white rounded shadow-sm px-3 pb-2">
                 <div class="p-2 flex-fill w-50">
-                    <div class="font-weight-bold text-uppercase">TREND :</div> 
+                    <div class="font-weight-bold text-uppercase h6">TREND :</div> 
                     <div class="px-3">{{{trend}}}</div> 
                 </div>
                 <div class="p-2 flex-fill w-50">
-                    <div class="font-weight-bold text-uppercase">OPPORTUNITIES/ EVOLUTION :</div> 
+                    <div class="font-weight-bold text-uppercase h6">OPPORTUNITIES/ EVOLUTION :</div> 
                     <div class="px-3">{{{opportunity}}}</div> 
                 </div>
             </div>
@@ -257,6 +267,7 @@
     </li>
 </ul>
 
+<script src="../Stickem/jquery.stickem.js"></script>
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>
 <script src="../amcharts4/maps.js"></script>

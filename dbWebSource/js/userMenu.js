@@ -20,19 +20,20 @@ var  svn                        = zsi.setValIfNull
     ,gModelYears                = []
     ,gMYFrom                    = ""
     ,gMYTo                      = ""
+    ,gData                      = []
+    ,gPieChartData              = []
+    ,gColumnChartData              = []
 ;
  
 $(document).ready(function(){
-    console.log(gMenuId);
-    console.log(gSpecsId);
-    
-    if(gMenuId !== null && gMenuId !== "" && gSpecsId !== null && gSpecsId !== "" && (isNaN(gMenuId) == false && isNaN(gSpecsId) == false)){
-         console.log("d1");
+    if(gMenuId !== null && gMenuId !== "" && gSpecsId !== null && gSpecsId !== "" && (isNaN(gMenuId) === false && isNaN(gSpecsId) === false)){
          displaySubCategory(this,gMenuId, gSpecsId);
     }else{
-         console.log("d2");
          displayUserMenus();
     }
+
+	//$('#container').stickem();
+	am4core.useTheme(am4themes_animated);
 });
 //  function displayUsersMenus(){
 //   var _tw =new zsi.easyJsTemplateWriter();    
@@ -88,22 +89,26 @@ function displayUserMenus(){
 }
 
 function displaySubCategory(sel,menuId, specsId){
-    var _tw = new zsi.easyJsTemplateWriter("#container").new(); 
+    var _tw = new zsi.easyJsTemplateWriter("#container"); 
     // $(".users-menu-content").html(menuId + specsId);
     
     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId, function(data){
-        var d = data.rows;
-        var res = d.filter(function (item) {
+        var _rows = data.rows;
+        var _result = _rows.filter(function (item) {
                 	return item.pcriteria_id === "";
                 });
   
-        if(res.length === 0){
+        if(_result.length === 0){
             displayUserMenus();
         }else{
             $(".navbar-nav.users").css("display","none"); // these are the main users menu which i hide temporarily
-            $(".navbar-nav").last().after(function(){
-                $.each(res, function(){
-                    var cid = this.criteria_id;
+            //$(".navbar-nav").last().after(function(){
+                $.each(_result, function(){
+                    var _cid = this.criteria_id;
+                    var _chartCon = "chart_container_" + _cid;
+                    var _data = _rows.filter(function (item) {
+                    	return item.pcriteria_id === _cid;
+                    });
                     
                     _tw.usersMenuGraph({
                           link      : "#"
@@ -111,82 +116,572 @@ function displaySubCategory(sel,menuId, specsId){
                         , imageId4  : 32
                         , label     : this.criteria_title
                         , labelBreakCSS: "label-double"
-                        , chartId   : "chart_container_" + cid
+                        , chartId   : _chartCon
                     });
-                    
-                    var obj = d.filter(function (item) {
-                    	return item.pcriteria_id === cid;
-                    });
-                    
-                    if(obj.length > 0){
-                        displayChart(obj);
+            
+                    if(_data.length > 0){
+                        setChartTemplate(_data, _chartCon);
                     }
                 });
+               
                 //return _tw.html();
-            });    
+           // });    
         }  
     });
 }   
 
-// ---------------------------------- CHART FUNCTION --------------------------//
+//******************************* CHART FUNCTION *****************************//
+
+function setChartTemplate(o, div){
+    var _parentCid = o[0].pcriteria_id;
+    var _chartCon = "#" + div;
+    var _tw = new zsi.easyJsTemplateWriter(_chartCon).new();
+    
+    $.each(o, function(i, v){
+        var _criteriaId = v.criteria_id;
+        var _criteriaTitle = v.criteria_title;
+        var _chartBody = "chartBody_" + _criteriaId;
+                
+        _tw.chart({
+            card_id: _criteriaId,
+            header_title: _criteriaTitle,
+            body_id: _chartBody
+        });
+
+        var index = 0;
+        var loadChart = function() {
+            
+            if (index < o.length) {
+                if(_criteriaId === 7 || _criteriaId === 8 || _criteriaId === 9 || _criteriaId === 10){
+                    gtw = new zsi.easyJsTemplateWriter("#" + _chartBody).new();
+                    gtw.chartDiv({ 
+                        title: "", 
+                        title_class:"d-none", 
+                        header_id: "",
+                        header_class: "d-none",
+                        chart_my_id: "chartMY_" + _criteriaId,
+                        chart_region_id: "chartRegion_" + _criteriaId,
+                        footer_id: "chartTrendResult",
+                        footer_class: "d-none"
+                    });
+                   
+                    getDataByCriteriaId(_criteriaId, function(){
+                        setMYRange();
+                        //setPieChartData();
+                        //setColumnChartData();
+                        
+                        displayPieChart(function(){
+                            displayColumnChart(function(){
+                                ++index;
+                            });
+                        });
+                    });
+               }
+            } 
+        };
+        loadChart();
+    });
+}
+
+function getDataByCriteriaId(criteriaId, callback){
+    if($.trim(criteriaId)){  
+        var _param = "";
+        if(gPrmIncludeCYear==="Y") 
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
+        }
+
+        $.get(execURL + "dynamic_wires_usage_summary @byRegion='Y',@byMY='Y',@criteria_id="+ criteriaId + _param
+        , function(data){
+            gData = [];
+            gPrmCriteriaId = criteriaId; //Re-set to maintain the value of gPrmCriteriaId 
+            
+            if(data.rows.length > 0) {
+                gData = data.rows;
+                gRegionNames = gData.groupBy(["region"]);
+                gModelYears = gData.groupBy(["model_year"]);
+            }
+            if(callback) callback();
+        });
+    }
+}
+
+// function setPieChartData(callback){
+
+//     if(gData.length > 0) {
+        
+//         gPieChartData = [];
+//         if(gPrmCriteriaId === 7){
+            
+//         }
+//         else if(gPrmCriteriaId === 8){
+            
+//         }
+//     }
+
+//     if(callback) callback();
+// }
+
+// function setColumnChartData(callback){
+//     gColumnChartData = [];
+//     if(gPrmCriteriaId === 7){
+        
+//     }
+    
+//     //console.log("gColumnChartData", gColumnChartData);
+//     if(callback) callback();
+// }
+
+function displayPieChart(callback){
+    if(gData.length > 0){
+        
+        if(gPrmCriteriaId === 7){
+            displayPieSmallWires();
+        }
+        else if(gPrmCriteriaId === 8){
+            displayPieNewWireSizes();
+        }
+        else if(gPrmCriteriaId === 9){
+            displayPieSMHighFlex();
+        }
+        else if(gPrmCriteriaId === 10){
+            displayPieSMEngineComp();
+        }
+    }
+    if(callback) callback();
+}
+
+function displayColumnChart(callback){
+    if(gData.length > 0){
+        
+        if(gPrmCriteriaId === 7){ 
+            displayColumnSmallWires();
+        }
+        else if(gPrmCriteriaId === 8){
+            displayColumnNewWireSizes();
+        }
+        else if(gPrmCriteriaId === 9){
+            displayColumnSMHighFlex();
+        }
+        else if(gPrmCriteriaId === 10){
+            displayColumnSMEngineComp();
+        }
+    }
+    
+    if(callback) callback();
+}
+
+//--------------------------------- PIE CHART --------------------------------//
+
+function displayPieSmallWires(){
+    //Set Data
+    var _data = [];
+    $.each(gData.groupBy(["model_year"]), function(i, my) { 
+        var _my = my.name;
+        var _items = my.items;
+        var _big = 0; //Big Wires
+        var _small = 0; //Small Wires
+        var _subBig = [];
+        var _subSmall = [];
+        
+        $.each(_items.groupBy(["alias_name"]), function(x, group){
+            var _alias = group.name.toLowerCase();
+            var _sum = group.items.reduce(function (accumulator, currentValue) {
+                return accumulator + currentValue.wire_count;
+            }, 0);
+  
+            var _sub = [];
+            $.each(group.items.groupBy(['wire_gauge']), function(y, wire){
+                var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue.wire_count;
+                }, 0);
+                
+                _sub.push({
+                    type: wire.name,
+                    percent: _sumWire
+                });
+            });
+  
+            if(_alias.indexOf("other") != -1){
+                _big = _sum;
+                _subBig = [];
+            }
+            if(_alias.indexOf("small") != -1){
+                _small = _sum;
+                _subSmall = _sub;
+            }
+        });
+        
+        _data.push({
+            type: "Wire sizes above 0.50 CSA",
+            model_year : +_my,
+            percent :  +_big,
+            subs : _subBig
+        },{
+            type: "Wire sizes below 0.50 CSA",
+            model_year : +_my,
+            percent :  +_small,
+            subs : _subSmall
+        });
+    });
+    
+    var container = am4core.create("chartMY_" + gPrmCriteriaId, am4core.Container);
+    container.width = am4core.percent(100);
+    container.height = am4core.percent(100);
+    container.layout = "horizontal";
+    
+    var _createChart = function(data, year){
+        var chart = container.createChild(am4charts.PieChart);
+        //chart.width = am4core.percent(80);
+        chart.paddingTop= 15;
+        chart.paddingBottom = 15;
+        var title = chart.titles.create();
+        title.text =  "MY" + year;
+        //title.fontSize = 12;
+        title.fontWeight = 800;
+        title.marginBottom = 0;
+        
+        //var types = data;
+        // Add data
+        var selected;
+        var generateChartData = function() {
+            var chartData = [];
+            for (var i = 0; i < data.length; i++) {
+                if (i == selected) {
+                    for (var x = 0; x < data[i].subs.length; x++) {
+                        chartData.push({
+                            type: data[i].subs[x].type,
+                            percent: data[i].subs[x].percent,
+                            color: data[i].color,
+                            pulled: true
+                        });
+                    }
+                } else {
+                    chartData.push({
+                        type: data[i].type,
+                        percent: data[i].percent,
+                        color: data[i].color,
+                        id: i
+                    });
+                }
+            }
+            return chartData;
+        };
+        
+        chart.data = generateChartData();
+    
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "percent";
+        pieSeries.dataFields.category = "type";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+        pieSeries.paddingBottom = 10;
+        pieSeries.maxHeight = "80%";
+        pieSeries.colors.step = 2;
+        
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.fontSize = 12;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        //pieSeries.labels.template.relativeRotation = 90;
+        pieSeries.labels.template.fill = am4core.color("white");
+    
+        chart.legend = new am4charts.Legend();
+        //chart.legend.height = 50;
+        chart.legend.labels.template.fontSize = 12;
+        chart.legend.valueLabels.template.fontSize = 12;
+        chart.legend.itemContainers.template.paddingTop = 1;
+        chart.legend.itemContainers.template.paddingBottom = 1;
+        //chart.legend.labels.template.truncate = false;
+        //chart.legend.labels.template.wrap = true;
+        //chart.legend.itemContainers.template.paddingRight = 0;
+        //chart.legend.itemContainers.template.paddingLeft = 0;
+        
+        var markerTemplate = chart.legend.markers.template;
+        markerTemplate.width = 12;
+        markerTemplate.height = 12;
+        
+        pieSeries.slices.template.events.on("hit", function(event) {
+            if(event.target.dataItem.dataContext.id !== 0){
+                if (event.target.dataItem.dataContext.id !== undefined ) {
+                    selected = event.target.dataItem.dataContext.id;
+                } else {
+                    selected = undefined;
+                }
+                chart.data = generateChartData();
+            }
+            
+        });
+        
+        // pieSeries.labels.template.adapter.add("relativeRotation", function(relativeRotation, target) {
+        //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+        //         return 90;
+        //     }
+        //     return relativeRotation;
+        // });
+        
+        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return 0;
+            }
+            return radius;
+        });
+        
+        pieSeries.labels.template.adapter.add("fill", function(color, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return am4core.color("#000");
+            }
+            return color;
+        });
+    };
+
+    $.each(gModelYears, function(i, v){
+        var _my = v.name;
+        var _res = _data.filter(function (item) {
+        	return item.model_year == _my;
+        });
+        
+        _createChart(_res, _my);
+    });
+}
+
+function displayPieNewWireSizes(){
+    
+}
+
+function displayPieSMHighFlex(){
+    
+}
+
+function displayPieSMEngineComp(){
+    
+}
+
+//------------------------------- COLUMN CHART -------------------------------//
+
+function displayColumnSmallWires(){
+    //Set Data
+    var _data = [];
+    $.each(gData.groupBy(["region"]), function(i, region) { 
+        $.each(gModelYears, function(x, my) {
+            var _region = region.name;
+            var _my = my.name;
+            var _big = 0; //Big Wires
+            var _small = 0; //Small Wires
+            var _res = region.items.filter(function (item) {
+            	return item.model_year == _my;
+            });
+          
+            if( _res.length > 0 ) {
+                $.each(_res, function(i, v){
+                    var _alias = v.alias_name.toLowerCase();
+                    if(_alias.indexOf("other") != -1){
+                        _big += v.wire_count;
+                    }
+                    if(_alias.indexOf("small") != -1){
+                        _small += v.wire_count;
+                    }
+                });
+            }
+            
+            _data.push({
+                region : _region,
+                model_year : +_my,
+                category : _my +"("+ _region +")",
+                total_big_wires :  +_big,
+                total_small_wires :  +_small
+            });
+        });
+    });
+        
+    var chart = am4core.create("chartRegion_" + gPrmCriteriaId, am4charts.XYChart);
+    chart.data = _data;
+    chart.colors.step = 2;
+    chart.padding(30, 30, 10, 30);
+
+    var title = chart.titles.create();
+    title.text =  "Overall Usage";
+    title.fontSize = 12;
+    title.fontWeight = 800;
+    title.marginBottom = 10;
+    
+    chart.legend = new am4charts.Legend();
+    chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.pointer;
+    chart.numberFormatter.numberFormat = "#";
+    
+    var markerTemplate = chart.legend.markers.template;
+        markerTemplate.width = 18;
+        markerTemplate.height = 18;
+    
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "category";
+    //categoryAxis.title.text = "Wire Category";
+    //categoryAxis.title.fontWeight = 800;
+    categoryAxis.renderer.minGridDistance = 60;
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.interactionsEnabled = false;
+    categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+        return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+    });
+    
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.max = 100;
+    valueAxis.strictMinMax = true;
+    valueAxis.calculateTotals = true;
+    
+    valueAxis.renderer.minGridDistance = 20;
+    valueAxis.renderer.minWidth = 35;
+    valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+      return text + "%";
+    });
+    
+    var series1 = chart.series.push(new am4charts.ColumnSeries());
+    series1.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+    series1.columns.template.column.strokeOpacity = 1;
+    series1.name = "% of Below 0.50";
+    series1.dataFields.categoryX = "category";
+    series1.dataFields.valueY = "total_small_wires";
+    series1.dataFields.valueYShow = "totalPercent";
+    series1.dataItems.template.locations.categoryX = 0.5;
+    series1.stacked = true;
+    series1.tooltip.pointerOrientation = "vertical";
+    series1.tooltip.dy = - 20;
+    
+    var bullet1 = series1.bullets.push(new am4charts.LabelBullet());
+    bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+    bullet1.locationY = 0.5;
+    bullet1.label.fill = am4core.color("#ffffff");
+    bullet1.interactionsEnabled = false;
+    
+    var series2 = chart.series.push(series1.clone());
+    series2.name = "% of Above 0.50";
+    series2.dataFields.valueY = "total_big_wires";
+    series2.fill = chart.colors.next();
+    series2.stroke = series2.fill;
+    
+    setLegendSize(chart);
+    //setTrendResult(_data);
+    
+    var createLabel = function(category, endCategory, label) {
+        var range = categoryAxis.axisRanges.create();
+        range.category = category;
+        range.endCategory = endCategory;
+        range.label.dataItem.text = label;
+        range.label.dy = 15;
+        range.label.fontWeight = "bold";
+        range.axisFill.fill = am4core.color("#396478");
+        range.axisFill.fillOpacity = 0.1;
+        range.locations.category = 0.1;
+        range.locations.endCategory = 0.9;
+    };
+    
+    $.each(gRegionNames, function(i, r) { 
+        var _region = "("+ r.name +")";
+        createLabel(gMYFrom + _region, gMYTo + _region, r.name);
+    });
+}
+
+function displayColumnNewWireSizes(){
+    
+}
+
+function displayColumnSMHighFlex(){
+    
+}
+
+function displayColumnSMEngineComp(){
+    
+}
+
+// ******************************** END CHART ********************************//
 
 function displayChart(o){
     if(o.length > 0){
-        var cid = o[0].pcriteria_id;
-        var chartId = "#chart_container_" + cid;
-        gPrmCriteriaId = cid;
-        gtw = new zsi.easyJsTemplateWriter(chartId).new();
+        var _parentCid = o[0].pcriteria_id;
+        var _chartCon = "#chart_container_" + _parentCid;
+        var _tw = new zsi.easyJsTemplateWriter(_chartCon).new();
+        
+        var ctr = 0;
+        var _callBack = function(){
+             
+            ctr++;
+            
+            // if(o.length === ctr){
+            //     return false;
+            // }else{
+               
+            // }
+        }; 
          
-        am4core.useTheme(am4themes_animated);
-        
-        //$.each(o, function(i, v){
-            //gPrmCriteriaId = v.criteria_id;
-           
-            //if(gPrmCriteriaId == 7){
-                getAllWires(function(){
-                    setMYRange();
-          
-                    displayChartWireSummary();
-                    displayChartSmallWires();
+        var _createChart = function(criteriaId, callback){
+            gPrmCriteriaId = criteriaId;
+            gtw = new zsi.easyJsTemplateWriter("#chartBody_" + criteriaId).new();
+            
+            
+            //console.log("criteriaId", criteriaId);
+                
+                //if(criteriaId === 7){
                     
-                    setTimeout(function(){
-                        getSmallWires(function(){ 
-                            displayChartSmallWiresDtl();
-                            
-                            // setTimeout(function(){
-                            //     getSmallWiresDtl(function(){
-                            //         displayChartSmallWiresSubDtl();
-                            //     });
-                            // }, 2500); 
-                        });
-                    }, 2500); 
+                    // getAllWires(function(){
+                    //     setMYRange();
+    
+                    //     displayChartWireSummary(function(){
+                    //         displayChartSmallWires(function(){
+                                
+                    //             //console.log(gtw.html());
+                    //             callback();
+                    //             console.log("out");
+                    //         });
+                    //     }); 
+                        
+                        // setTimeout(function(){
+                        //     getSmallWires(function(){ 
+                        //         displayChartSmallWiresDtl(function(){
+                        //             console.log("test");
+                                    
+                        //         });
+                                
+                        //         setTimeout(function(){
+                        //             getSmallWiresDtl(function(){
+                        //                 displayChartSmallWiresSubDtl();
+                        //             });
+                        //         }, 2500); 
+                                
+                        //     });
+                        // }, 2500); 
+                    //});
+               
+                //}else if(criteriaId == 12){
+                //     displayNewWireTech(function(){
+                //         callback(criteriaId);
+                //         console.log("tech");
+                //     });
+                //}else{
+                    //console.log("else");
+                //    callback();
+                //}
+        };
+
+        //if(o.length != ctr){
+            $.each(o, function(i, v){
+                var _criteriaId = v.criteria_id;
+                var _criteriaTitle = v.criteria_title;
+                
+                _tw.chart({
+                    card_id: _criteriaId,
+                    header_title: _criteriaTitle,
+                    //header_class: "criteriaId_" + _criteriaId,
+                    body_id: "chartBody_" + _criteriaId
                 });
-           // }
-            
-            // if(gPrmCriteriaId == 8){
-               
-            // }
-            
-            // if(gPrmCriteriaId == 9){
-               
-            // }
-            
-            // if(gPrmCriteriaId == 10){
-               
-            // }
-            
-            // if(gPrmCriteriaId == 12){
-               
-            // }
-        //});
-        
-        // if($.trim(name) === "New Wire Tech"){
-        //     $("#chart_filter").hide();
-        //     displayNewWireTech();
-        // }else{
-        //     $("#chart_filter").show();
-        //     displayChart();
-        // }
+
+                _createChart(_criteriaId);
+            });
+        //}
     }
 }
 
@@ -209,67 +704,15 @@ function filterChart(){
     }
 }
 
-function getData(obj, callback){
-    if( $.isEmptyObject(obj) === false ) {
-        var _param = "";
-        var _byregion = ( obj.byRegion === "Y" ? "Y" : "N" );
-        var _byModelYear = ( obj.byModelYear === "Y" ? "Y" : "N" );
-        var _criteriaID = ( obj.criterieId !=="" ? obj.criterieId : "7" );
-        var _reportTypeID = ( obj.reportTypeId !=="" ? obj.reportTypeId : "1" );
-        
-        if(gPrmIncludeCYear==="Y") 
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-        }
-        
-        $.get(execURL + "dynamic_wires_usage_summary @byRegion='"+ _byregion +"',@byMY='"+ _byModelYear +"',@criteria_id="+ _criteriaID +",@report_type_id=" + _reportTypeID + _param
-        , function(data){
-            var dataRows = [];
-            if(data.rows.length > 0){
-              dataRows = data.rows;
-            }
-            if(callback) callback(dataRows);
-        });
-        
-        // var _param = {
-        //     byRegion: _byregion,
-        //     byMY: _byModelYear,
-        //     criteria_id: _criteriaID,
-        //     report_type_id: _reportTypeID
-        // };
-        
-        // if(gPrmIncludeCYear==="Y"){ 
-        //     _param.no_years = gPrmNoYears;
-        //     _param.include_cyear = "Y";
-        // }else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-        //     _param.no_years = gPrmNoYears;
-        //     _param.include_cyear = "N";
-        // }
-        
-        // zsi.getData({
-        //     sqlCode : "D15"
-        //     ,parameters : _param
-        //     ,onComplete : function(d) {
-        //         var dataRows = [];
-        //         if(data.rows.length > 0){
-        //             dataRows = data.rows;
-        //         }
-        //         if(callback) callback(dataRows);
-        //     }
-        // });
-    }
-}
-
 function getDataAll(callback){
     getData({
         byRegion: "Y",
         byModelYear: "Y",
         criterieId: gPrmCriteriaId,
-        reportTypeId: gPrmReportTypeId
+        //reportTypeId: gPrmReportTypeId
     }, function(all){
         gAll = all;
-        
+
         gRegionNames = all.groupBy(["REGION_NAME"]);
         gModelYears = all.groupBy(["MODEL_YEAR"]);
 
@@ -277,79 +720,80 @@ function getDataAll(callback){
     });
 }
 
-function getDataByRegion(callback){
-    getData({
-        byRegion: "Y",
-        byModelYear: "N",
-        criterieId: gPrmCriteriaId,
-        reportTypeId: gPrmReportTypeId
-    }, function(region){
-        gByRegion = region;
+// function getDataByRegion(callback){
+//     getData({
+//         byRegion: "Y",
+//         byModelYear: "N",
+//         criterieId: gPrmCriteriaId,
+//         reportTypeId: gPrmReportTypeId
+//     }, function(region){
+//         gByRegion = region;
         
-        if(callback) callback(region);
-    });
-} 
+//         if(callback) callback(region);
+//     });
+// } 
 
-function getDataByModelYear(callback){
-    getData({
-        byRegion: "N",
-        byModelYear: "Y",
-        criterieId: gPrmCriteriaId,
-        reportTypeId: gPrmReportTypeId
-    }, function(model_year){
-        gByModelYear = model_year;
+// function getDataByModelYear(callback){
+//     getData({
+//         byRegion: "N",
+//         byModelYear: "Y",
+//         criterieId: gPrmCriteriaId,
+//         reportTypeId: gPrmReportTypeId
+//     }, function(model_year){
+//         gByModelYear = model_year;
         
-        if(callback) callback(model_year);
-    });
-}
+//         if(callback) callback(model_year);
+//     });
+// }
 
 function getAllWires(callback){
     gPrmReportTypeId = 1;
     
     getDataAll(function(){
         //getDataByRegion(function(){
-            gByModelYear = [];
-            gAll.groupBy(["MODEL_YEAR"]).forEach(function(v){
-                var obj = {};
-                var totalWires = 0;
-                var totalBigWires = 0;
-                var totalSmallWires = 0;
+            // gByModelYear = [];
+            // gAll.groupBy(["MODEL_YEAR"]).forEach(function(v){
+            //     var obj = {};
+            //     var totalWires = 0;
+            //     var totalBigWires = 0;
+            //     var totalSmallWires = 0;
                
-                v.items.forEach(function(item){
-                    totalBigWires += item.total_big_wires;
-                    totalSmallWires += item.total_small_wires;
-                }); 
-                totalWires = totalSmallWires + totalBigWires;
+            //     v.items.forEach(function(item){
+            //         totalBigWires += item.total_big_wires;
+            //         totalSmallWires += item.total_small_wires;
+            //     }); 
+            //     totalWires = totalSmallWires + totalBigWires;
                
-                obj.MODEL_YEAR = +v.name
-                obj.total_big_wires = totalBigWires
-                obj.total_small_wires = totalSmallWires
-                obj.total_wire_count = totalWires
+            //     obj.MODEL_YEAR = +v.name;
+            //     obj.total_big_wires = totalBigWires;
+            //     obj.total_small_wires = totalSmallWires;
+            //     obj.total_wire_count = totalWires;
                 
-                gByModelYear.push(obj);
-            });
+            //     gByModelYear.push(obj);
+            // });
             
-            gByRegion = [];
-            gAll.groupBy(["REGION_NAME"]).forEach(function(v){
-                var obj = {};
-                var totalWires = 0;
-                var totalBigWires = 0;
-                var totalSmallWires = 0;
+            // gByRegion = [];
+            // gAll.groupBy(["REGION_NAME"]).forEach(function(v){
+            //     var obj = {};
+            //     var totalWires = 0;
+            //     var totalBigWires = 0;
+            //     var totalSmallWires = 0;
                
-                v.items.forEach(function(item){
-                    totalBigWires += item.total_big_wires;
-                    totalSmallWires += item.total_small_wires;
-                }); 
-                totalWires = totalSmallWires + totalBigWires;
+            //     v.items.forEach(function(item){
+            //         totalBigWires += item.total_big_wires;
+            //         totalSmallWires += item.total_small_wires;
+            //     }); 
+            //     totalWires = totalSmallWires + totalBigWires;
                
-                obj.REGION_NAME = v.name
-                obj.total_big_wires = totalBigWires
-                obj.total_small_wires = totalSmallWires
-                obj.total_wire_count = totalWires
+            //     obj.REGION_NAME = v.name;
+            //     obj.total_big_wires = totalBigWires;
+            //     obj.total_small_wires = totalSmallWires;
+            //     obj.total_wire_count = totalWires;
                 
-                gByRegion.push(obj);
-            });
-            
+            //     gByRegion.push(obj);
+            // });
+            console.log("gByModelYear", gByModelYear);
+            console.log("gByRegion", gByRegion);
             //getDataByModelYear(function(){
                 if(callback) callback();
             //});
@@ -357,31 +801,31 @@ function getAllWires(callback){
     });
 }
 
-function getSmallWires(callback){
-    gPrmReportTypeId = 2;
+// function getSmallWires(callback){
+//     gPrmReportTypeId = 2;
     
-    getDataAll(function(){
-        getDataByRegion(function(){
-            getDataByModelYear(function(){
-                if(callback) callback();
-            });
-        });
-    });
-}
+//     getDataAll(function(){
+//         getDataByRegion(function(){
+//             getDataByModelYear(function(){
+//                 if(callback) callback();
+//             });
+//         });
+//     });
+// }
 
-function getSmallWiresDtl(callback){
-    gPrmReportTypeId = 4;
+// function getSmallWiresDtl(callback){
+//     gPrmReportTypeId = 4;
     
-    getDataAll(function(){
-        getDataByRegion(function(){
-            getDataByModelYear(function(){
-                if(callback) callback();
-            });
-        });
-    });
-}
+//     getDataAll(function(){
+//         getDataByRegion(function(){
+//             getDataByModelYear(function(){
+//                 if(callback) callback();
+//             });
+//         });
+//     });
+// }
 
-function displayChartWireSummary(){
+function displayChartWireSummary(cb){
     gtw.chartDiv({ 
         id:"chartWireSummary", 
         title:"Summary", 
@@ -401,13 +845,16 @@ function displayChartWireSummary(){
         displayWireSummaryByMYPie(function(){
             displayWireSummaryByRegionPie(function(){
                 displayWireSummaryEachMYPie(function(){
-                    displayWireSummaryEachRegionPie();
+                    displayWireSummaryEachRegionPie(function(){
+                        cb();
+                    });
                 });
             });
         });
     }else{
         displayWireSummaryByMYBar(function(){
             displayWireSummaryByRegionBar(function(){
+                cb();
                 //displayWireSummaryEachMYBar(function(){
                 //    displayWireSummaryEachRegionBar();
                 //});
@@ -416,7 +863,7 @@ function displayChartWireSummary(){
     }
 }
 
-function displayChartSmallWires(){
+function displayChartSmallWires(cb){
     gtw.chartDiv({ 
         id:"chartSmallWire", 
         title:"Details", 
@@ -436,7 +883,9 @@ function displayChartSmallWires(){
             displaySWByRegionPie(function(){
                 displaySWAll(function(){
                     displaySWEachModelYearPie(function(){
-                        displaySWEachRegionPie();
+                        displaySWEachRegionPie(function(){
+                            cb();
+                        });
                     });
                 });
             });
@@ -444,6 +893,7 @@ function displayChartSmallWires(){
     }else{
         displaySWByModelYearBar(function(){
             displaySWByRegionBar(function(){
+                cb();
                 //displaySWAll(function(){
                     //displaySWEachModelYearBar(function(){
                     //    displaySWEachRegionBar();
@@ -493,6 +943,7 @@ function displayChartSmallWiresSubDtl(){
             title_class: "",
             by_model_year_id: "chartSWSubDtlByMY" + harness,
             by_region_id: "chartSWSubDtlByRegion" + harness,
+            sub_title_class: "d-none",
             each_model_year_id: "chartSWSubDtlEachMY" + harness,
             each_region_id: "chartSWSubDtlEachRegion" + harness
         });
@@ -642,7 +1093,7 @@ function displayWireSummaryAll(callback){
     chart.padding(30, 30, 10, 30);
 
     var title = chart.titles.create();
-    title.text =  "Usage per Model year";
+    title.text =  "Overall Usage";
     title.fontSize = 12;
     title.fontWeight = 800;
     title.marginBottom = 10;
@@ -2758,4 +3209,4 @@ function displayNewWireTech(){
 
 
 
-     
+           
