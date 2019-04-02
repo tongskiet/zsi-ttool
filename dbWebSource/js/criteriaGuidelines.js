@@ -11,6 +11,7 @@ var  svn                        = zsi.setValIfNull
     ,modalIconUpload            = "modalWindowIconUpload"
     ,modalCriteriaImageUpload   = "modalwindowCriteriaImageUpload"
     ,modalChart                 = "modalWindowChart"
+    ,modalCriteriaColumnValues  = "modalWindowCriteriaColumnValues"
     ,gSpecsId                   = ""
     ,gTimeStamp                 = 0
     ,gClsMma                    ="mouse-move-area"
@@ -61,7 +62,7 @@ function getTemplates(callback){
           id        : gMdlId
         , sizeAttr  : "modal-full"
         , title     : "Criteria Columns"
-        , body      : gtw.new().modalBody({gridId1:"gridCriteriaColumns",gridId2:"gridCriteriaColumnValues",onClickSave1:"submitData1();",onClickSave2:"submitData2();"}).html()  
+        , body      : gtw.new().modalBody({gridId1:"gridCriteriaColumns",onClickSave1:"submitData1();"}).html()  
     })
     .bsModalBox({
           id        : gMdlWGR
@@ -137,6 +138,14 @@ function getTemplates(callback){
                             +'</div>'
                         +'</div>'
                         +'<div id="chart_container"></div>'
+    })
+    
+    .bsModalBox({
+          id        : modalCriteriaColumnValues
+        , sizeAttr  : "modal-md"
+        , title     : "Criteria Column Values"
+        , body      : gtw.new().modalInList({gridCricolVal:"gridCriteriaColumnValues",saveCriColVal:"submitData2();"}).html()  
+        //, footer   : '<div class="col-11 ml-auto"><button type="button" onclick="submitData2(this);" class="btn btn-primary"><span class="fas fa-file-upload"></span> Save</button>'
     });
     
     if(callback) callback();
@@ -498,29 +507,14 @@ function submitDataWGR(){
     var _$grid =  $("#gridWireGaugeReferences");
        _$grid.jsonSubmit({
              procedure: "wire_gauge_references_upd"
-           // ,optionalItems: ["is_output"]
-         //   ,notInclude: "#column_value_select, #column_value_select2"
             ,onComplete: function (data) {
                 if(data.isSuccess===true) {
                     zsi.form.showAlert("alert");
                     displayWireGaugeReferences(_$grid.data("menuId"), _$grid.data("specsId"));
                 }
             }
-            
         });
 }  
-/*
- $("#btnSave").click(function () {
-   $("#grid").jsonSubmit({
-             procedure: "wire_gauge_references_upd"
-            , onComplete: function (data) {
-                $("#grid").clearGrid();
-                if(data.isSuccess===true) zsi.form.showAlert("alert");
-                displayRecords();
-            }
-    });
-});
-*/
 
 function uploadMenuImage(obj){
     var _frm = $(obj).closest(".modal-content").find("form");
@@ -608,7 +602,6 @@ function uploadCriteriaImage(obj){
         //Ajax events
         success: completeHandler = function(data) {
             if(data.isSuccess){
-                console.log("data",data);
                 $.get(base_url  + "sql/exec?p=dbo.criteria_image_upd @criteria_id=" + _parent_id 
                                 + ",@" + _field_name + "=" + data.image_id 
                                 + ",@user_id=" + userId 
@@ -639,101 +632,106 @@ function uploadCriteriaImage(obj){
 }
 
 function displayCriteria(menuId,specsId){
-        $("#gridCriteria").dataBind({
-             sqlCode        : "C12"
-            ,parameters     : {
-                                trend_menu_id: menuId
-                            }
-            ,width          : 1025
-    	    ,height         : $(document).height() - 250
-            ,blankRowsLimit : 10
-            ,dataRows       :[
-        		 { text: "Seq. No."   , width:65 , style:"text-align:left;" 
-        		     ,onRender : function(d){return bs({name:"criteria_id"          ,type:"hidden"  ,value: svn(d,"criteria_id")})
-        		                                +   bs({name:"trend_menu_id"        ,type:"hidden"  ,value: menuId})
-        		                                +   bs({name:"is_edited",type:"hidden" })
-        		                                +   bs({name:"seq_no" ,value: svn(d,"seq_no")}) ;
-        		         	     }
-        		 }
-        		,{ text:"Criteria Title"   , width:450 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
-        		   ,onRender: function(d){
-        		        if(d){
-        		            return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" value="'+ d.criteria_title +'" style="text-align: left;'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';   
-        		        } else return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" style="text-align: left;">';   
-        		    }
-        		}	 	 
-        		
-        		,{ text:"Group Criteria"    , width:150    , style:"text-align:center;"    
-    		            ,onRender   :   function(d){ 
-    		                    return bs({name:"pcriteria_id", type:"select", value: svn(d,"pcriteria_id")});
-    		          }
+    $("#gridCriteria").dataBind({
+         sqlCode        : "C12"
+        ,parameters     : {
+                            trend_menu_id: menuId
+                        }
+        ,width          : 1025
+	    ,height         : $(document).height() - 250
+        ,blankRowsLimit : 10
+        ,dataRows       :[
+    		 { text: "Seq. No."   , width:65 , style:"text-align:left;" 
+    		     ,onRender : function(d){return bs({name:"criteria_id"          ,type:"hidden"  ,value: svn(d,"criteria_id")})
+    		                                +   bs({name:"is_edited",type:"hidden" })
+    		                                +   bs({name:"seq_no" ,value: svn(d,"seq_no")}) ;
+    		         	     }
+    		 }
+    		,{ text:"Trend Menu"    , width:150    , style:"text-align:center;"    
+		            ,onRender   :   function(d){ 
+		                    var _trendMenuSelect = bs({name:"trend_menu_id"   ,type:"select"  ,value: menuId})
+		                    var _trendMenuHide   = bs({name:"trend_menu_id"   ,type:"hidden"  ,value: menuId})
+		                    return (d !== null && svn(d,"pcriteria_id") == "" ? _trendMenuSelect : _trendMenuHide );
+		          }
+		    }
+    		,{ text:"Criteria Title"   , width:450 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
+    		   ,onRender: function(d){
+    		        if(d){
+    		            return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" value="'+ d.criteria_title +'" style="text-align: left;'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';   
+    		        } else return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" style="text-align: left;">';   
     		    }
-    
-        		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
-        		,{ text:"" ,width:35 , style:"text-align:left;"
-        		        ,onRender   :   function(d){
-        		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
-        		            return (d !==null ? _link : "" );
-        		        }
-        		}
-        		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ 
-        		        this.addClass(gClsMma);
-                        var _mouseMoveEvent = "onmouseover='mouseoverCriteria(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
-        		        var _image1       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
-        		        if(svn(d,"pcriteria_id"))
-        		            return "";
-        		        else if(d !==null)
-        		            return _image1;
-        		        else 
-        		            return "";
-        		    }
-        		}	 	 	
-        		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
-        		    ,onRender : function(d){ 
-        		        this.addClass(gClsMma);
-                        var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
-        		        var _image2         = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
-        		        if(svn(d,"pcriteria_id"))
-        		            return "";
-        		        else if(d !==null)
-        		            return _image2;
-        		        else 
-        		            return "";
-        		    }
-        		}	 	 	
-                ,{ text:"" ,width:35 , style:"text-align:left;"
+    		}	 	 
+    		
+    		,{ text:"Group Criteria"    , width:150    , style:"text-align:center;"    
+		            ,onRender   :   function(d){ 
+		                    return bs({name:"pcriteria_id", type:"select", value: svn(d,"pcriteria_id")});
+		          }
+		    }
+
+    		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
+    		,{ text:"" ,width:35 , style:"text-align:left;"
     		        ,onRender   :   function(d){
-    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalChart(\""+ svn(d,"criteria_id") +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-chart-bar'></i> </a>";
+    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
     		            return (d !==null ? _link : "" );
     		        }
-        		}
+    		}
+    		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
+    		    ,onRender : function(d){ 
+    		        this.addClass(gClsMma);
+                    var _mouseMoveEvent = "onmouseover='mouseoverCriteria(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
+    		        var _image1       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+    		        if(svn(d,"pcriteria_id"))
+    		            return "";
+    		        else if(d !==null)
+    		            return _image1;
+    		        else 
+    		            return "";
+    		    }
+    		}	 	 	
+    		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
+    		    ,onRender : function(d){ 
+    		        this.addClass(gClsMma);
+                    var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
+    		        var _image2         = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
+    		        if(svn(d,"pcriteria_id"))
+    		            return "";
+    		        else if(d !==null)
+    		            return _image2;
+    		        else 
+    		            return "";
+    		    }
+    		}	 	 	
+            ,{ text:"" ,width:35 , style:"text-align:left;"
+		        ,onRender   :   function(d){
+		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalChart(\""+ svn(d,"criteria_id") +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-chart-bar'></i> </a>";
+		            return (d !==null ? _link : "" );
+		        }
+    		}
 
-    	    ]
-      	    ,onComplete : function(){
-                $("input, select").on("change keyup ", function(){
-                    $(this).closest(".zRow").find("#is_edited").val("Y");
-                });  
-                this.data("menuId",menuId);
-                this.data("specsId",specsId);
-            
-                $.each( $("[name='criteria_id'") ,function(){
-                    var _$select = $(this).closest(".zRow").find("select[name='pcriteria_id']");
-                    _$select.dataBind({
-                        //url: execURL + "criteria_group_sel" + (this.value ? " @criteria_id=" + this.value : "")  
-                              sqlCode       : "C11"
-                            , parameters    : {criteria_id : this.value}
-                            , text          : "criteria_title"
-                            , value         : "criteria_id"
-                    });
-
-
+	    ]
+  	    ,onComplete : function(){
+            $("input, select").on("change keyup ", function(){
+                $(this).closest(".zRow").find("#is_edited").val("Y");
+            });  
+            this.data("menuId",menuId);
+            this.data("specsId",specsId);
+            this.find("select[name='trend_menu_id']").dataBind({
+                 url    : execURL + "trend_menus_dd_sel"
+                ,text   : "menu_name"
+                ,value  : "menu_id"
+            });    
+      
+            $.each( $("[name='criteria_id'") ,function(){
+                var _$select = $(this).closest(".zRow").find("select[name='pcriteria_id']");
+                _$select.dataBind({
+                          sqlCode       : "C11"
+                        , parameters    : {criteria_id : this.value}
+                        , text          : "criteria_title"
+                        , value         : "criteria_id"
                 });
-    
-    	    }
-    
-        });
-     
+            });
+	    }
+    });
 }
 
 function showModalCriteriaColumns(criteriaId,specsId,name) {
@@ -745,40 +743,47 @@ function showModalCriteriaColumns(criteriaId,specsId,name) {
 
 }  
 
+function showModalCriteriaColumnValues(colName,criteriaColId) {
+    g$mdl = $("#" + modalCriteriaColumnValues); 
+    g$mdl.find(".modal-title").text("Criteria Column Values  » " + colName ) ;
+    g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
+    displayCriteriaColumnValues(colName,criteriaColId);
+
+}  
+
 function displayCriteriaColumns(criteriaId,specsId){
     $("#gridCriteriaColumns").dataBind({
          sqlCode        : "C9"
-        ,parameters     : {
-                            criteria_id : criteriaId 
-                        }
-        ,width          : 950
+        ,parameters     : { criteria_id : criteriaId }
+        ,width          : $("#frm_modalCriteriaColums").width() - 80
 	    ,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
-    		 { text: "Column Name"   , width:250 , style:"text-align:left;" 
-    		     ,onRender : function(d){return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
+    		 { text: "Column Name"              , width:250     , style:"text-align:left;" 
+    		     ,onRender : function(d){
+    		         return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
     		                                +   bs({name:"criteria_id"  ,type:"hidden",value: criteriaId })
     		                                +   bs({name:"is_edited",type:"hidden" })
     		                                +   bs({name:"column_name"  ,type:"select",value: svn(d,"column_name") });
     		                               
     		        }
     		 }
-    		 ,{ text: "Alias Name" ,  width:125, style:"text-align:left;" 
+    		 ,{ text: "Alias Name"              ,  width:125    , style:"text-align:left;" 
     		     ,onRender: function(d){
     		         return bs({name:"alias_name",  type:"input", value: svn(d,"alias_name")});
     		     }
     		 }
-    		 ,{ text: "Operator Name" ,  width:125, style:"text-align:left;" 
+    		 ,{ text: "Operator Name"           ,  width:125    , style:"text-align:left;" 
     		     ,onRender: function(d){
     		         return bs({name:"operator_value",  type:"select", value: svn(d,"operator_value")});
     		     }
     		 }
-    		 ,{ text: "List Values"              ,width:80      , style:"text-align:center;"
+    		 ,{ text: "List Values"             ,width:80      , style:"text-align:center;"
     		        ,onRender   :   function(d){
-                       return "<span class='lst-icon'> &nbsp;<span>";
-        	        }
+    		           return "<span class='lst-icon'> &nbsp;<span>";
+                    }
     		  }
-    		 ,{ text: "Column Value1"     , width:130           , style:"text-align:left;" 
+    		 ,{ text: "Column Value1"           , width:130     , style:"text-align:left;" 
     		     ,onRender : function(d){
     		         if(svn(d,"operator_value") === ""){
     		           return bs({name:"column_value"      , type:"select" , value: svn(d,"column_value") ,class:"hide"});   
@@ -788,34 +793,42 @@ function displayCriteriaColumns(criteriaId,specsId){
     		         } 
     		     }
     		 }
-    		 ,{ text: "Column Value2"     , width:130          , style:"text-align:left;"  
+    		 ,{ text: "Column Value2"           , width:130     , style:"text-align:left;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value2"    , type:"select" , value: svn(d,"column_value2")}); 
     		     }
     		     
     		 }
-    		 ,{ text: "Column Value3"     , width:130           , style:"text-align:left;"  
+    		 ,{ text: "Column Value3"           , width:130     , style:"text-align:left;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value3"    , type:"input" , value: svn(d,"column_value3")}); 
     		     }
     		     
     		 }
-    		 ,{ text: "Math Function"     , width:100           , style:"text-align:left;"  
+    		 ,{ text: "Math Function"           , width:100     , style:"text-align:left;"  
     		     ,onRender : function(d){
     		         return bs({name:"math_function"    , type:"select" , value: svn(d,"math_function")}); 
     		     }
     		     
     		 }
-    		 ,{ text: "Math Function2"     , width:105          , style:"text-align:left;"  
-    		     ,onRender : function(d){
-    		         return bs({name:"math_function2"    , type:"select" , value: svn(d,"math_function2")}); 
+    		 ,{ text: "Is Output?"          , name:"is_output"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align:center;" }
+    		 ,{ text: "Remove Duplicate"    , name:"remove_dup"         , type:"yesno"   , defaultValue:"Y"  , width:180   , style:"text-align:left;"   }
+    		 ,{ text: "Is From To"          , name:"is_fromto"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align:center;" }
+    		 ,{ text: "Logical Operator"    , width:130                 , style:"text-align:left;"                 
+    		     ,onRender: function(d){
+    		         return bs({ name:"logical_operator"   , type:"select" , value: svn(d,"logical_operator")})
     		     }
-    		     
     		 }
-    		 ,{ text: "Is Output?"      , name:"is_output"     , type:"yesno"   , defaultValue:"Y"  , width:100 , style:"text-align:center;" }
+    		 ,{ text: "Color Preference"    , width:180                 , style:"text-align:center;" 
+    		     ,onRender: function(d){
+    		        return bs({name:"color_pref"    , type:"select" , value: svn(d,"color_pref")}); 
+    		     }
+    		 }
+
 	    ]
 	    ,onComplete : function(){
-            var _this = this
+	        var  _this = this
+	            ,_zRow = this.find(".zRow")
                 ,_setDdlvalues = function($zRow,harnessName){
                         if(harnessName === "") return;
                         $zRow.find("select[name='column_value']").dataBind({
@@ -866,20 +879,35 @@ function displayCriteriaColumns(criteriaId,specsId){
                         });  
 	            }
                 ,_displayListIcon   = function($zRow,value){
-                    var _link = (value =="IN" ?  gtw.new().inList({p1: $zRow.find("#column_name").val() , p2: $zRow.find("#criteria_column_id").val() }).html() :"");
+                    var _colName = $zRow.find("#column_name").val();
+                    var _criteriaColId = $zRow.find("#criteria_column_id").val();
+                    console.log("_colName",_colName);
+                    var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\");'  ><i class='fas fa-link'></i> </a>";
+                    var _link = (value =="IN" ?  _href : "");
+                   // var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues("{{p1}}","{{p2}}");' ><i class='fas fa-link'></i></a>"
+                    //var _link = (value =="IN" ?  gtw.new().inList({p1: $zRow.find("#column_name").val() , p2: $zRow.find("#criteria_column_id").val() }).html() :"");
                     $zRow.find(".lst-icon").html(_link);
                 }
 	        ;
-	        
+
 	        _this.data("criteriaId", criteriaId);
-             _this.data("specsId",specsId);
+            _this.data("specsId",specsId);
             _this.find("input, select").on("change keyup ", function(){
                 $(this).closest(".zRow").find("#is_edited").val("Y");
             }); 
 
-	        var _zRow = this.find(".zRow");
-
-            
+            _this.find("select[name='logical_operator']").fillSelect({data : 
+                [  {text : "AND", value : "AND"}
+                  ,{text : "OR" , value : "OR"}
+                ]
+            });
+	       
+	        _this.find("select[name='color_pref']").dataBind({
+                 url    : execURL + "color_references_sel"
+                ,text   : "color_name"
+                ,value  : "color_id"
+            });   
+           
             _this.find("select[name='column_name']").dataBind({
                  url            : execURL + "reference_table_columns_sel @specs_id=" + specsId  
                 ,text           : "table_column_name"
@@ -898,7 +926,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                         _setDdlvalues(_zRow , _$self.val());
                 }
             }); 
-
+           
             _this.find("select[name='operator_value']").dataBind({
                  url: execURL + "operators_sel"
                 ,text: "operator_name"
@@ -934,30 +962,26 @@ function displayCriteriaColumns(criteriaId,specsId){
 
     	
 	         $("select[name='math_function']").dataBind( "mathfunction");        
-	         $("select[name='math_function2']").dataBind( "mathfunction");        
+	         //$("select[name='math_function2']").dataBind( "mathfunction");        
 	    }
     });    
 }  
 
 function displayCriteriaColumnValues(colName,criteriaColId){
-    $(".colval").show();
     $("#gridCriteriaColumnValues").dataBind({
          sqlCode        : "C7"
-        ,parameters     : {
-                            criteria_column_id : criteriaColId
-                        }
+        ,parameters     : { criteria_column_id : criteriaColId}
         ,width          : 350
-	    ,height         : 400
+	    //,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
     		 { text:   "Attribute Value"    , width:300  , style:"text-align:left;"   
-    		     ,onRender : function(d){
-    		         console.log("d",d);
-                                 return bs({name:"criteria_column_value_id"  ,type:"hidden",value: svn(d,"criteria_column_value_id")})
-    		                                +   bs({name:"criteria_column_id"  ,type:"hidden",value: criteriaColId })
-    		                                +   bs({name:"is_edited",type:"hidden" })
-                                            +   bs({name:"attribute_value"    , type:"select" , value: svn(d,"attribute_value")}); 
-                            }             
+    		    ,onRender : function(d){
+                     return bs({name:"criteria_column_value_id"  ,type:"hidden",value: svn(d,"criteria_column_value_id")})
+                        +   bs({name:"criteria_column_id"  ,type:"hidden",value: criteriaColId })
+                        +   bs({name:"is_edited",type:"hidden" })
+                        +   bs({name:"attribute_value"    , type:"select" , value: svn(d,"attribute_value")}); 
+                }             
     		 }	 
 
 	    ]
@@ -992,6 +1016,18 @@ function submitData1(){
         });
 }   
 
+function submitData2(){
+    var _$grid = $("#gridCriteriaColumnValues");
+        _$grid.jsonSubmit({
+             procedure: "criteria_column_values_upd"
+            ,onComplete: function (data) {
+            if(data.isSuccess===true) zsi.form.showAlert("alert");
+            displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
+            $("#frm_modalWindowCriteriaColumnValues").find(".close").click();
+            }
+        });
+}    
+
 $("#btnSave").click(function () {
     var _$grid = $("#gridCriteria");
         _$grid.jsonSubmit({
@@ -1004,17 +1040,6 @@ $("#btnSave").click(function () {
             }
         });
 });
-
-function submitData2(){
-    var _$grid = $("#gridCriteriaColumnValues");
-        _$grid.jsonSubmit({
-             procedure: "criteria_column_values_upd"
-            ,onComplete: function (data) {
-            if(data.isSuccess===true) zsi.form.showAlert("alert");
-            displayCriteriaColumnValues(_$grid.data("colName"),_$grid.data("criteriaColId"));
-            }
-        });
-}                      
 
 // ---------------------------------- CHART ----------------------------------------//
 
@@ -3613,4 +3638,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-         
+          

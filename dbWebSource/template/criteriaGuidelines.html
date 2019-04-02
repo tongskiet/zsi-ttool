@@ -112,10 +112,16 @@
     <li name="formButton">
         
     </li>
-    <li name="inList">
-        <a href='javascript:void(0);' class='btn btn-sm'  onclick='displayCriteriaColumnValues("{{p1}}","{{p2}}");' >
+    <li name="modalInList">
+       <!-- <a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues("{{p1}}","{{p2}}");' >
     	    <i class='fas fa-link'></i>
-    	</a>
+    	</a>-->
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+                <div id="{{gridCricolVal}}" class="zGrid"> </div>
+                <button type="button" onclick="{{saveCriColVal}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+            </div>
+        </div>
     </li>
     <li name="chartDiv">
         <div id="{{id}}">
