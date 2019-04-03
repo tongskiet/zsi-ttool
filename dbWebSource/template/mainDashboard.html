@@ -13,8 +13,9 @@
         background-color: rgba(0,0,0,.03);
     }
     #chart_map {
-        max-height: 400px;
+        min-height: 400px;
         height: 100vh;
+        margin-top: -13vh;
         background-color: #30303d; 
         color: #fff;
     }
@@ -22,39 +23,39 @@
 
 <div class="zPanel">
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="input-group ">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                              <input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year"> 
-                              <span class="pl-1">Include Current Year</span>
-                            </div>
-                        </div>
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">No. of Years :</span>
-                        </div>
-                        <input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years">
+        <!--<div class="col-12">-->
+        <!--    <div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">-->
+        <!--        <div class="btn-toolbar mb-2 mb-md-0">-->
+        <!--            <div class="input-group ">-->
+        <!--                <div class="input-group-prepend">-->
+        <!--                    <div class="input-group-text">-->
+        <!--                      <input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year"> -->
+        <!--                      <span class="pl-1">Include Current Year</span>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div class="input-group-prepend">-->
+        <!--                    <span class="input-group-text">No. of Years :</span>-->
+        <!--                </div>-->
+        <!--                <input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years">-->
                         
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Chart Type :</span>
-                        </div>
-                        <select class="custom-select" id="chart_type">
-                            <option selected>Choose...</option>
-                            <option value="Pie Chart">Pie Chart</option>
-                            <option value="Bar Graph" selected>Bar Graph</option>
-                        </select>
-                        <div class="input-group-append">
-                            <button class="btn btn-dark" type="button" id="btnSearch">Go</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!--                <div class="input-group-prepend">-->
+        <!--                    <span class="input-group-text">Chart Type :</span>-->
+        <!--                </div>-->
+        <!--                <select class="custom-select" id="chart_type">-->
+        <!--                    <option selected>Choose...</option>-->
+        <!--                    <option value="Pie Chart">Pie Chart</option>-->
+        <!--                    <option value="Bar Graph" selected>Bar Graph</option>-->
+        <!--                </select>-->
+        <!--                <div class="input-group-append">-->
+        <!--                    <button class="btn btn-dark" type="button" id="btnSearch">Go</button>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--    </div>-->
+        <!--</div>-->
         <div class="col-12">
-            <div id="chart_map" class="mb-1"></div>
-            <div id="chart_container"></div>
+            <div id="chart_map"></div>
+            <!--<div id="chart_container"></div>-->
         </div>
     </div>
  </div>

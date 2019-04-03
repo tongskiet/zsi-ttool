@@ -23,8 +23,11 @@ var gPrmReportTypeId = "";
 var gTW;
 var gMYRange = "";
 
+var gRegionNames = [];
+var gModelYears = [];
+
 zsi.ready(function(){
-    gTW = new zsi.easyJsTemplateWriter("#chart_container");
+    gTW = new zsi.easyJsTemplateWriter("#chart_map");
     
     getAllWires(function(){
         getMYRange();
@@ -32,16 +35,16 @@ zsi.ready(function(){
         am4core.unuseTheme(am4themes_dark); 
         am4core.useTheme(am4themes_animated); //Initialized amchart Theme
         
-        displayChartWireSummary();
+        //displayChartWireSummary();
         
         //getSmallWires(function(){
             
-            displayChartSmallWires();
+            //displayChartSmallWires();
             
             //getDataSmallWires(function(){    
-                getSmallWires(function(){ //getDataSmallWiresDtl(function(){
-                  displayChartSmallWiresDtl();
-                });
+                // getSmallWires(function(){ //getDataSmallWiresDtl(function(){
+                //   displayChartSmallWiresDtl();
+                // });
             //});
         //});
     });
@@ -73,7 +76,7 @@ zsi.ready(function(){
         }else{
             $("#chart_container").empty();
             
-            getAllWires(function(){
+            (function(){
                 getMYRange();
                 displaySWMap();
                 am4core.unuseTheme(am4themes_dark); 
@@ -107,7 +110,7 @@ function getData(obj, callback){
             _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
         }
         
-        $.get(execURL + "dynamic_wires_usage_summary @byRegion='"+ _byregion +"',@byMY='"+ _byModelYear +"',@criteria_id="+ _criteriaID +",@report_type_id=" + _reportTypeID + _param
+        $.get(execURL + "dynamic_wires_usage_summary @byRegion='"+ _byregion +"',@byMY='"+ _byModelYear +"',@criteria_id=" +  _criteriaID//+",@report_type_id=" + _reportTypeID + _param
         , function(data){
             var dataRows = [];
             if(data.rows.length > 0){
@@ -126,6 +129,42 @@ function getDataAll(callback){
         reportTypeId: gPrmReportTypeId
     }, function(all){
         gAll = all;
+    
+        gRegionNames = gAll.groupBy(["region"]);
+        gModelYears = gAll.groupBy(["model_year"]);
+
+        //sort by name
+        if(gRegionNames.length > 0){
+            gRegionNames.sort(function(a, b) {
+              var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+              var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+            
+              // names must be equal
+              return 0;
+            });
+        }
+        //sort by name
+        if(gModelYears.length > 0){
+            gModelYears.sort(function(a, b) {
+              var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+              var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+            
+              // names must be equal
+              return 0;
+            });
+        }
         
         if(callback) callback(all);
     });
@@ -161,12 +200,14 @@ function getAllWires(callback){
     gPrmCriteriaId = 7;
     gPrmReportTypeId = 1;
     
-    getDataByRegion(function(){
-        getDataByModelYear(function(){
-            getDataAll(function(){
-                if(callback) callback();
-            });
-        });
+    getDataAll(function(){
+        if(callback) callback();
+    //     getDataByRegion(function(){
+    //     getDataByModelYear(function(){
+    //         getDataAll(function(){
+    //             if(callback) callback();
+    //         });
+    //     });
     });
 }
 
@@ -483,6 +524,10 @@ function getMYRange(){
 
 // ---------------------- All Wires --------------------------//
 function displaySWMap(){
+    // console.log("gAll", gAll);
+    // console.log("gRegionNames", gRegionNames);
+    // console.log("gModelYears", gModelYears);
+    
     am4core.useTheme(am4themes_dark);
     
     var chart = am4core.create("chart_map", am4maps.MapChart);
@@ -608,56 +653,64 @@ function displaySWMap(){
     
     var pieSeriesTemplate = pieChartTemplate.series.push(new am4charts.PieSeries);
     pieSeriesTemplate.dataFields.category = "MODEL_YEAR";
-    pieSeriesTemplate.dataFields.value = "total_wire_count";
+    pieSeriesTemplate.dataFields.value = "wire_count";
     pieSeriesTemplate.labels.template.disabled = true;
     pieSeriesTemplate.ticks.template.disabled = true;
     
     // Put a thick white border around each Slice
     pieSeriesTemplate.slices.template.stroke = am4core.color("#ffffff");
-    pieSeriesTemplate.slices.template.strokeWidth = 2;
+    pieSeriesTemplate.slices.template.strokeWidth = 1;
     pieSeriesTemplate.slices.template.strokeOpacity = 0.3;
     pieSeriesTemplate.slices.template.tooltipText = "[bold]{category}[/]: {value.percent.formatNumber('#.0')}% ({value.value.formatNumber('#,###')})";
     
     // Set Pie Chart data
-    var _data = $.each(gAll.groupBy(["REGION_NAME"]), function(i, v) {
-        if( v.name==="Asia Pacific" ){
+    var _data = $.each(gAll.groupBy(["region"]), function(i, v) {
+        var _region = $.trim(v.name);
+        var _items = [];
+  
+        if( _region==="Asia Pacific" ){
             v.latitude = 47.212106;
             v.longitude = 103.183594;
-            v.width = 100;
-            v.height = 100;
+            v.width = 130;
+            v.height = 130;
         }
         
-        if( v.name==="Europe" ){
+        if( _region==="Europe" ){
             v.latitude = 50.896104;
             v.longitude = 19.160156;
-            v.width = 90;
-            v.height = 90;
-        }
-        
-        if( v.name==="North America" ){
-            v.latitude = 39.563353;
-            v.longitude = -99.316406;
             v.width = 120;
             v.height = 120;
         }
         
-        gByModelYear.forEach(function(o) {
-            var res = v.items.filter(function (item) {
-            	return item.MODEL_YEAR == o.MODEL_YEAR;
+        if( _region==="North America" ){
+            v.latitude = 39.563353;
+            v.longitude = -99.316406;
+            v.width = 150;
+            v.height = 150;
+        }
+
+        $.each(gModelYears, function(x, my) {
+            var _count = 0;
+            var _my = my.name;
+            var _res = v.items.filter(function (item) {
+            	return item.model_year == _my;
             });
             
-            if(!res.length){
-                v.items.push({
-                    REGION_NAME: v.name,
-                    MODEL_YEAR: o.MODEL_YEAR,
-                    total_big_wires: 0,
-                    total_small_wires: 0,
-                    total_wire_count: 0
-                });
-            }
+             _count = _res.reduce(function (accumulator, currentValue) {
+                return accumulator + currentValue.wire_count;
+            }, 0);
+
+            _items.push({
+                MODEL_YEAR: _my,
+                wire_count: _count
+            });
         });
+        v.items = []
+        v.items = _items;
+        
         return v;
     });
+    //console.log("_data", _data);
     
     pieSeries.data = _data;
     
@@ -2140,4 +2193,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-               
+                 

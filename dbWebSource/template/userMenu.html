@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="../Stickem/screen.css">
 <style>
 
 .tt-menu a:hover{
@@ -85,6 +84,7 @@
 }
 .cursorContextMenu{
     cursor: context-menu;
+    display: block;
 }
 .menuMargin{
     margin: 8px 8px 8px 7px;
@@ -129,6 +129,18 @@
     width: 100%;
     max-height: 100%;
 }
+
+    .container {
+    border: 1px solid red;
+}
+
+.manual_spacer {
+    background: red;
+    padding: 10px;
+}
+/*--- Chart Fix--*/
+
+
 
 /* ---------END CHART STYLE--------- */
 
@@ -179,8 +191,8 @@
 		</div>
     </li>
     <li name="usersMenuGraph">
-        <div class="userForm d-flex stickem-container">
-            <div class="imageHolder stickem">
+        <div class="userForm d-flex">
+            <div class="imageHolder">
         	    <div class="users-menu-item menuMargin">
         	        <a class="cursorContextMenu" href="{{link}}" onClick="{{onClick}}">
         	            <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}">
@@ -194,7 +206,7 @@
     </li>
     <li name="chart">
         <div class="card rounded-0 border-0 {{card_class}}" id="{{card_id}}">
-            <div class="card-header rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
+            <div class="card-header bg-dark text-white rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
             <div class="card-body p-0 mt-1">
                 <div class="{{body_class}}" id="{{body_id}}"></div>  
             </div>
@@ -267,7 +279,7 @@
     </li>
 </ul>
 
-<script src="../Stickem/jquery.stickem.js"></script>
+<script src="../Scripts/jquery.sticky-kit.min.js"></script>
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>
 <script src="../amcharts4/maps.js"></script>
@@ -278,5 +290,3 @@
 <script src="../amcharts4/geodata/region/world/asiaLow.js"></script>    
 <script src="../amcharts4/geodata/region/world/europeLow.js"></script>    
 <script src="../amcharts4/geodata/region/world/northAmericaLow.js"></script>   
-
-
