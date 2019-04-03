@@ -255,7 +255,6 @@ function displayRecordsMech(){
                             }
         		  	        else{
                                 $(".criteria").hide();
-                               //$("#gridCriteria").find(".zRows").html("");
                             }
         		        });
                         return  bs({name:"menu_id" ,type:"hidden" ,value:svn(d,"menu_id") })
@@ -671,8 +670,9 @@ function displayCriteria(menuId,specsId){
     		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
     		,{ text:"" ,width:35 , style:"text-align:left;"
     		        ,onRender   :   function(d){
+    		            var _pcriteriaId = svn(d,"pcriteria_id");
     		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
-    		            return (d !==null ? _link : "" );
+    		            return (d !==null && _pcriteriaId !== "" ? _link : "" );
     		        }
     		}
     		,{ text:"Image 1"      , width:100     , style:"text-align:center;" 
@@ -761,6 +761,7 @@ function displayCriteriaColumns(criteriaId,specsId){
         ,dataRows       :[
     		 { text: "Column Name"              , width:250     , style:"text-align:left;" 
     		     ,onRender : function(d){
+    		         console.log("colname",svn(d,"column_name"));
     		         return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
     		                                +   bs({name:"criteria_id"  ,type:"hidden",value: criteriaId })
     		                                +   bs({name:"is_edited",type:"hidden" })
@@ -783,7 +784,7 @@ function displayCriteriaColumns(criteriaId,specsId){
     		           return "<span class='lst-icon'> &nbsp;<span>";
                     }
     		  }
-    		 ,{ text: "Column Value1"           , width:130     , style:"text-align:left;" 
+    		 ,{ text: "Column Value1"           , width:130     , style:"text-align-last:center;" 
     		     ,onRender : function(d){
     		         if(svn(d,"operator_value") === ""){
     		           return bs({name:"column_value"      , type:"select" , value: svn(d,"column_value") ,class:"hide"});   
@@ -793,13 +794,13 @@ function displayCriteriaColumns(criteriaId,specsId){
     		         } 
     		     }
     		 }
-    		 ,{ text: "Column Value2"           , width:130     , style:"text-align:left;"  
+    		 ,{ text: "Column Value2"           , width:130     , style:"text-align-last:center;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value2"    , type:"select" , value: svn(d,"column_value2")}); 
     		     }
     		     
     		 }
-    		 ,{ text: "Column Value3"           , width:130     , style:"text-align:left;"  
+    		 ,{ text: "Column Value3"           , width:130     , style:"text-align-last:center;"  
     		     ,onRender : function(d){
     		         return bs({name:"column_value3"    , type:"input" , value: svn(d,"column_value3")}); 
     		     }
@@ -811,15 +812,15 @@ function displayCriteriaColumns(criteriaId,specsId){
     		     }
     		     
     		 }
-    		 ,{ text: "Is Output?"          , name:"is_output"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align:center;" }
-    		 ,{ text: "Remove Duplicate"    , name:"remove_dup"         , type:"yesno"   , defaultValue:"Y"  , width:180   , style:"text-align:left;"   }
-    		 ,{ text: "Is From To"          , name:"is_fromto"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align:center;" }
-    		 ,{ text: "Logical Operator"    , width:130                 , style:"text-align:left;"                 
+    		 ,{ text: "Display on Chart"    , name:"is_output"          , type:"yesno"   , defaultValue:"Y"  , width:110   , style:"text-align-last:center;" }
+    		 ,{ text: "Remove Duplicate"    , name:"remove_dup"         , type:"yesno"   , defaultValue:"Y"  , width:125   , style:"text-align-last:center;"   }
+    		 ,{ text: "Is From To"          , name:"is_fromto"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align-last:center;" }
+    		 ,{ text: "Logical Operator"    , width:130                 , style:"text-align-last:center;"                 
     		     ,onRender: function(d){
     		         return bs({ name:"logical_operator"   , type:"select" , value: svn(d,"logical_operator")})
     		     }
     		 }
-    		 ,{ text: "Color Preference"    , width:180                 , style:"text-align:center;" 
+    		 ,{ text: "Color Preference"    , width:180                 , style:"text-align-last:center;" 
     		     ,onRender: function(d){
     		        return bs({name:"color_pref"    , type:"select" , value: svn(d,"color_pref")}); 
     		     }
@@ -881,7 +882,6 @@ function displayCriteriaColumns(criteriaId,specsId){
                 ,_displayListIcon   = function($zRow,value){
                     var _colName = $zRow.find("#column_name").val();
                     var _criteriaColId = $zRow.find("#criteria_column_id").val();
-                    console.log("_colName",_colName);
                     var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\");'  ><i class='fas fa-link'></i> </a>";
                     var _link = (value =="IN" ?  _href : "");
                    // var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues("{{p1}}","{{p2}}");' ><i class='fas fa-link'></i></a>"
@@ -3638,4 +3638,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-          
+           
