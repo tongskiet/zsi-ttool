@@ -97,7 +97,7 @@ function displaySubCategory(sel,menuId, specsId){
   
         if(_result.length === 0){
             displayUserMenus();
-        }else{
+        }else{  
             $(".navbar-nav.users").css("display","none"); // these are the main users menu which i hide temporarily
             //$(".navbar-nav").last().after(function(){
                 $.each(_result, function(){
@@ -120,13 +120,20 @@ function displaySubCategory(sel,menuId, specsId){
                         setChartTemplate(_data, _chartCon);
                     }
                 });
-               
                 //return _tw.html();
-                $(".users-menu-item").stick_in_parent({
-                    //parent: ".userForm",
-                    //spacer: ".manual_spacer"
-                });    
-           // });    
+           // }); 
+           
+           // Show div on scroll
+            $('.aniview').AniView({
+                animateThreshold: 200,
+                scrollPollInterval: 20
+            });
+            
+            // Initialize sticky div
+            $(".users-menu-item").stick_in_parent({
+                //parent: ".userForm",
+                //spacer: ".manual_spacer"
+            });   
         } 
     });
 }   
@@ -4522,4 +4529,4 @@ function displayNewWireTech(criteriaId){
 
 
 
-              
+               

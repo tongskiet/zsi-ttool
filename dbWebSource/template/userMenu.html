@@ -205,7 +205,7 @@
         </div>
     </li>
     <li name="chart">
-        <div class="card rounded-0 border-0 {{card_class}}" id="{{card_id}}">
+        <div class="card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn">
             <div class="card-header bg-dark text-white rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
             <div class="card-body p-0 mt-1">
                 <div class="{{body_class}}" id="{{body_id}}"></div>  
@@ -279,6 +279,7 @@
     </li>
 </ul>
 
+<script src="../Scripts/jquery.aniview.js"></script>
 <script src="../Scripts/jquery.sticky-kit.min.js"></script>
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>

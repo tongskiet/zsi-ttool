@@ -524,28 +524,388 @@ function getMYRange(){
 
 // ---------------------- All Wires --------------------------//
 function displaySWMap(){
-    // console.log("gAll", gAll);
-    // console.log("gRegionNames", gRegionNames);
-    // console.log("gModelYears", gModelYears);
+    //console.log("gAll", gAll);
+    //console.log("gRegionNames", gRegionNames);
+    //console.log("gModelYears", gModelYears);
     
     am4core.useTheme(am4themes_dark);
+    am4core.useTheme(am4themes_animated);
     
+    // Create chart
     var chart = am4core.create("chart_map", am4maps.MapChart);
+    
+    // Set map definition
+    chart.geodata = am4geodata_continentsLow;
+    
+    // Set projection
+    chart.projection = new am4maps.projections.Miller();
+    
+    // // zoomout on background click
+    // // chart.chartContainer.background.events.on("hit", function () { zoomOut() });
+    
+    // var colorSet = new am4core.ColorSet();
+    // // var morphedPolygon;
+    
+    // var groupData = []
+    
+    // $.each(gRegionNames, function(i, v) {
+    //     var _region = $.trim(v.name);
+    //     var _items = [];
+    //     var _color;
+        
+  
+    //     if( _region==="Asia Pacific" ){
+    //         var _asiaData = am4geodata_region_world_asiaLow.features;
+    //             _asiaData.push({ id : "AU"})
+                
+    //         _color = chart.colors.getIndex(0);
+    //         _items = _asiaData;
+    //     }
+        
+    //     if( _region==="Europe" ){
+    //         var _europeAsia = am4geodata_region_world_europeLow.features;
+    //             //_europeAsia.shift();
+    //             console.log(_europeAsia);
+    //         _color = chart.colors.getIndex(2);
+    //         _items = _europeAsia;
+    //     }
+        
+    //     if( _region==="North America" ){
+    //         _color = chart.colors.getIndex(4);
+    //         _items = am4geodata_region_world_northAmericaLow.features;
+              
+    //     }
+        
+    //     groupData.push({
+    //         name: _region,
+    //         color: _color,
+    //         data: _items
+    //     })
+    // });
+    
+    // console.log("groupData",groupData);
+    
+    // // This array will be populated with country IDs to exclude from the world series
+    // var excludedCountries = ["AQ"];
+    
+    // // Create a series for each group, and populate the above array
+    // groupData.forEach(function(group) {
+      
+    //     var series = chart.series.push(new am4maps.MapPolygonSeries());
+    //     series.name = group.name;
+    //     series.useGeodata = true;
+      
+    //     var includedCountries = [];
+        
+    //     group.data.forEach(function(country){
+    //         //console.log(country.id)
+    //         includedCountries.push(country.id);
+    //         excludedCountries.push(country.id);
+    //     });
+    //     series.geodata = includedCountries;
+    //     //series.include = includedCountries;
+    //     series.fill = am4core.color(group.color);
+        
+    //     series.events.on("over", over);
+    //     series.events.on("out", out);
+      
+    //     // By creating a hover state and setting setStateOnChildren to true, when we
+    //     // hover over the series itself, it will trigger the hover SpriteState of all
+    //     // its countries (provided those countries have a hover SpriteState, too!).
+    //     series.setStateOnChildren = true;
+    //     var seriesHoverState = series.states.create("hover");  
+      
+    //     // Country shape properties & behaviors
+    //     var mapPolygonTemplate = series.mapPolygons.template;
+    //     // Instead of our custom title, we could also use {name} which comes from geodata  
+    //     mapPolygonTemplate.fill = am4core.color(group.color);
+    //     mapPolygonTemplate.fillOpacity = 0.5;
+    //     mapPolygonTemplate.nonScalingStroke = true;
+        
+    //     // country area look and behavior
+    //     //mapPolygonTemplate.strokeOpacity = 1;
+    //     // mapPolygonTemplate.stroke = am4core.color("#ffffff");
+    //     // mapPolygonTemplate.fillOpacity = 0.5;
+    //     mapPolygonTemplate.tooltipText = "{series.name}";
+        
+    //     // desaturate filter for countries
+    //     // var desaturateFilter = new am4core.DesaturateFilter();
+    //     // desaturateFilter.saturation = 0.25;
+    //     // mapPolygonTemplate.filters.push(desaturateFilter);
+        
+    //     // take a color from color set
+    //     mapPolygonTemplate.adapter.add("fill", function (fill, target) {
+    //         return colorSet.getIndex(target.dataItem.index + 1);
+    //     })
+        
+    //     // set fillOpacity to 1 when hovered
+    //     var hoverState = mapPolygonTemplate.states.create("hover");
+    //     hoverState.properties.fillOpacity = 1;
+        
+    //     // what to do when country is clicked
+    //     mapPolygonTemplate.events.on("hit", function (event) {
+    //         //selectPolygon(event.target);
+    //         //console.log(event.target);
+    //     })
+      
+    //     // States  
+    //     //var hoverState = mapPolygonTemplate.states.create("hover");
+    //     //hoverState.properties.fill = am4core.color("#CC0000");
+      
+    //     // Tooltip
+    //     //mapPolygonTemplate.tooltipText = "{title} joined EU at {customData}"; // enables tooltip
+    //     // series.tooltip.getFillFromObject = false; // prevents default colorization, which would make all tooltips red on hover
+    //     // series.tooltip.background.fill = am4core.color(group.color);
+      
+    //     // MapPolygonSeries will mutate the data assigned to it, 
+    //     // we make and provide a copy of the original data array to leave it untouched.
+    //     // (This method of copying works only for simple objects, e.g. it will not work
+    //     //  as predictably for deep copying custom Classes.)
+    //     series.data = JSON.parse(JSON.stringify(group.data));
+    // });
+    
+    // // The rest of the world.
+    // var worldSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    // var worldSeriesName = "world";
+    // worldSeries.name = worldSeriesName;
+    // worldSeries.useGeodata = true;
+    // worldSeries.exclude = excludedCountries;
+    // worldSeries.fillOpacity = 0.8;
+    // worldSeries.hiddenInLegend = true;
+    // worldSeries.mapPolygons.template.nonScalingStroke = true;
+    
+    // // This auto-generates a legend according to each series' name and fill
+    // chart.legend = new am4maps.Legend();
+    
+    // // Legend styles
+    // chart.legend.paddingLeft = 27;
+    // chart.legend.paddingRight = 27;
+    // chart.legend.marginBottom = 15;
+    // chart.legend.width = am4core.percent(90);
+    // chart.legend.valign = "bottom";
+    // chart.legend.contentAlign = "left";
+    
+    // // Legend items
+    // chart.legend.itemContainers.template.interactionsEnabled = false;
+    
+    // // Pie chart
+    // var pieChart = chart.seriesContainer.createChild(am4charts.PieChart);
+    // // Set width/heigh of a pie chart for easier positioning only
+    // pieChart.width = 100;
+    // pieChart.height = 100;
+    // pieChart.hidden = true; // can't use visible = false!
+    
+    // // because defauls are 50, and it's not good with small countries
+    // pieChart.chartContainer.minHeight = 1;
+    // pieChart.chartContainer.minWidth = 1;
+    
+    // var pieSeries = pieChart.series.push(new am4charts.PieSeries());
+    // pieSeries.dataFields.value = "value";
+    // pieSeries.dataFields.category = "category";
+    // pieSeries.data = [{ value: 100, category: "First" }, { value: 20, category: "Second" }, { value: 10, category: "Third" }];
+    
+    // var dropShadowFilter = new am4core.DropShadowFilter();
+    // dropShadowFilter.blur = 4;
+    // pieSeries.filters.push(dropShadowFilter);
+    
+    // var sliceTemplate = pieSeries.slices.template;
+    // sliceTemplate.fillOpacity = 1;
+    // sliceTemplate.strokeOpacity = 0;
+    
+    // var activeState = sliceTemplate.states.getKey("active");
+    // activeState.properties.shiftRadius = 0; // no need to pull on click, as country circle under the pie won't make it good
+    
+    // var sliceHoverState = sliceTemplate.states.getKey("hover");
+    // sliceHoverState.properties.shiftRadius = 0; // no need to pull on click, as country circle under the pie won't make it good
+    
+    // // we don't need default pie chart animation, so change defaults
+    // var hiddenState = pieSeries.hiddenState;
+    // hiddenState.properties.startAngle = pieSeries.startAngle;
+    // hiddenState.properties.endAngle = pieSeries.endAngle;
+    // hiddenState.properties.opacity = 0;
+    // hiddenState.properties.visible = false;
+    
+    // // series labels
+    // var labelTemplate = pieSeries.labels.template;
+    // labelTemplate.nonScaling = true;
+    // labelTemplate.fill = am4core.color("#FFFFFF");
+    // labelTemplate.fontSize = 10;
+    // labelTemplate.background = new am4core.RoundedRectangle();
+    // labelTemplate.background.fillOpacity = 0.9;
+    // labelTemplate.padding(4, 9, 4, 9);
+    // labelTemplate.background.fill = am4core.color("#7678a0");
+    
+    // // we need pie series to hide faster to avoid strange pause after country is clicked
+    // pieSeries.hiddenState.transitionDuration = 200;
+    
+    // // country label
+    // var countryLabel = chart.chartContainer.createChild(am4core.Label);
+    // countryLabel.text = "Select a country";
+    // countryLabel.fill = am4core.color("#7678a0");
+    // countryLabel.fontSize = 40;
+    
+    // countryLabel.hiddenState.properties.dy = 1000;
+    // countryLabel.defaultState.properties.dy = 0;
+    // countryLabel.valign = "middle";
+    // countryLabel.align = "right";
+    // countryLabel.paddingRight = 50;
+    // countryLabel.hide(0);
+    // countryLabel.show();
+    
+    // // select polygon
+    // function selectPolygon(polygon) {
+    //     if (morphedPolygon != polygon) {
+    //         var animation = pieSeries.hide();
+    //         if (animation) {
+    //             animation.events.on("animationended", function () {
+    //                 morphToCircle(polygon);
+    //             })
+    //         }
+    //         else {
+    //             morphToCircle(polygon);
+    //         }
+    //     }
+    // }
+    
+    // // fade out all countries except selected
+    // function fadeOut(exceptPolygon) {
+    //     for (var i = 0; i < polygonSeries.mapPolygons.length; i++) {
+    //         var polygon = polygonSeries.mapPolygons.getIndex(i);
+    //         if (polygon != exceptPolygon) {
+    //             polygon.defaultState.properties.fillOpacity = 0.5;
+    //             polygon.animate([{ property: "fillOpacity", to: 0.5 }, { property: "strokeOpacity", to: 1 }], polygon.polygon.morpher.morphDuration);
+    //         }
+    //     }
+    // }
+    
+    // function zoomOut() {
+    //     if (morphedPolygon) {
+    //         pieSeries.hide();
+    //         morphBack();
+    //         fadeOut();
+    //         countryLabel.hide();
+    //         morphedPolygon = undefined;
+    //     }
+    // }
+    
+    // function morphBack() {
+    //     if (morphedPolygon) {
+    //         morphedPolygon.polygon.morpher.morphBack();
+    //         var dsf = morphedPolygon.filters.getIndex(0);
+    //         dsf.animate({ property: "saturation", to: 0.25 }, morphedPolygon.polygon.morpher.morphDuration);
+    //     }
+    // }
+    
+    // function morphToCircle(polygon) {
+    //     var animationDuration = polygon.polygon.morpher.morphDuration;
+    //     // if there is a country already morphed to circle, morph it back
+    //     morphBack();
+    //     // morph polygon to circle
+    //     polygon.toFront();
+    //     polygon.polygon.morpher.morphToSingle = true;
+    //     var morphAnimation = polygon.polygon.morpher.morphToCircle();
+    
+    //     polygon.strokeOpacity = 0; // hide stroke for lines not to cross countries
+    
+    //     polygon.defaultState.properties.fillOpacity = 1;
+    //     polygon.animate({ property: "fillOpacity", to: 1 }, animationDuration);
+    
+    //     // animate desaturate filter
+    //     var filter = polygon.filters.getIndex(0);
+    //     filter.animate({ property: "saturation", to: 1 }, animationDuration);
+    
+    //     // save currently morphed polygon
+    //     morphedPolygon = polygon;
+    
+    //     // fade out all other
+    //     fadeOut(polygon);
+    
+    //     // hide country label
+    //     countryLabel.hide();
+    
+    //     if (morphAnimation) {
+    //         morphAnimation.events.on("animationended", function () {
+    //             zoomToCountry(polygon);
+    //         })
+    //     }
+    //     else {
+    //         zoomToCountry(polygon);
+    //     }
+    // }
+    
+    // function zoomToCountry(polygon) {
+    //     var zoomAnimation = chart.zoomToMapObject(polygon, 2, true);
+    //     if (zoomAnimation) {
+    //         zoomAnimation.events.on("animationended", function () {
+    //             showPieChart(polygon);
+    //         })
+    //     }
+    //     else {
+    //         showPieChart(polygon);
+    //     }
+    // }
+    
+    
+    // function showPieChart(polygon) {
+    //     polygon.polygon.measure();
+    //     var radius = polygon.polygon.measuredWidth / 2 * polygon.globalScale / chart.seriesContainer.scale;
+    //     pieChart.width = radius * 2;
+    //     pieChart.height = radius * 2;
+    //     pieChart.radius = radius;
+    
+    //     var centerPoint = am4core.utils.spritePointToSvg(polygon.polygon.centerPoint, polygon.polygon);
+    //     centerPoint = am4core.utils.svgPointToSprite(centerPoint, chart.seriesContainer);
+    
+    //     pieChart.x = centerPoint.x - radius;
+    //     pieChart.y = centerPoint.y - radius;
+    
+    //     var fill = polygon.fill;
+    //     var desaturated = fill.saturate(0.3);
+    
+    //     for (var i = 0; i < pieSeries.dataItems.length; i++) {
+    //         var dataItem = pieSeries.dataItems.getIndex(i);
+    //         dataItem.value = Math.round(Math.random() * 100);
+    //         dataItem.slice.fill = am4core.color(am4core.colors.interpolate(
+    //             fill.rgb,
+    //             am4core.color("#ffffff").rgb,
+    //             0.2 * i
+    //         ));
+    
+    //         dataItem.label.background.fill = desaturated;
+    //         dataItem.tick.stroke = fill;
+    //     }
+    
+    //     pieSeries.show();
+    //     pieChart.show();
+    
+    //     countryLabel.text = "{name}";
+    //     countryLabel.dataItem = polygon.dataItem;
+    //     countryLabel.fill = desaturated;
+    //     countryLabel.show();
+    // }
+    // *************************************************************************
 
     /* Set map definition */
-    chart.geodata = am4geodata_continentsLow;
+    // chart.geodata = am4geodata_continentsLow;
     // chart.geodata = am4geodata_region_world_asiaLow;
     // chart.geodata = am4geodata_worldLow;
 
-    // Set projection
-    chart.projection = new am4maps.projections.Miller();
-    // chart.projection = new am4maps.projections.Mercator();
+    // // Set projection
+    // chart.projection = new am4maps.projections.Miller();
+    // // chart.projection = new am4maps.projections.Mercator();
     
     // Export
     //chart.exporting.menu = new am4core.ExportMenu();
     
     // Zoom control
     chart.zoomControl = new am4maps.ZoomControl();
+    
+    // // Modify chart's colors
+    // chart.colors.list = [
+    //   am4core.color("#96BDC6"),
+    //   am4core.color("#845EC2"),
+    //   am4core.color("#99C78F")
+    // ];
     
     // Create map polygon series
     var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
@@ -613,6 +973,7 @@ function displaySWMap(){
     var hs = polygonTemplate.states.create("highlight");
     hs.properties.fillOpacity = 1;
     
+    // Create Upper Left Label
     var label = chart.createChild(am4core.Label);
         label.text = gMYRange;
         label.fontSize = 18;
@@ -621,10 +982,8 @@ function displaySWMap(){
         label.x = 20;
         label.y = 20;
     
-    // ----------------------------------------------------------
-    am4core.useTheme(am4themes_animated);
-    
-    // Create an image series that will hold pie charts
+    //----------------------------------------------------------
+    //Create an image series that will hold pie charts
     var pieSeries = chart.series.push(new am4maps.MapImageSeries());
     pieSeries.name = "Toggle Pie Chart";
     pieSeries.hiddenInLegend = true;
@@ -710,11 +1069,10 @@ function displaySWMap(){
         
         return v;
     });
-    //console.log("_data", _data);
     
     pieSeries.data = _data;
-    
-    // Center on Pacic
+    console.log("_data", _data);
+    // Center on Pacific
     //chart.deltaLongitude = -160;
     
     // This auto-generates a legend according to each series' name and fill
@@ -751,78 +1109,6 @@ function displaySWMap(){
         polygon.setState("default");
       });
     }
-   
-    // ------------------------------------------------------
-    // // Create map polygon series
-    // var series1 = chart.series.push(new am4maps.MapPolygonSeries());
-    
-    // // Exclude Antartica
-    // series1.exclude = ["AQ"];
-    
-    // // Make map load polygon (like country names) data from GeoJSON
-    //  series1.name = "Asia Pacific";
-    // series1.useGeodata = true;
-    // //series1.include = am4geodata_worldLow;
-    // series1.mapPolygons.template.tooltipText = "{name}";
-    // series1.mapPolygons.template.fill = am4core.color("#74B266");
-    
-    // // Configure series
-    // // var polygonTemplate = series1.mapPolygons.template;
-    // // polygonTemplate.tooltipText = "{name}";
-    // // polygonTemplate.fill = am4core.color("#74B266");
-    
-    // // Create hover state and set alternative fill color
-    // var hs = series1.mapPolygons.template.states.create("hover");
-    // hs.properties.fill = am4core.color("#367B25");
-    // -----------------------------------------------------
-    /* Northern Europe */
-    // var series1 = chart.series.push(new am4maps.MapPolygonSeries());
-    // series1.name = "Northern Europe";
-    // series1.useGeodata = true;
-    // series1.include = ["FI", "DK", "SE", "NO", "LT", "LV", "EE", "IS"];
-    // series1.mapPolygons.template.tooltipText = "{name}";
-    // series1.mapPolygons.template.fill = am4core.color("#96BDC6");
-    // series1.fill = am4core.color("#96BDC6");
-    
-    // /* Central Europe */
-    // var series2 = chart.series.push(new am4maps.MapPolygonSeries());
-    // series2.name = "Central Europe";
-    // series2.useGeodata = true;
-    // series2.include = ["AT", "CZ", "DE", "HU", "LI", "PL", "SK", "SI", "CH"];
-    // series2.mapPolygons.template.tooltipText = "{name}";
-    // series2.mapPolygons.template.fill = am4core.color("#81968F");
-    // series2.fill = am4core.color("#81968F");
-    
-    // /* Eastern Europe */
-    // var series3 = chart.series.push(new am4maps.MapPolygonSeries());
-    // series3.name = "Eastern Europe";
-    // series3.useGeodata = true;
-    // series3.include = ["MD", "BY", "UA"];
-    // series3.mapPolygons.template.tooltipText = "{name}";
-    // series3.mapPolygons.template.fill = am4core.color("#CFB9A5");
-    // series3.fill = am4core.color("#CFB9A5");
-    
-    // /* Southeast Europe */
-    // var series4 = chart.series.push(new am4maps.MapPolygonSeries());
-    // series4.name = "Southeast Europe";
-    // series4.useGeodata = true;
-    // series4.include = ["AL", "BA", "BG", "HR", "GR", "XK", "MK", "ME", "RO", "RS"];
-    // series4.mapPolygons.template.tooltipText = "{name}";
-    // series4.mapPolygons.template.fill = am4core.color("#E8CCBF");
-    // series4.fill = am4core.color("#E8CCBF");
-    
-    // /* Western Europe */
-    // var series5 = chart.series.push(new am4maps.MapPolygonSeries());
-    // series5.name = "Western Europe";
-    // series5.useGeodata = true;
-    // series5.include = ["BE", "FR", "IE", "IT", "LU", "MC", "NL", "GB", "ES", "PT", "AD"];
-    // series5.mapPolygons.template.tooltipText = "{name}";
-    // series5.mapPolygons.template.fill = am4core.color("#99C78F");
-    // series5.fill = am4core.color("#99C78F");
-    
-    // chart.legend = new am4maps.Legend();
-    // chart.legend.position = "right";
-    // chart.legend.align = "right";
 }
 
 function displayWireSummaryByMYBar(callback){
@@ -2193,4 +2479,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-                 
+                  
