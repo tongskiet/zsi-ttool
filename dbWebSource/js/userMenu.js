@@ -4493,7 +4493,7 @@ function displayNewWireTech(criteriaId){
         range.grid.strokeWidth = 2;
         range.grid.strokeOpacity = 1;
         range.label.inside = true;
-        range.label.text = "Upper Limit";
+        range.label.text = "Upper Weight";
         range.label.fill = range.grid.stroke;
         //range.label.align = "right";
         range.label.verticalCenter = "bottom";
@@ -4504,7 +4504,7 @@ function displayNewWireTech(criteriaId){
         range2.grid.strokeWidth = 2;
         range2.grid.strokeOpacity = 1;
         range2.label.inside = true;
-        range2.label.text = "Lower Limit";
+        range2.label.text = "Lower Weight";
         range2.label.fill = range2.grid.stroke;
         //range2.label.align = "right";
         range2.label.verticalCenter = "bottom";
@@ -4529,4 +4529,4 @@ function displayNewWireTech(criteriaId){
 
 
 
-               
+                
