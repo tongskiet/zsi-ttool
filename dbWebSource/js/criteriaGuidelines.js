@@ -390,9 +390,10 @@ function displayWireGaugeReferences(menuId,specsId){
         ,dataRows       : [
                             {  id:  1  ,groupId: 0      , text  : "<div class='centered'>Wire Gauge </div>"           , style :   "text-align:center;"}	 
             		        ,{ id:  2  ,groupId: 0      , text  : "<div class='centered'>Color</div>"                 , style :   "text-align:left;" }
-            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centered'>JASO</div>"                     , style :   "text-align:center;" }	 
-    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centered'>ISO</div>"                      , style :   "text-align:center;" }	 
-    		                ,{ id:  5  ,groupId: 0      , text  : "<div class='centered'>Combined JASO/ISO</div>"                      , style :   "text-align:center;" }	 
+            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centered'>JASO</div>"                  , style :   "text-align:center;" }	 
+    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centered'>ISO</div>"                   , style :   "text-align:center;" }	 
+    		                ,{ id:  5  ,groupId: 0      , text  : "<div class='centered'>SAE</div>"                   , style :   "text-align:center;" }	 
+    		                ,{ id:  6  ,groupId: 0      , text  : "<div class='centered'>Combined JASO/ISO</div>"     , style :   "text-align:center;" }	 
     		                
     		                ,{  id          : 100
                                 , groupId   : 1    		      
@@ -400,8 +401,8 @@ function displayWireGaugeReferences(menuId,specsId){
             		            , name      : "wire_gauge"  
             		            , type      : "input"           
             		            , width     : 150      
-            		            , style     : "text-align:left;"  
-            		            
+            		            , style     : "text-align:left;" 
+
             		        }
             		        ,{  id          : 101
                                 , groupId   : 2    		      
@@ -414,7 +415,7 @@ function displayWireGaugeReferences(menuId,specsId){
             		        
             		        ,{  id          : 102
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>LL</div>"     
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
             		            , name      : "jaso_lower_limit"  
             		            , type      : "input"           
             		            , width     : 120      
@@ -426,7 +427,7 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 103
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>UL</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , name      : "jaso_upper_limit"  
             		            , type      : "input"           
             		            , width     : 105      
@@ -438,7 +439,7 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 104
                                 , groupId   : 4    		      
-                                , text      : "<div class='centr'>Lower Limit</div>"     
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
             		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
@@ -451,7 +452,7 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 105
                                 , groupId   : 4  		      
-                                , text      : "<div class='centr'>Upper Limit</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , type      : "input"           
             		            , width     : 105      
             		            , style     : "text-align:center;"  
@@ -459,9 +460,33 @@ function displayWireGaugeReferences(menuId,specsId){
     		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
     		                       } 
             		        }
-    		                ,{  id          : 106
+            		        ,{  id          : 102
                                 , groupId   : 5    		      
-                                , text      : "<div class='centr'>Lower Limit</div>"     
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
+            		            , name      : "sae_lower_limit"  
+            		            , type      : "input"           
+            		            , width     : 120      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"jsae_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_lower_limit")});
+    		                        }
+            		            
+            		        }
+            		        ,{  id          : 103
+                                , groupId   : 5    		      
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
+            		            , name      : "sae_upper_limit"  
+            		            , type      : "input"           
+            		            , width     : 105      
+            		            , style     : "text-align:center;"  
+            		            , onRender  :   function(d){ 
+    		                        return  bs({name:"sae_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_upper_limit")});
+    		                        }
+            		            
+            		        }
+    		                ,{  id          : 106
+                                , groupId   : 6    		      
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
             		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
@@ -471,8 +496,8 @@ function displayWireGaugeReferences(menuId,specsId){
             		            
             		        }
             		        ,{  id          : 107
-                                , groupId   : 5  		      
-                                , text      : "<div class='centr'>Upper Limit</div>"     
+                                , groupId   : 6  		      
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , type      : "input"           
             		            , width     : 105      
             		            , style     : "text-align:center;"  
@@ -3638,4 +3663,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-           
+               
