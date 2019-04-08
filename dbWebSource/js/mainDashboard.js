@@ -524,9 +524,9 @@ function getMYRange(){
 
 // ---------------------- All Wires --------------------------//
 function displaySWMap(){
-    //console.log("gAll", gAll);
-    //console.log("gRegionNames", gRegionNames);
-    //console.log("gModelYears", gModelYears);
+    console.log("gAll", gAll);
+    console.log("gRegionNames", gRegionNames);
+    console.log("gModelYears", gModelYears);
     
     am4core.useTheme(am4themes_dark);
     am4core.useTheme(am4themes_animated);
@@ -912,7 +912,7 @@ function displaySWMap(){
     polygonSeries.exclude = ["antarctica"];
     polygonSeries.useGeodata = true;
     polygonSeries.hiddenInLegend = true;
-    polygonSeries.include = ["AU"];
+    //polygonSeries.include = ["AU"];
     // ----------------------------------------------------------
     // Series for Asia map
     var asiaSeries = chart.series.push(new am4maps.MapPolygonSeries());
@@ -945,7 +945,7 @@ function displaySWMap(){
     europeSeries.fill = am4core.color("#845EC2");
     europeSeries.events.on("over", over);
     europeSeries.events.on("out", out);
-    
+      
     var polygonTemplate = europeSeries.mapPolygons.template;
     polygonTemplate.tooltipText = "{series.name}: [bold]{name}[/]";
     polygonTemplate.fill = am4core.color("#845EC2");
@@ -1026,7 +1026,7 @@ function displaySWMap(){
     var _data = $.each(gAll.groupBy(["region"]), function(i, v) {
         var _region = $.trim(v.name);
         var _items = [];
-  
+
         if( _region==="Asia Pacific" ){
             v.latitude = 47.212106;
             v.longitude = 103.183594;
@@ -1047,7 +1047,14 @@ function displaySWMap(){
             v.width = 150;
             v.height = 150;
         }
-
+        
+        if(_region===""){
+            v.latitude = 31.563353;
+            v.longitude = -91.316406;
+            v.width = 10;
+            v.height = 10;
+        }
+        
         $.each(gModelYears, function(x, my) {
             var _count = 0;
             var _my = my.name;
@@ -1066,7 +1073,7 @@ function displaySWMap(){
         });
         v.items = []
         v.items = _items;
-        
+    
         return v;
     });
     
@@ -2479,4 +2486,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-                  
+                   
