@@ -3,6 +3,7 @@ var  svn                        = zsi.setValIfNull
     ,bsButton                   = zsi.bs.button
     ,proc_url                   = base_url + "common/executeproc/"
     ,gMdlId                     = "modalCriteriaColums"
+    ,gMdlRD                     = "modalRemoveDuplicate"
     ,gMdlWGR                    = "modalWireGaugeReferences"
     ,gtw                        = null
     ,g$mdl                      = null
@@ -13,7 +14,7 @@ var  svn                        = zsi.setValIfNull
     ,modalChart                 = "modalWindowChart"
     ,modalCriteriaColumnValues  = "modalWindowCriteriaColumnValues"
     ,gSpecsId                   = ""
-    ,gTimeStamp                 = 0
+    ,gTimeStamp                 = new Date().getTime()
     ,gClsMma                    ="mouse-move-area"
     ,gPrmRegion                 = ""
     ,gPrmNoYears                = ""
@@ -63,6 +64,12 @@ function getTemplates(callback){
         , sizeAttr  : "modal-full"
         , title     : "Criteria Columns"
         , body      : gtw.new().modalBody({gridId1:"gridCriteriaColumns",onClickSave1:"submitData1();"}).html()  
+    })
+    .bsModalBox({
+          id        : gMdlRD
+        , sizeAttr  : "modal-md"
+        , title     : "Remove Duplicate"
+        , body      : gtw.new().modalBodyRD({gridRD:"gridRD",onClickSaveRD:"submitDataRD();"}).html()  
     })
     .bsModalBox({
           id        : gMdlWGR
@@ -382,18 +389,18 @@ function displayWireGaugeReferences(menuId,specsId){
      var rownum=0;
      $("#gridWireGaugeReferences").dataBind({
 	     url            : execURL + "wire_gauge_references_sel"
-	    ,width          : $("#gridWireGaugeReferences").closest(".modal-body").width() 
+	    //,width          : $("#gridWireGaugeReferences").closest(".modal-body").width() 
 	    ,height         : $(document).height() - 200
 	    ,selectorIndex  : 1
 	    ,startGroupId   : 0
         ,blankRowsLimit : 5
         ,dataRows       : [
-                            {  id:  1  ,groupId: 0      , text  : "<div class='centered'>Wire Gauge </div>"           , style :   "text-align:center;"}	 
-            		        ,{ id:  2  ,groupId: 0      , text  : "<div class='centered'>Color</div>"                 , style :   "text-align:left;" }
-            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centered'>JASO</div>"                  , style :   "text-align:center;" }	 
-    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centered'>ISO</div>"                   , style :   "text-align:center;" }	 
-    		                ,{ id:  5  ,groupId: 0      , text  : "<div class='centered'>SAE</div>"                   , style :   "text-align:center;" }	 
-    		                ,{ id:  6  ,groupId: 0      , text  : "<div class='centered'>Combined JASO/ISO</div>"     , style :   "text-align:center;" }	 
+                            {  id:  1  ,groupId: 0      , text  : "Wire Gauge"          }	 
+            		        ,{ id:  2  ,groupId: 0      , text  : "Color"               }
+            		        ,{ id:  3  ,groupId: 0      , text  : "JASO"                }	 
+    		                ,{ id:  4  ,groupId: 0      , text  : "ISO"                 }	 
+    		                ,{ id:  5  ,groupId: 0      , text  : "SAE"                 }	 
+    		                ,{ id:  6  ,groupId: 0      , text  : "Combined JASO/ISO"   }	 
     		                
     		                ,{  id          : 100
                                 , groupId   : 1    		      
@@ -415,10 +422,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        
             		        ,{  id          : 102
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>Lower Dia.</div>"     
+                                , text      : "<div class='centr'>Lower Diameter</div>"     
             		            , name      : "jaso_lower_limit"  
             		            , type      : "input"           
-            		            , width     : 120      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_lower_limit")});
@@ -427,10 +434,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 103
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>Upper Dia.</div>"     
+                                , text      : "<div class='centr'>Upper Diameter</div>"     
             		            , name      : "jaso_upper_limit"  
             		            , type      : "input"           
-            		            , width     : 105      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_upper_limit")});
@@ -439,22 +446,18 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 104
                                 , groupId   : 4    		      
-                                , text      : "<div class='centr'>Lower Dia.</div>"     
-            		            , width     : 105      
+                                , text      : "<div class='centr'>Lower Diameter</div>"     
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
-            		                
-            		                console.log(this);
-    		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_lower_limit")});
+            	                    return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_lower_limit")});
     		                        } 
-            		        
-            		            
             		        }
             		        ,{  id          : 105
                                 , groupId   : 4  		      
-                                , text      : "<div class='centr'>Upper Dia.</div>"     
+                                , text      : "<div class='centr'>Upper Diameter</div>"     
             		            , type      : "input"           
-            		            , width     : 105      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
@@ -462,10 +465,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 102
                                 , groupId   : 5    		      
-                                , text      : "<div class='centr'>Lower Dia.</div>"     
+                                , text      : "<div class='centr'>Lower Diameter</div>"     
             		            , name      : "sae_lower_limit"  
             		            , type      : "input"           
-            		            , width     : 120      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jsae_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_lower_limit")});
@@ -474,10 +477,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 103
                                 , groupId   : 5    		      
-                                , text      : "<div class='centr'>Upper Dia.</div>"     
+                                , text      : "<div class='centr'>Upper Diameter</div>"     
             		            , name      : "sae_upper_limit"  
             		            , type      : "input"           
-            		            , width     : 105      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"sae_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_upper_limit")});
@@ -486,20 +489,18 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
     		                ,{  id          : 106
                                 , groupId   : 6    		      
-                                , text      : "<div class='centr'>Lower Dia.</div>"     
-            		            , width     : 105      
+                                , text      : "<div class='centr'>Lower Diameter</div>"     
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"combined_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_lower_limit")});
     		                        } 
-            		        
-            		            
             		        }
             		        ,{  id          : 107
                                 , groupId   : 6  		      
-                                , text      : "<div class='centr'>Upper Dia.</div>"     
+                                , text      : "<div class='centr'>Upper Diameter</div>"     
             		            , type      : "input"           
-            		            , width     : 105      
+            		            , width     : 140      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"combined_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_upper_limit")})
@@ -559,7 +560,6 @@ function uploadMenuImage(obj){
         //Ajax events
         success: completeHandler = function(data) {
             if(data.isSuccess){
-                console.log("data",data);
                 $.get(base_url  + "sql/exec?p=dbo.trend_menu_image_upd @tren_menu_id=" + _parent_id 
                                 + ",@" + _field_name + "=" + data.image_id 
                                 + ",@user_id=" + userId 
@@ -678,7 +678,7 @@ function displayCriteria(menuId,specsId){
 		                    return (d !== null && svn(d,"pcriteria_id") == "" ? _trendMenuSelect : _trendMenuHide );
 		          }
 		    }
-    		,{ text:"Criteria Title"   , width:450 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
+    		,{ text:"Criteria Title"   , width:420 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
     		   ,onRender: function(d){
     		        if(d){
     		            return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" value="'+ d.criteria_title +'" style="text-align: left;'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';   
@@ -693,10 +693,18 @@ function displayCriteria(menuId,specsId){
 		    }
 
     		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
-    		,{ text:"" ,width:35 , style:"text-align:left;"
+    		,{ text:"CC" ,width:35 , style:"text-align:left;"
     		        ,onRender   :   function(d){
     		            var _pcriteriaId = svn(d,"pcriteria_id");
-    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
+    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm' data-toggle='tooltip' data-placement='left' title='Criteria Columns'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
+    		            //<a href="#" data-toggle="tooltip" title="Hooray!">Hover over me</a>
+    		            return (d !==null && _pcriteriaId !== "" ? _link : "" );
+    		        }
+    		}
+    		,{ text:"RD" ,width:35 , style:"text-align:left;"
+    		        ,onRender   :   function(d){
+    		            var _pcriteriaId = svn(d,"pcriteria_id");
+    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm' data-toggle='tooltip' data-placement='left' title='Remove Duplicate' onclick='showModalRemoveDup(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
     		            return (d !==null && _pcriteriaId !== "" ? _link : "" );
     		        }
     		}
@@ -735,6 +743,7 @@ function displayCriteria(menuId,specsId){
 
 	    ]
   	    ,onComplete : function(){
+  	        this.find('[data-toggle="tooltip"]').tooltip(); 
             $("input, select").on("change keyup ", function(){
                 $(this).closest(".zRow").find("#is_edited").val("Y");
             });  
@@ -765,7 +774,14 @@ function showModalCriteriaColumns(criteriaId,specsId,name) {
     g$mdl.find(".modal-title").text("Criteria Columns  » " + name ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
     displayCriteriaColumns(criteriaId,specsId);
+}  
 
+function showModalRemoveDup(criteriaId,specsId,name) {
+    $(".colval").hide();
+    g$mdl = $("#" + gMdlRD); 
+    g$mdl.find(".modal-title").text("Remove Duplicate  » " + name ) ;
+    g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
+    displayRemoveDuplicate(criteriaId,specsId);
 }  
 
 function showModalCriteriaColumnValues(colName,criteriaColId) {
@@ -786,7 +802,6 @@ function displayCriteriaColumns(criteriaId,specsId){
         ,dataRows       :[
     		 { text: "Column Name"              , width:250     , style:"text-align:left;" 
     		     ,onRender : function(d){
-    		         console.log("colname",svn(d,"column_name"));
     		         return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
     		                                +   bs({name:"criteria_id"  ,type:"hidden",value: criteriaId })
     		                                +   bs({name:"is_edited",type:"hidden" })
@@ -838,7 +853,6 @@ function displayCriteriaColumns(criteriaId,specsId){
     		     
     		 }
     		 ,{ text: "Display on Chart"    , name:"is_output"          , type:"yesno"   , defaultValue:"Y"  , width:110   , style:"text-align-last:center;" }
-    		 ,{ text: "Remove Duplicate"    , name:"remove_dup"         , type:"yesno"   , defaultValue:"Y"  , width:125   , style:"text-align-last:center;"   }
     		 ,{ text: "Is From To"          , name:"is_fromto"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align-last:center;" }
     		 ,{ text: "Logical Operator"    , width:130                 , style:"text-align-last:center;"                 
     		     ,onRender: function(d){
@@ -870,6 +884,9 @@ function displayCriteriaColumns(criteriaId,specsId){
                                         case "IN" :
                                             _$self.css({"display":"none"});
                                             break;
+                                        case "NIN" :
+                                            _$self.css({"display":"none"});
+                                            break;    
                                         case "ISNULL" :
                                             _$self.css({"display":"none"});
                                             break;
@@ -908,9 +925,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                     var _colName = $zRow.find("#column_name").val();
                     var _criteriaColId = $zRow.find("#criteria_column_id").val();
                     var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\");'  ><i class='fas fa-link'></i> </a>";
-                    var _link = (value =="IN" ?  _href : "");
-                   // var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues("{{p1}}","{{p2}}");' ><i class='fas fa-link'></i></a>"
-                    //var _link = (value =="IN" ?  gtw.new().inList({p1: $zRow.find("#column_name").val() , p2: $zRow.find("#criteria_column_id").val() }).html() :"");
+                    var _link = ( (value =="IN" || value =="NIN") ?  _href : "");
                     $zRow.find(".lst-icon").html(_link);
                 }
 	        ;
@@ -965,11 +980,10 @@ function displayCriteriaColumns(criteriaId,specsId){
                     var _$zRow = _$self.closest(".zRow");
                     var _$column_value1 = _$zRow.find("#column_value");
                     var _$column_value2 = _$zRow.find("#column_value2");
-                    //var _optSelVal = _$zRow.find("select[name='operator_value']").attr("selectedvalue");
                     var _optVal = _$zRow.find("select[name='operator_value']").val();
                     
                     //trigger display upon user selection
-                    if( ["IN","ISNULL",""].includes(_optVal) ) 
+                    if( ["IN","NIN","ISNULL",""].includes(_optVal) ) 
                         _$column_value1.css({"display":"none"}); 
                     else 
                         _$column_value1.css({"display":"unset"});
@@ -979,7 +993,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                     else 
                         _$column_value2.css({"display":"unset"});
                     
-                    if(_optVal !== "IN") $(".colval").hide(); 
+                    if(_optVal !== "IN" || _optVal !== "NIN") $(".colval").hide(); 
 
                     _displayListIcon( this.closest(".zRow"), $(this).val() );
                 }
@@ -987,11 +1001,38 @@ function displayCriteriaColumns(criteriaId,specsId){
 
     	
 	         $("select[name='math_function']").dataBind( "mathfunction");        
-	         //$("select[name='math_function2']").dataBind( "mathfunction");        
 	    }
     });    
 }  
 
+function displayRemoveDuplicate(criteriaId,specsId){
+    $("#gridRD").dataBind({
+         sqlCode        : "C102"
+        ,parameters     : { criteria_id : criteriaId}
+        //,width          : 250
+	   // ,height         : 200
+	    ,blankRowsLimit : 5
+        ,dataRows       :[
+    		 { text:   "Column Name"    , width:250  , style:"text-align:left;"   
+    		    ,onRender : function(d){
+                     return bs({name:"criteria_rd_id"   ,type:"hidden"      ,value: svn(d,"criteria_rd_id")})
+                        +   bs({name:"criteria_id"      ,type:"hidden"      ,value: criteriaId })
+                        +   bs({name:"is_edited"        ,type:"hidden" })
+                        +   bs({name:"column_name"      ,type:"select"      ,value: svn(d,"column_name")}); 
+                }             
+    		 }	 
+	    ]
+	    ,onComplete : function(o){
+	        var _zRow = this.find(".zRow")
+             _zRow.find("select[name='column_name']").dataBind({
+                 url            : execURL + "reference_table_columns_sel @specs_id=" + specsId  
+                ,text           : "table_column_name"
+                ,value          : "column_name"
+            }); 
+           
+	    }
+    });        
+}
 function displayCriteriaColumnValues(colName,criteriaColId){
     $("#gridCriteriaColumnValues").dataBind({
          sqlCode        : "C7"
@@ -1035,6 +1076,20 @@ function submitData1(){
                 if(data.isSuccess===true) {
                     zsi.form.showAlert("alert");
                     displayCriteriaColumns(_$grid.data("criteriaId"), _$grid.data("specsId"));
+                }
+            }
+            
+        });
+}   
+
+function submitDataRD(){
+    var _$grid =  $("#gridRD");
+       _$grid.jsonSubmit({
+             procedure: "criteria_rd_columns_upd"
+            ,onComplete: function (data) {
+                if(data.isSuccess===true) {
+                    zsi.form.showAlert("alert");
+                    $("#frm_modalRemoveDuplicate").find(".close").click();
                 }
             }
             
@@ -3663,4 +3718,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-               
+                       
