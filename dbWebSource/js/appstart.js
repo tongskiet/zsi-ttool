@@ -52,32 +52,69 @@ var isMenuItemsSaved = readCookie("isMenuItemsSaved");
 
 $.ajaxSetup({ cache: false });
 
-function displayTrendToolMenus(){
+function toggleMenu(o){
+	var ttmenu = document.querySelector(".tt-menu");
+	if (ttmenu.getAttribute("class").indexOf("show") === -1){
+		ttmenu.classList.add("show");
+
+	}else{
+		ttmenu.classList.remove("show");
+	}
+}
+		
+function displayTrendToolMenus(){ //load Main Menu
 
     var _tw = new zsi.easyJsTemplateWriter();    
+    var _getMenuItems = function(d){
+        var _h = "";
+         $.each(d, function(){
+            _h += _tw.ttStandardMenu({
+                  link      : "#"
+                , imageId1  : this.image2_id 
+                , imageId2  : this.image1_id
+                , label     : this.menu_name.toUpperCase()
+                , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
+                , onClick       : "displayTrendToolSubMenu(this,"+this.menu_id+","+this.specs_id+")"
+            }).html();
+        });
+        return _h;
+    };
 
     $.get(execURL + "trend_menus_sel", function(data){
-
-        d = data.rows;
+        var mnuGrps = data.rows.groupBy(["menu_type"]);
         
-        $(".menu-content").html(function(){
-            $.each(d, function(){
-                _tw.ttStandardMenu({
-                      link      : "#"
-                    , imageId1  : this.image2_id 
-                    , imageId2  : this.image1_id
-                    , label     : this.menu_name.toUpperCase()
-                    , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
-                    // , event     : "onClick"
-                    // , fnc       : "displaySubCategory("+this.menu_id+","+this.specs_id+")"
-                });
-            });
-            return _tw.html();
+        $.each(mnuGrps, function(){
+            var _title =  (this.name.trim() ==="E" ? "ELECTRICAL" : "MECHANICAL");
+            var _h= _tw.ttStandardMenuGroup({
+                          title: _title
+                         ,value: _getMenuItems( this.items)
+                    }).html();
+            
+           $("#topMainMenu").append(_h);
+
         });
 
     });
     
 }
+function displayTrendToolSubMenu(sel,menuId, specsId){ //Sub Menu base on Main Menu
+
+    //console.log("result:", menuId,specsId);
+    var _tw = new zsi.easyJsTemplateWriter(); 
+
+    $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
+        d = data.rows;
+        if(d.length == 0){
+            displayTrendToolMenus()   
+        }
+        else{
+            window.location.href = "/page/userMenu?mId=" + menuId + "&sId=" + specsId;
+        }
+        
+    });
+
+}
+
 
 if(isMenuItemsSaved ==="N"){
     if(isLocalStorageSupport()) localStorage.clear();
@@ -295,4 +332,4 @@ function readCookie(name) {
 function deleteCookie(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
-                                          
+                                                 

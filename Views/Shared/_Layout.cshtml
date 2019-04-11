@@ -22,17 +22,7 @@
         var controller_url = '@this.Context.Request.RequestContext.RouteData.Values["controller"].ToString()';
         @userId
     </script>
-	<script>
-		function toggleMenu(o){
-			var ttmenu = document.querySelector(".tt-menu");
-			if (ttmenu.getAttribute("class").indexOf("show") === -1){
-				ttmenu.classList.add("show");
-
-			}else{
-				ttmenu.classList.remove("show");
-			}
-		}
-	</script>
+ 
 	<style>
 		.ml-auto, .mx-auto {
 			margin-left: auto !important;
@@ -58,46 +48,7 @@
 							<i class="fas fa-bars"></i>
 						</button>
 					</a>
-					<div class="tt-menu dropdown-menu dropdown-menu-left " >
-						<div class="ddmenu-header">
-							ELECTRICAL MENU
-						</div>
-						<div class="menu-content"></div>
-
-						<div class="row menu-filter">
-							<form>
-								<div class="form-group ddrow">
-									<div class="col-5">
-										<label class="text-right">Category :</label>
-									</div>
-									<div class="col-7">
-										<div class="selectWrapper">
-											<select name="per_model_year" class="form-control input-sm" placeholder="Per Model Year">
-												<option></option>
-												<option>Per Model Year</option>
-												<option>Per Region</option>
-											</select>
-										</div>
-									</div>
-								</div>
-								<div class="form-group ddrow">
-									<div class="col-5">
-										<label class="text-right">Graph Type : </label>
-									</div>
-									<div class="col-7">
-										<div class="selectWrapper">
-											<select name="column_graph" class="form-control input-sm" placeholder="Column Graph">
-												<option></option>
-												<option>Line Graph</option>
-												<option>Column Graph</option>
-												<option>Pie Chart</option>
-											</select>
-										</div>
-									</div>
-								</div>
-							</form>
-						</div>
-					</div>
+					<div id="topMainMenu" class="tt-menu dropdown-menu dropdown-menu-left" > </div>
 				</li>
 			</ul>
 		</nav>
@@ -151,6 +102,7 @@
     </div>
     }
  }
+<script src='@Url.Content("~/")Scripts/popper.min.js'></script>
 <script src='@Url.Content("~/")Scripts/bootstrap.min.js'></script>
 <script src='@Url.Content("~/")javascript/name/easyJsTemplateWriter'></script>
 <div class="alert alert-success">
