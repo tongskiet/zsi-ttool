@@ -107,11 +107,17 @@
             </div>
         </div>
     </li> 
-
-
+    <li name="ttStandardMenuGroup">
+        	<div class="groupItems">
+    			<div class="ddmenu-header" id="{{id}}" onclick="{{onclick}}">
+    				{{title}}
+    			</div>
+    			<div class="menu-content" id="{{mID}}">{{{value}}}</div>
+		    </div>
+    </li>
     <li name="ttStandardMenu">
         <div class="menu-item hw">
-                <a href="{{link}}">
+                <a href="{{link}}" onclick='{{onClick}}'>
                     <img class="imgPrime img" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId1}}" />
                     <img class="imgFade img"  src="/file/viewimagedb?sqlcode=t83&imageid={{imageId2}}" />
                     <div class="text"> <span>{{label}} </span></div> 

@@ -1,64 +1,97 @@
-.tt-menu a {
-    margin: 0;
-    padding: 0;
-    border-radius: 5px;
-    background: none;
-    position: relative;
-  }
-  
-  .menu-content {
-    margin: 5px 0 0 0;
-    float: none;
-    overflow: hidden;
-    .hw {
-      width: 90px;
-      height: 90px;
-    }
-    .menu-item {
-      float: left;
-      margin: 0px 0px 5px 6px;
-      overflow: hidden;
-      border-radius: 6px;
-      &:hover .imgFade {
-        opacity: 0;
-        transition: 0.8s;
-      }
-      a {
-        position: relative;
-        text-decoration: none;
-        float: inherit;
-        height: inherit;
-        width: inherit;
-        .img {
-          position: absolute;
-          height: inherit;
-          width: inherit;
-          left: 0;
-          top: 0;
-        }
-        .text {
-          font-size: 0.75em;
-          color: #fff;
-          font-weight: bold;
-          padding-left: 3px;
-          line-height: 13px;
-          padding-top: 2px;
-          display: table-cell;
-          vertical-align: bottom;
-          height: inherit;
-          width: inherit;
-          position: relative;
-          padding-bottom: 3px;
-          opacity: 0;
-          transition: opacity 0.5s;
-        }
-        &:hover .text {
-          opacity: 1;
-        }
-      }
-    }
-  }
-  
-  .dropdown-menu-left {
-    width: 303px !important;
-  }
+$color_1: #fff;
+$background-color_1: #ff0021;
+
+.tt-menu {
+	a {
+		margin: 0;
+		padding: 0;
+		border-radius: 5px;
+		background: none;
+		position: relative;
+	}
+	margin-top: 5px !important;
+}
+.menu-content {
+	margin: 5px 0 0 0;
+	float: none;
+	overflow: hidden;
+	.hw {
+		width: 90px;
+		height: 90px;
+	}
+	.menu-item {
+		float: left;
+		margin: 0px 0px 5px 6px;
+		overflow: hidden;
+		border-radius: 6px;
+		&:hover {
+			.imgFade {
+				opacity: 0;
+				transition: 0.8s;
+			}
+		}
+		a {
+			position: relative;
+			text-decoration: none;
+			float: inherit;
+			height: inherit;
+			width: inherit;
+			.img {
+				position: absolute;
+				height: inherit;
+				width: inherit;
+				left: 0;
+				top: 0;
+			}
+			.text {
+				font-size: 0.75em;
+				color: $color_1;
+				font-weight: bold;
+				padding-left: 3px;
+				line-height: 13px;
+				padding-top: 2px;
+				display: table-cell;
+				vertical-align: bottom;
+				height: inherit;
+				width: inherit;
+				position: relative;
+				padding-bottom: 3px;
+				opacity: 0;
+				transition: opacity 0.5s;
+			}
+			&:hover {
+				.text {
+					opacity: 1;
+				}
+			}
+		}
+	}
+}
+.dropdown-menu-left {
+	width: 303px !important;
+	left: 0;
+	left: auto;
+	border-radius: 0 !important;
+	left: 4px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	width: 300px !important;
+}
+.ddmenu-header {
+	background-color: $background-color_1;
+	color: $color_1;
+	padding: .1rem 1rem;
+	margin-top: 0 !important;
+}
+#electricalMenu {
+	cursor: pointer;
+}
+#mechanicalMenu {
+	cursor: pointer;
+}
+#electricalMenuContent {
+	display: none;
+}
+#mechanicalMenuContent {
+	display: none;
+}
