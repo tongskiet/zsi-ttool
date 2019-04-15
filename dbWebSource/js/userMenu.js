@@ -31,6 +31,20 @@ $(document).ready(function(){
     }else{
          displayUserMenus();
     }
+    
+    // ===== Scroll to Top ==== 
+    $(window).scroll(function() {
+        if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
+            $('#btnGoTop').fadeIn(200);    // Fade in the arrow
+        } else {
+            $('#btnGoTop').fadeOut(200);   // Else fade out the arrow
+        }
+    });
+    $('#btnGoTop').click(function() {      // When arrow is clicked
+        $('body,html').animate({
+            scrollTop : 0                       // Scroll to top of body
+        }, 500);
+    });
 });
 //  function displayUsersMenus(){
 //   var _tw =new zsi.easyJsTemplateWriter();    
@@ -160,7 +174,7 @@ function setChartTemplate(o, div){
         var loadChart = function() {
             
             if (index < o.length) {
-                if(_criteriaId === 7 || _criteriaId === 8 || _criteriaId === 9 || _criteriaId === 10 || _criteriaId === 38 || _criteriaId === 40 || _criteriaId === 41 || _criteriaId === 14 ){
+                if(_criteriaId === 7 || _criteriaId === 8 || _criteriaId === 9 || _criteriaId === 10 || _criteriaId === 38 || _criteriaId === 39 || _criteriaId === 40 || _criteriaId === 41 || _criteriaId === 14 ){
                     gtw = new zsi.easyJsTemplateWriter("#" + _chartBody).new();
                     gtw.chartDiv({ 
                         title: "", 
@@ -169,15 +183,21 @@ function setChartTemplate(o, div){
                         header_class: "d-none",
                         chart_my_id: "chartMY_" + _criteriaId,
                         chart_region_id: "chartRegion_" + _criteriaId,
-                        chart_region_class: ( _criteriaId === 40 ? "d-none" : ""),
+                        chart_region_class: ( _criteriaId === 39 ||  _criteriaId === 40 ? "d-none" : ""),
                         footer_id: "chartTrendResult",
                         footer_class: "d-none"
                     });
                     
                     am4core.useTheme(am4themes_animated);
                    
-                    if(_criteriaId !== 40){
-                        getDataByCriteriaId(_criteriaId, function(){
+                    if(_criteriaId === 39){
+                        displayNewWireTechDimension(_criteriaId);
+                    }
+                    else if(_criteriaId === 40){
+                       displayNewWireTech(_criteriaId);
+                    }
+                    else{
+                       getDataByCriteriaId(_criteriaId, function(){
                             setMYRange();
                             //setPieChartData();
                             //setColumnChartData();
@@ -188,9 +208,6 @@ function setChartTemplate(o, div){
                                 });
                             });
                         });
-                   }
-                   else{
-                       displayNewWireTech(_criteriaId);
                    }
                }
             } 
@@ -4413,7 +4430,7 @@ function displaySWSubDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-//------------------- New Wire Tech ---------------------------------//
+//------------------- New Wire Tech Lesser Weight---------------------------------//
 
 function getDataNewWireTech(callback){
     var _my = new Date().getFullYear() - 2;
@@ -4517,16 +4534,112 @@ function displayNewWireTech(criteriaId){
     });
 }
 
+//------------------- New Wire Tech Lesser Weight---------------------------------//
+
+function getDataNewWireTechDimension(criteriaId, callback){
+    var _my = new Date().getFullYear() - 2;
+    var _wireGuage = "0.75";
+    $.get(execURL + "wire_tech_lower_upper_diameter @byMY="+ _my +",@criteria_id="+ criteriaId 
+    , function(data){
+        var dataRows = [];
+        if(data.rows.length > 0){
+          dataRows = data.rows;
+        }
+        if(callback) callback(dataRows);
+    });
+}
+
+function displayNewWireTechDimension(criteriaId){
+    am4core.useTheme(am4themes_animated);
+    getDataNewWireTechDimension(criteriaId, function(data){
+
+        var lowerLimit = 0;
+        var upperLimit = 5;
+        var chartId = "chartMY_" + criteriaId;
+    
+        var chart = am4core.create(chartId, am4charts.XYChart);
+        
+        var newData = $.each(data.groupBy(["wire_type"]), function(i, v){
+            
+            var _sum = v.items.reduce(function (accumulator, currentValue) {
+                return accumulator + currentValue.avg_dia;
+            }, 0);
+            
+            v.avg_dia = (_sum / v.items.length);
+            
+            return v;
+        });
+                    
+        // Add data
+        chart.data = newData;
+        
+        chart.numberFormatter.numberFormat = "#.#####";
+        
+        // Create axes
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "name";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.labels.template.horizontalCenter = "right";
+        categoryAxis.renderer.labels.template.verticalCenter = "middle";
+        categoryAxis.renderer.labels.template.rotation = 310;
+
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.min = 0.0000;
+        valueAxis.max = upperLimit;
+        //valueAxis.title.text = "Avg. Weight";
+        valueAxis.renderer.minGridDistance = 20;
+        //valueAxis.renderer.numberFormatter.numberFormat = "#.#####";
+        valueAxis.numberFormatter = new am4core.NumberFormatter();
+        valueAxis.numberFormatter.numberFormat = "#.0000";
+        
+         var axisTooltip = valueAxis.tooltip;
+        //axisTooltip.background.fill = am4core.color("#07BEB8");
+        // axisTooltip.background.strokeWidth = 0;
+        // axisTooltip.background.cornerRadius = 3;
+        // axisTooltip.background.pointerLength = 0;
+        // axisTooltip.dy = 5;
+        axisTooltip.numberFormatter = new am4core.NumberFormatter();
+        axisTooltip.numberFormatter.numberFormat = "#.#####";
+        
+        var axisTooltip = valueAxis.tooltip;
+        
+        // Create series
+        var series = chart.series.push(new am4charts.LineSeries());
+        series.dataFields.valueY = "avg_dia";
+        series.dataFields.categoryX = "name";
+        series.name = "Avg. Weight";
+        series.tooltipText = "{name}: [bold]{valueY}[/]";
+        
+        // Create value axis range
+        var range = valueAxis.axisRanges.create();
+        range.value = upperLimit;
+        range.grid.stroke = am4core.color("#396478");
+        range.grid.strokeWidth = 2;
+        range.grid.strokeOpacity = 1;
+        range.label.inside = true;
+        range.label.text = "Upper Weight";
+        range.label.fill = range.grid.stroke;
+        //range.label.align = "right";
+        range.label.verticalCenter = "bottom";
+        
+        var range2 = valueAxis.axisRanges.create();
+        range2.value = lowerLimit;
+        range2.grid.stroke = am4core.color("#A96478");
+        range2.grid.strokeWidth = 2;
+        range2.grid.strokeOpacity = 1;
+        range2.label.inside = true;
+        range2.label.text = "Lower Weight";
+        range2.label.fill = range2.grid.stroke;
+        //range2.label.align = "right";
+        range2.label.verticalCenter = "bottom";
+        
+        // Add cursor
+        chart.cursor = new am4charts.XYCursor();
+        
+        // Add legend
+        //chart.legend = new am4charts.Legend();
+    });
+}
 
 
-
-
-
-
-
-
-
-
-
-
-                

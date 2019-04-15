@@ -8,6 +8,7 @@
     <title>@ViewBag.pageTitle - PAFEIS</title>
     
     <script src='@Url.Content("~/")Scripts/jquery.min.js'></script>
+		<script src='@Url.Content("~/")Scripts/handlebars.min.js'></script>
     <link href='@Url.Content("~/")css/app.min.css' rel="stylesheet" />
     <link href='@Url.Content("~/")css/zsi-trendtool.css' rel="stylesheet" />
 
@@ -43,10 +44,8 @@
         </div> 
     }
 }
-     <footer >
-         <p>&copy; @DateTime.Now.Year - Powered By <a href="http://zetta-solutions.net/">ZettaSolutions, Inc. </a></p>
-       </footer>
 <script src="@Url.Content("~/")Scripts/bootstrap.min.js"></script>
+<script src='@Url.Content("~/")javascript/name/easyJsTemplateWriter'></script>
 <div class="alert alert-success">
     <p>Data has been saved.</p>
 </div>
