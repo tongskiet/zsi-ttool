@@ -3,7 +3,6 @@ var  svn                        = zsi.setValIfNull
     ,bsButton                   = zsi.bs.button
     ,proc_url                   = base_url + "common/executeproc/"
     ,gMdlId                     = "modalCriteriaColums"
-    ,gMdlRD                     = "modalRemoveDuplicate"
     ,gMdlWGR                    = "modalWireGaugeReferences"
     ,gtw                        = null
     ,g$mdl                      = null
@@ -14,7 +13,7 @@ var  svn                        = zsi.setValIfNull
     ,modalChart                 = "modalWindowChart"
     ,modalCriteriaColumnValues  = "modalWindowCriteriaColumnValues"
     ,gSpecsId                   = ""
-    ,gTimeStamp                 = new Date().getTime()
+    ,gTimeStamp                 = 0
     ,gClsMma                    ="mouse-move-area"
     ,gPrmRegion                 = ""
     ,gPrmNoYears                = ""
@@ -66,12 +65,6 @@ function getTemplates(callback){
         , body      : gtw.new().modalBody({gridId1:"gridCriteriaColumns",onClickSave1:"submitData1();"}).html()  
     })
     .bsModalBox({
-          id        : gMdlRD
-        , sizeAttr  : "modal-md"
-        , title     : "Remove Duplicate"
-        , body      : gtw.new().modalBodyRD({gridRD:"gridRD",onClickSaveRD:"submitDataRD();"}).html()  
-    })
-    .bsModalBox({
           id        : gMdlWGR
         , sizeAttr  : "modal-full"
         , title     : "Wire Gauge References"
@@ -106,45 +99,45 @@ function getTemplates(callback){
         , sizeAttr  : "modal-full"
         , title     : "Chart"
         , footer    : ""
-        , body      : //div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">'
-                      //    +'<div class="mr-auto py-2 font-weight-bold" id="chart_range"></div>'
-                      //    +'<div class="btn-toolbar mb-2 mb-md-0" id="chart_filter">'
-                      //        +'<div class="input-group ">'
-                      //            +'<div class="input-group-prepend">'
-                      //                +'<span class="input-group-text">Category :</span>'
-                      //            +'</div>'
-                      //            +'<select class="custom-select" id="category" style="width:120px">'
-                      //                +'<option selected>Choose...</option>'
-                      //                +'<option value="Per Model Year">Per Model Year</option>'
-                      //                +'<option value="Per Region">Per Region</option>'
-                      //                +'<option value="Per Vehicle Type">Per Vehicle Type</option>'
-                      //                +'<option value="Per OEM">Per OEM</option>'
-                      //            +'</select>'
-                      //            +'<div class="input-group-prepend">'
-                      //                +'<div class="input-group-text">'
-                      //                    +'<input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year">'
-                      //                    +'<span class="pl-1">Include Current Year</span>'
-                      //                +'</div>'
-                      //            +'</div>'
-                      //            +'<div class="input-group-prepend">'
-                      //                +'<span class="input-group-text">No. of Years :</span>'
-                      //            +'</div>'
-                      //            +'<input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years" style="width:50px">'
-                      //            +'<div class="input-group-prepend">'
-                      //                +'<span class="input-group-text">Chart Type :</span>'
-                      //            +'</div>'
-                      //            +'<select class="custom-select" id="chart_type" style="width:120px">'
-                      //                +'<option selected>Choose...</option>'
-                      //                +'<option value="Pie Chart">Pie Chart</option>'
-                      //                +'<option value="Bar Graph" selected>Bar Graph</option>'
-                      //            +'</select>'
-                      //            +'<div class="input-group-append">'
-                      //                +'<button class="btn btn-dark" type="button" id="btnSearch" onclick="filterChart();">Go</button>'
-                      //            +'</div>'
-                      //        +'</div>'
-                      //    +'</div>'
-                      //+'</div>'
-                        '<div id="chart_container"></div>'
+         , body      : '<div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">'
+                            +'<div class="mr-auto py-2 font-weight-bold" id="chart_range"></div>'
+                            +'<div class="btn-toolbar mb-2 mb-md-0" id="chart_filter">'
+                                +'<div class="input-group ">'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">Category :</span>'
+                                    +'</div>'
+                                    +'<select class="custom-select" id="category" style="width:120px">'
+                                        +'<option selected>Choose...</option>'
+                                        +'<option value="Per Model Year">Per Model Year</option>'
+                                        +'<option value="Per Region">Per Region</option>'
+                                        +'<option value="Per Vehicle Type">Per Vehicle Type</option>'
+                                        +'<option value="Per OEM">Per OEM</option>'
+                                    +'</select>'
+                                    +'<div class="input-group-prepend">'
+                                        +'<div class="input-group-text">'
+                                            +'<input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year">'
+                                            +'<span class="pl-1">Include Current Year</span>'
+                                        +'</div>'
+                                    +'</div>'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">No. of Years :</span>'
+                                    +'</div>'
+                                    +'<input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years" style="width:50px">'
+                                    +'<div class="input-group-prepend">'
+                                        +'<span class="input-group-text">Chart Type :</span>'
+                                    +'</div>'
+                                    +'<select class="custom-select" id="chart_type" style="width:120px">'
+                                        +'<option selected>Choose...</option>'
+                                        +'<option value="Pie Chart">Pie Chart</option>'
+                                        +'<option value="Bar Graph" selected>Bar Graph</option>'
+                                    +'</select>'
+                                    +'<div class="input-group-append">'
+                                        +'<button class="btn btn-dark" type="button" id="btnSearch" onclick="filterChart();">Go</button>'
+                                    +'</div>'
+                                +'</div>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div id="chart_container"></div>'
     })
     
     .bsModalBox({
@@ -193,7 +186,7 @@ function displayRecords(){
         		    ,onRender : function(d){ 
         		        this.addClass(gClsMma);
                         var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image1_id") +  "\");' onmouseout=''";
-        		        var _imgName        = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;' onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> popover</a>";
+        		        var _imgName       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadImage(" + svn(d,"menu_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"menu_name") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
         		            return (d !== null ? _imgName : "");
         		    }
         		}	 	 	
@@ -389,18 +382,18 @@ function displayWireGaugeReferences(menuId,specsId){
      var rownum=0;
      $("#gridWireGaugeReferences").dataBind({
 	     url            : execURL + "wire_gauge_references_sel"
-	    //,width          : $("#gridWireGaugeReferences").closest(".modal-body").width() 
+	    ,width          : $("#gridWireGaugeReferences").closest(".modal-body").width() 
 	    ,height         : $(document).height() - 200
 	    ,selectorIndex  : 1
 	    ,startGroupId   : 0
         ,blankRowsLimit : 5
         ,dataRows       : [
-                            {  id:  1  ,groupId: 0      , text  : "Wire Gauge"          }	 
-            		        ,{ id:  2  ,groupId: 0      , text  : "Color"               }
-            		        ,{ id:  3  ,groupId: 0      , text  : "JASO"                }	 
-    		                ,{ id:  4  ,groupId: 0      , text  : "ISO"                 }	 
-    		                ,{ id:  5  ,groupId: 0      , text  : "SAE"                 }	 
-    		                ,{ id:  6  ,groupId: 0      , text  : "Combined JASO/ISO"   }	 
+                            {  id:  1  ,groupId: 0      , text  : "<div class='centered'>Wire Gauge </div>"           , style :   "text-align:center;"}	 
+            		        ,{ id:  2  ,groupId: 0      , text  : "<div class='centered'>Color</div>"                 , style :   "text-align:left;" }
+            		        ,{ id:  3  ,groupId: 0      , text  : "<div class='centered'>JASO</div>"                  , style :   "text-align:center;" }	 
+    		                ,{ id:  4  ,groupId: 0      , text  : "<div class='centered'>ISO</div>"                   , style :   "text-align:center;" }	 
+    		                ,{ id:  5  ,groupId: 0      , text  : "<div class='centered'>SAE</div>"                   , style :   "text-align:center;" }	 
+    		                ,{ id:  6  ,groupId: 0      , text  : "<div class='centered'>Combined JASO/ISO</div>"     , style :   "text-align:center;" }	 
     		                
     		                ,{  id          : 100
                                 , groupId   : 1    		      
@@ -422,10 +415,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        
             		        ,{  id          : 102
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>Lower Diameter</div>"     
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
             		            , name      : "jaso_lower_limit"  
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 120      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_lower_limit")});
@@ -434,10 +427,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 103
                                 , groupId   : 3    		      
-                                , text      : "<div class='centr'>Upper Diameter</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , name      : "jaso_upper_limit"  
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jaso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"jaso_upper_limit")});
@@ -446,18 +439,22 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 104
                                 , groupId   : 4    		      
-                                , text      : "<div class='centr'>Lower Diameter</div>"     
-            		            , width     : 140      
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
-            	                    return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_lower_limit")});
+            		                
+            		                console.log(this);
+    		                        return  bs({name:"iso_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_lower_limit")});
     		                        } 
+            		        
+            		            
             		        }
             		        ,{  id          : 105
                                 , groupId   : 4  		      
-                                , text      : "<div class='centr'>Upper Diameter</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"iso_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"iso_upper_limit")});
@@ -465,10 +462,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 102
                                 , groupId   : 5    		      
-                                , text      : "<div class='centr'>Lower Diameter</div>"     
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
             		            , name      : "sae_lower_limit"  
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 120      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"jsae_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_lower_limit")});
@@ -477,10 +474,10 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
             		        ,{  id          : 103
                                 , groupId   : 5    		      
-                                , text      : "<div class='centr'>Upper Diameter</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , name      : "sae_upper_limit"  
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"sae_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"sae_upper_limit")});
@@ -489,18 +486,20 @@ function displayWireGaugeReferences(menuId,specsId){
             		        }
     		                ,{  id          : 106
                                 , groupId   : 6    		      
-                                , text      : "<div class='centr'>Lower Diameter</div>"     
-            		            , width     : 140      
+                                , text      : "<div class='centr'>Lower Dia.</div>"     
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"combined_lower_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_lower_limit")});
     		                        } 
+            		        
+            		            
             		        }
             		        ,{  id          : 107
                                 , groupId   : 6  		      
-                                , text      : "<div class='centr'>Upper Diameter</div>"     
+                                , text      : "<div class='centr'>Upper Dia.</div>"     
             		            , type      : "input"           
-            		            , width     : 140      
+            		            , width     : 105      
             		            , style     : "text-align:center;"  
             		            , onRender  :   function(d){ 
     		                        return  bs({name:"combined_upper_limit"      , class : "numeric text-center",   type    : "input"          ,   value: svn(d,"combined_upper_limit")})
@@ -560,6 +559,7 @@ function uploadMenuImage(obj){
         //Ajax events
         success: completeHandler = function(data) {
             if(data.isSuccess){
+                console.log("data",data);
                 $.get(base_url  + "sql/exec?p=dbo.trend_menu_image_upd @tren_menu_id=" + _parent_id 
                                 + ",@" + _field_name + "=" + data.image_id 
                                 + ",@user_id=" + userId 
@@ -678,7 +678,7 @@ function displayCriteria(menuId,specsId){
 		                    return (d !== null && svn(d,"pcriteria_id") == "" ? _trendMenuSelect : _trendMenuHide );
 		          }
 		    }
-    		,{ text:"Criteria Title"   , width:420 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
+    		,{ text:"Criteria Title"   , width:450 , style:"text-align:left;" ,  type:"input"  ,  name:"criteria_title"	
     		   ,onRender: function(d){
     		        if(d){
     		            return '<input class="form-control" type="text" name="criteria_title" id="criteria_title" value="'+ d.criteria_title +'" style="text-align: left;'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';   
@@ -693,17 +693,10 @@ function displayCriteria(menuId,specsId){
 		    }
 
     		,{ text:"Active?"    , width:65  , style:"text-align:left;" ,  type:"yesno"  ,  name:"is_active"  ,  defaultValue   : "Y"}
-    		,{ text:"CC" ,width:35 , style:"text-align:left;"
+    		,{ text:"" ,width:35 , style:"text-align:left;"
     		        ,onRender   :   function(d){
     		            var _pcriteriaId = svn(d,"pcriteria_id");
-    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm' data-toggle='tooltip' data-placement='left' title='Criteria Columns'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
-    		            return (d !==null && _pcriteriaId !== "" ? _link : "" );
-    		        }
-    		}
-    		,{ text:"RD" ,width:35 , style:"text-align:left;"
-    		        ,onRender   :   function(d){
-    		            var _pcriteriaId = svn(d,"pcriteria_id");
-    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm' data-toggle='tooltip' data-placement='left' title='Remove Duplicate' onclick='showModalRemoveDup(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
+    		            var _link = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumns(\""+ svn(d,"criteria_id") +"\",\""+ specsId +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-link'></i> </a>";
     		            return (d !==null && _pcriteriaId !== "" ? _link : "" );
     		        }
     		}
@@ -742,7 +735,6 @@ function displayCriteria(menuId,specsId){
 
 	    ]
   	    ,onComplete : function(){
-  	        this.find('[data-toggle="tooltip"]').tooltip(); 
             $("input, select").on("change keyup ", function(){
                 $(this).closest(".zRow").find("#is_edited").val("Y");
             });  
@@ -773,21 +765,14 @@ function showModalCriteriaColumns(criteriaId,specsId,name) {
     g$mdl.find(".modal-title").text("Criteria Columns  » " + name ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
     displayCriteriaColumns(criteriaId,specsId);
+
 }  
 
-function showModalRemoveDup(criteriaId,specsId,name) {
-    $(".colval").hide();
-    g$mdl = $("#" + gMdlRD); 
-    g$mdl.find(".modal-title").text("Remove Duplicate  » " + name ) ;
-    g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
-    displayRemoveDuplicate(criteriaId,specsId);
-}  
-
-function showModalCriteriaColumnValues(colName,criteriaColId,specsId) {
+function showModalCriteriaColumnValues(colName,criteriaColId) {
     g$mdl = $("#" + modalCriteriaColumnValues); 
     g$mdl.find(".modal-title").text("Criteria Column Values  » " + colName ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
-    displayCriteriaColumnValues(colName,criteriaColId,specsId);
+    displayCriteriaColumnValues(colName,criteriaColId);
 
 }  
 
@@ -801,6 +786,7 @@ function displayCriteriaColumns(criteriaId,specsId){
         ,dataRows       :[
     		 { text: "Column Name"              , width:250     , style:"text-align:left;" 
     		     ,onRender : function(d){
+    		         console.log("colname",svn(d,"column_name"));
     		         return bs({name:"criteria_column_id"  ,type:"hidden",value: svn(d,"criteria_column_id")})
     		                                +   bs({name:"criteria_id"  ,type:"hidden",value: criteriaId })
     		                                +   bs({name:"is_edited",type:"hidden" })
@@ -852,6 +838,7 @@ function displayCriteriaColumns(criteriaId,specsId){
     		     
     		 }
     		 ,{ text: "Display on Chart"    , name:"is_output"          , type:"yesno"   , defaultValue:"Y"  , width:110   , style:"text-align-last:center;" }
+    		 ,{ text: "Remove Duplicate"    , name:"remove_dup"         , type:"yesno"   , defaultValue:"Y"  , width:125   , style:"text-align-last:center;"   }
     		 ,{ text: "Is From To"          , name:"is_fromto"          , type:"yesno"   , defaultValue:"Y"  , width:100   , style:"text-align-last:center;" }
     		 ,{ text: "Logical Operator"    , width:130                 , style:"text-align-last:center;"                 
     		     ,onRender: function(d){
@@ -871,7 +858,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                 ,_setDdlvalues = function($zRow,harnessName){
                         if(harnessName === "") return;
                         $zRow.find("select[name='column_value']").dataBind({
-                            url: execURL + "reference_table_column_values_sel @specs_id=" + specsId + ",@column_name=" + harnessName  
+                            url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
                                 , text: "attribute_name"
                                 , value: "attribute_id"
                                  , onEachComplete : function(data){
@@ -883,9 +870,6 @@ function displayCriteriaColumns(criteriaId,specsId){
                                         case "IN" :
                                             _$self.css({"display":"none"});
                                             break;
-                                        case "NIN" :
-                                            _$self.css({"display":"none"});
-                                            break;    
                                         case "ISNULL" :
                                             _$self.css({"display":"none"});
                                             break;
@@ -903,7 +887,7 @@ function displayCriteriaColumns(criteriaId,specsId){
                         });  
                         
                         $zRow.find("select[name='column_value2']").dataBind({
-                            url: execURL + "reference_table_column_values_sel @specs_id=" + specsId + ",@column_name=" + harnessName  
+                            url: execURL + "reference_table_column_values_sel @column_name=" + harnessName  
                                 , text: "attribute_name"
                                 , value: "attribute_id"
                                 , onEachComplete : function(data){
@@ -921,11 +905,12 @@ function displayCriteriaColumns(criteriaId,specsId){
                         });  
 	            }
                 ,_displayListIcon   = function($zRow,value){
-                    var _colName = $zRow.find("select[name='column_name']").val();
+                    var _colName = $zRow.find("#column_name").val();
                     var _criteriaColId = $zRow.find("#criteria_column_id").val();
-                    console.log("_colName",_colName);
-                    var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\",\""+ specsId +"\");'  ><i class='fas fa-link'></i> </a>";
-                    var _link = ( (value =="IN" || value =="NIN") ?  _href : "");
+                    var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\");'  ><i class='fas fa-link'></i> </a>";
+                    var _link = (value =="IN" ?  _href : "");
+                   // var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues("{{p1}}","{{p2}}");' ><i class='fas fa-link'></i></a>"
+                    //var _link = (value =="IN" ?  gtw.new().inList({p1: $zRow.find("#column_name").val() , p2: $zRow.find("#criteria_column_id").val() }).html() :"");
                     $zRow.find(".lst-icon").html(_link);
                 }
 	        ;
@@ -973,16 +958,18 @@ function displayCriteriaColumns(criteriaId,specsId){
                 ,value: "operator_value"
                 ,onEachComplete : function(data){
                     _displayListIcon( $(this).closest(".zRow"), $(this).val() );
-
+                      
                 }
                 ,onChange: function(){
                     var _$self = this;
                     var _$zRow = _$self.closest(".zRow");
                     var _$column_value1 = _$zRow.find("#column_value");
                     var _$column_value2 = _$zRow.find("#column_value2");
+                    //var _optSelVal = _$zRow.find("select[name='operator_value']").attr("selectedvalue");
                     var _optVal = _$zRow.find("select[name='operator_value']").val();
+                    
                     //trigger display upon user selection
-                    if( ["IN","NIN","ISNULL",""].includes(_optVal) ) 
+                    if( ["IN","ISNULL",""].includes(_optVal) ) 
                         _$column_value1.css({"display":"none"}); 
                     else 
                         _$column_value1.css({"display":"unset"});
@@ -992,46 +979,20 @@ function displayCriteriaColumns(criteriaId,specsId){
                     else 
                         _$column_value2.css({"display":"unset"});
                     
-                    if(_optVal !== "IN" || _optVal !== "NIN") $(".colval").hide(); 
+                    if(_optVal !== "IN") $(".colval").hide(); 
+
                     _displayListIcon( this.closest(".zRow"), $(this).val() );
                 }
              });  
 
     	
 	         $("select[name='math_function']").dataBind( "mathfunction");        
+	         //$("select[name='math_function2']").dataBind( "mathfunction");        
 	    }
     });    
 }  
 
-function displayRemoveDuplicate(criteriaId,specsId){
-    $("#gridRD").dataBind({
-         sqlCode        : "C102"
-        ,parameters     : { criteria_id : criteriaId}
-        //,width          : 250
-	   // ,height         : 200
-	    ,blankRowsLimit : 5
-        ,dataRows       :[
-    		 { text:   "Column Name"    , width:250  , style:"text-align:left;"   
-    		    ,onRender : function(d){
-                     return bs({name:"criteria_rd_id"   ,type:"hidden"      ,value: svn(d,"criteria_rd_id")})
-                        +   bs({name:"criteria_id"      ,type:"hidden"      ,value: criteriaId })
-                        +   bs({name:"is_edited"        ,type:"hidden" })
-                        +   bs({name:"column_name"      ,type:"select"      ,value: svn(d,"column_name")}); 
-                }             
-    		 }	 
-	    ]
-	    ,onComplete : function(o){
-	        var _zRow = this.find(".zRow")
-             _zRow.find("select[name='column_name']").dataBind({
-                 url            : execURL + "reference_table_columns_sel @specs_id=" + specsId  
-                ,text           : "table_column_name"
-                ,value          : "column_name"
-            }); 
-           
-	    }
-    });        
-}
-function displayCriteriaColumnValues(colName,criteriaColId,specsId){
+function displayCriteriaColumnValues(colName,criteriaColId){
     $("#gridCriteriaColumnValues").dataBind({
          sqlCode        : "C7"
         ,parameters     : { criteria_column_id : criteriaColId}
@@ -1056,7 +1017,7 @@ function displayCriteriaColumnValues(colName,criteriaColId,specsId){
                     $(this).closest(".zRow").find("#is_edited").val("Y");
                 });  
                 this.find("select[name='attribute_value']").dataBind({
-                    url: execURL + "reference_table_column_values_sel @specs_id=" + specsId + ",@column_name='" + colName + "'"  
+                    url: execURL + "reference_table_column_values_sel @column_name='" + colName + "'"  
                         ,text   : "attribute_name"
                         ,value  : "attribute_id"
                 });  
@@ -1074,20 +1035,6 @@ function submitData1(){
                 if(data.isSuccess===true) {
                     zsi.form.showAlert("alert");
                     displayCriteriaColumns(_$grid.data("criteriaId"), _$grid.data("specsId"));
-                }
-            }
-            
-        });
-}   
-
-function submitDataRD(){
-    var _$grid =  $("#gridRD");
-       _$grid.jsonSubmit({
-             procedure: "criteria_rd_columns_upd"
-            ,onComplete: function (data) {
-                if(data.isSuccess===true) {
-                    zsi.form.showAlert("alert");
-                    $("#frm_modalRemoveDuplicate").find(".close").click();
                 }
             }
             
@@ -1126,17 +1073,15 @@ function showModalChart(criteriaId,name) {
     g$mdl = $("#" + modalChart); 
     g$mdl.find(".modal-title").text( name ) ;
     g$mdl.modal({ show: true, keyboard: false, backdrop: 'static' });
-/*    if($.trim(name) === "New Technology on wire Conductor"){
+    
+    if($.trim(name) === "New Technology on wire Conductor"){
         $("#chart_filter").hide();
         displayNewWireTech();
     }else{
         $("#chart_filter").show();
         displayChart();
     }
-*/  
-    //gtw = new zsi.easyJsTemplateWriter("#chart_container").new();
-    displayRetainerSealingBar();
-
+    gtw = new zsi.easyJsTemplateWriter("#chart_container").new();
 } 
 
 function displayChart(){
@@ -2444,50 +2389,6 @@ function displaySWByRegionBar(callback){
     if(callback) callback();
 }
  
- 
-function displayRetainerSealingBar(callback){
-    var dataRows = [];
-    $.get(execURL + "dynamic_retainers_sel @byRegion='Y',@byMY='Y',@criteria_id=60" 
-    , function(data){
-        dataRows = data.rows;
-        //var _groupedData = dataRows.groupBy(["REGION_NAME"]);
-        $.each(dataRows.groupBy(["REGION_NAME"]), function(i,v){
-            var _items = v.items;
-            console.log("_items",_items);
-
-        });
-
-
-                /*var chart = am4core.create("chart_container", am4charts.XYChart);
-                chart.data = dataRows;
-            
-                var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-                categoryAxis.renderer.grid.template.location = 0;
-                categoryAxis.dataFields.category = "REGION_NAME";
-                categoryAxis.renderer.minGridDistance = 60;
-                categoryAxis.title.text = "Usage per Region";
-                categoryAxis.numberFormatter.numberFormat = "#";
-                
-                var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-                
-                var series = chart.series.push(new am4charts.ColumnSeries());
-                series.dataFields.categoryX = "REGION_NAME";
-                series.dataFields.valueY = "total_small_wires";
-                series.tooltipText = "{valueY.value.formatNumber('#,###')}"
-                series.columns.template.strokeOpacity = 0;
-                
-                chart.cursor = new am4charts.XYCursor();
-            
-                // as by default columns of the same series are of the same color, we add adapter which takes colors from chart.colors color set
-                series.columns.template.adapter.add("fill", function (fill, target) {
-                	return chart.colors.getIndex(target.dataItem.index);
-                });*/
-
-
-    });
-    if(callback) callback();
-} 
- 
 // function displaySWAll(callback){
 //     var _result = [];
 //     $.each(gByModelYear.groupBy(["MODEL_YEAR"]), function(i,v) {
@@ -3762,4 +3663,4 @@ function displayNewWireTech(){
         //chart.legend = new am4charts.Legend();
     });
 }
-                         
+               

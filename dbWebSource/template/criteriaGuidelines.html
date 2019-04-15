@@ -1,12 +1,6 @@
 <script src="/scripts/linq.min.js"></script>
 <style type="text/css" media="all">
 
-    .clear-both{
-        clear:both;
-    }
-    .zHeaders .title .text {
-    width: 100%;
-    }
     .zGrid .zHeaders .item {
         border-right: none;
     }
@@ -115,23 +109,11 @@
             <button type="button" id="btnSave" onclick="{{onClickSave}}" class="btn btn-primary mr-auto"><i class="far fa-save"></i> Save</button>
         </div>
     </li>
-    <li name="modalBodyRD">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
-                <div class="row">
-                    <div id="{{gridRD}}" class="zGrid"> </div>
-                </div>
-                <button type="button" onclick="{{onClickSaveRD}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
-                
-            </div>
-        </div>
-    </li>
     
     <li name="modalBodyWGR">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
                 <div id="{{gridWGR}}" class="zGrid"> </div>
-                <div class="clear-both"></div>
                 <button type="button" id="btnSave1" onclick="{{onClickSaveWGR}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
             </div>
         </div>
