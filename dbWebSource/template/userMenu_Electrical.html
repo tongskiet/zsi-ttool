@@ -1,39 +1,17 @@
 <style>
-
-.tt-menu a:hover{
-    background:none;
-}
-.dropdown-menu-excecutive-left{
-    width:auto !important;
-    max-width:auto !important;
-}
-.users-menu-content{
-    margin:5px 5px 0 5px;
-}
-.users-menu-item{
-    display:inline-block;
-    margin:1px 2px 0 2px;
-    
-}
-/*.users-menu-item a .userImgPrime{*/
-/*    border:1px solid black;*/
-/*}*/
-/*.users-menu-item a .userImgFade{*/
-/*    border:1px solid green;*/
-/*}*/
-/*.users-menu-item a .userLabel{*/
-/*    border:1px solid gray;*/
-/*}*/
-.users-menu-item, .users-menu-item a .userImgPrime, .users-menu-item a .userImgFade, .users-menu-item a .userLabel{
+.users-menu-item, .users-menu-item a .userImgPrime
+, .users-menu-item a .userImgFade
+, .users-menu-item a .userLabel{
     height:376px;
     width:376px;
-    
+    margin-right: 5px;
 }
-
 .users-menu-item a{
     position:relative;
 }
-.users-menu-item a .userImgPrime, .users-menu-item a .userImgFade, .users-menu-item a .userLabel{
+.users-menu-item a .userImgPrime
+, .users-menu-item a .userImgFade
+, .users-menu-item a .userLabel{
     position:absolute;
     top:0px;
     left:0px;
@@ -45,12 +23,10 @@
     opacity:0.0;
 }
 .users-menu-item a .userLabel{
-    /*padding:5px;*/
     color:white;
     text-align
     display:table-cell;
     vertical-align:bottom;
-    
 }
 .users-menu-item a .userLabel span{
     font-size:15px;
@@ -58,8 +34,6 @@
     font-weight: bold;
     padding-left: 5px;
     padding-right: 5px;
-    
-    /*padding-top: 2px;*/
     display: table-cell;
     vertical-align: bottom;
     height: inherit;
@@ -67,52 +41,9 @@
     position: relative;
     opacity:0;
     transition:opacity .5s;
-    /*padding-bottom: 13px;*/
 }
 .users-menu-item a:hover .userLabel span{
     opacity:1;
-}
-.userForm{
-    display:table;
-    /*border:solid 1px black;*/
-    background-color: white;
-    margin-top: 6px;
-    border-radius:5px;
-    overflow:hidden;
-    width:100%;
-    
-}
-.cursorContextMenu{
-    cursor: context-menu;
-    display: block;
-}
-.menuMargin{
-    margin: 8px 8px 8px 7px;
-}
-.graphForm, .imageHolder{
-    /*border:solid 1px black;*/
-    float:left;
-    display:table-cell;
-}
-.imageHolder{
-    /*width:376px;*/
-    height:auto;
-    
-    width:auto;
-    
-
-}
-.graphForm{
-    /*width:376px;*/
-    margin:8px 8px 8px 7px;
-    min-height:376px;
-    width: auto;
-    
-}
-.userForm:after{
-    clear:both
-    content: "";
-    display: table;;
 }
 
 /* ---------CHART STYLE--------- */
@@ -129,16 +60,6 @@
     width: 100%;
     max-height: 100%;
 }
-
-    .container {
-    border: 1px solid red;
-}
-
-/*.manual_spacer {*/
-/*    background: red;*/
-/*    padding: 10px;*/
-/*}*/
-/*--- Chart Fix--*/
 
 #btnGoTop {
     position: fixed;
@@ -181,75 +102,37 @@
     color: #fff;
     top: 5px;
 }
-
-
-/* ---------END CHART STYLE--------- */
-
-/*.users-menu-item a{*/
-/*    border:1px solid blue;*/
-/*}*/
-/*.users-menu-item a .userImgPrime{*/
-/*    border:1px solid yellow;*/
-/*}*/
-/*.users-menu-item a .userImgFade{*/
-/*    border:1px solid green;*/
-/*}*/
-/*.users-menu-item a .userLabel{*/
-/*    border:1px solid black;*/
-/*}*/
-/*.users-menu-item, .users-menu-item a, .users-menu-item a .userImgPrime, .users-menu-item a .userImgFade, .users-menu-item a .userLabel{*/
-/*    height:350px;*/
-/*    width:350px;*/
-/*}*/
-/*.users-menu-item a{*/
-/*    position:relative;*/
-/*}*/
-
-/*.tt-menu a.vehicle{*/
-/*    background-image:url('/images/menu/menu-electrical-vehicle-architecture-colored.png');*/
-/*}*/
 </style>
 
 <!-- Return to Top -->
 <span id="btnGoTop"><i class="fas fa-angle-up fa-2x"></i></span>
 
-<ul class="navbar-nav users">
-	<li class="nav-item dropdown no-arrow">
-		<div class="tt-menu dropdown-menu dropdown-menu-users-left show">
-			<div class="users-menu-content">
-			</div>
-		</div>
-	</li>
-</ul>
-
-<div id="main_container"></div>
+<div id="main_container" class="zPanel"></div>
 
 <ul id="localTemplates">
     <li name="usersMenu" >
         <div class="users-menu-item">
 		    <a href="{{link}}" onClick="{{onClick}}">
-		        <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}" >
-		        <img class="userImgFade"src="/file/viewimagedb?sqlcode=t83&imageid={{imageId4}}">
+		        <img class="userImgPrime" src="{{{imageId3}}}" >
+		        <img class="userImgFade" src="{{{imageId4}}}">
 		        <div class="userLabel" style="{{style}}"><span>{{label}}</span></div>
 		    </a>
 		</div>
     </li>
     <li name="usersMenuGraph">
-        <div class="userForm d-flex">
-            <div class="imageHolder">
-        	    <div class="users-menu-item menuMargin">
-        	        <a class="cursorContextMenu" href="{{link}}" onClick="{{onClick}}">
-        	            <img class="userImgPrime" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId3}}">
-        	            <img class="userImgFade" src="/file/viewimagedb?sqlcode=t83&imageid={{imageId4}}">
-        	            <div class="userLabel"><span>{{label}}</span></div>
-        	        </a>
-        	    </div>
-        	</div>
-        	<div class="graphForm flex-grow-1 overflow-auto" id="{{chartId}}"></div>
+        <div class="d-flex d-criteria" id="{{criteriaId}}" name="{{{criteriaName}}}">
+    	    <div class="users-menu-item aniview" data-av-animation="fadeIn">
+    	        <a class="cursorContextMenu" href="{{link}}" onClick="{{onClick}}">
+    	            <img class="userImgPrime" src="{{{imageId3}}}">
+    	            <img class="userImgFade" src="{{{imageId4}}}">
+    	            <div class="userLabel"><span>{{label}}</span></div>
+    	        </a>
+    	    </div>
+        	<div class="users-menu-graph flex-grow-1 overflow-auto" id="{{chartId}}"></div>
         </div>
     </li>
     <li name="chart">
-        <div class="card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn">
+        <div class="d-sub-criteria card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn">
             <div class="card-header bg-dark text-white rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
             <div class="card-body p-0 mt-1">
                 <div class="{{body_class}}" id="{{body_id}}"></div>  
@@ -262,30 +145,9 @@
             <div class="bg-white rounded-0">
                 <div id="{{header_id}}" class="{{header_class}}"></div>
                 <div id="d-flex">
-                    <div id="{{chart_my_id}}" class="chart-div mb-1 {{chart_my_class}}"></div>
+                    <div id="{{pie_chart}}" class="chart-div mb-1 {{chart_my_class}}"></div>
                     <div id="{{chart_region_id}}" class="chart-div mb-1 {{chart_region_class}}"></div>
                 </div>
-                <!--<div class="d-flex">-->
-                <!--    <div class="p-1 flex-fill w-100">-->
-                <!--        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Model Year</b></h6>-->
-                <!--        <div id="{{by_model_year_id}}" class="chart-div"></div>-->
-                <!--        <hr class="my-2">-->
-                <!--    </div>-->
-                <!--    <div class="p-1 flex-fill w-100">-->
-                <!--        <h6 class="border-bottom border-gray py-2 mb-2 {{sub_title_class}}"><b>By Region</b></h6>-->
-                <!--        <div id="{{by_region_id}}" class="chart-div"></div>-->
-                <!--        <hr class="my-2">-->
-                <!--    </div>-->
-                <!--</div>-->
-                <!--<div id="{{div_middle_id}}"></div>-->
-                <!--<div class="d-flex">-->
-                <!--    <div class="p-1 flex-fill w-50">-->
-                <!--        <div id="{{each_model_year_id}}" class="chart-div-sub"></div>-->
-                <!--    </div>-->
-                <!--    <div class="p-1 flex-fill w-50">-->
-                <!--        <div id="{{each_region_id}}" class="chart-div-sub"></div>-->
-                <!--    </div>-->
-                <!--</div>-->
                 <div id="{{footer_id}}" class="{{footer_id}}"></div>
             </div>
         </div>

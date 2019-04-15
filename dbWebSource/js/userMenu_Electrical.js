@@ -1,4 +1,4 @@
-var  svn                        = zsi.setValIfNull
+ var  svn                        = zsi.setValIfNull
     ,bs                         = zsi.bs.ctrl
     ,bsButton                   = zsi.bs.button
     ,proc_url                   = base_url + "common/executeproc/"
@@ -22,196 +22,167 @@ var  svn                        = zsi.setValIfNull
     ,gMYTo                      = ""
     ,gData                      = []
     ,gPieChartData              = []
-    ,gColumnChartData              = []
+    ,gColumnChartData           = []
+    ,$gMainContainer     
+    ,gTW 
+    ,gSubCriteriaName           = ""
 ;
  
 zsi.ready(function(){
+    //Init main container and template writer
+    gTW = new zsi.easyJsTemplateWriter();
+    $gMainContainer = $("#main_container");
+    
     if(gMenuId !== null && gMenuId !== "" && gSpecsId !== null && gSpecsId !== "" && (isNaN(gMenuId) === false && isNaN(gSpecsId) === false)){
-         displaySubCategory(this,gMenuId, gSpecsId);
+         displaySubCategory(gMenuId, gSpecsId, function(data){
+             displayChartByCriteria(data);
+         });
     }else{
          displayUserMenus();
     }
     
     // ===== Scroll to Top ==== 
     $(window).scroll(function() {
-        if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
-            $('#btnGoTop').fadeIn(200);    // Fade in the arrow
+        if ($(this).scrollTop() >= 50) {    // If page is scrolled more than 50px
+            $('#btnGoTop').fadeIn(200);     // Fade in the arrow
         } else {
-            $('#btnGoTop').fadeOut(200);   // Else fade out the arrow
+            $('#btnGoTop').fadeOut(200);    // Else fade out the arrow
         }
     });
-    $('#btnGoTop').click(function() {      // When arrow is clicked
+    $('#btnGoTop').click(function() {       // When arrow is clicked
         $('body,html').animate({
-            scrollTop : 0                       // Scroll to top of body
+            scrollTop : 0                   // Scroll to top of body
         }, 500);
     });
 });
 
-function getMenuTypeTemplate(callBack){
-    $.get(base_url + "page/name/tmplLeftNavE",function(d){
-        if(callBack) callBack(d);
-    });    
-}
-
 // this function uses a stored procedure action to get the "menus" for the users
 function displayUserMenus(){
-    var _tw = new zsi.easyJsTemplateWriter();    
-    $.get(execURL + "trend_menus_sel", function(data){
-        var d = data.rows;
-        
-        $(".users-menu-content").html(function(){
-            $.each(d, function(){
-                _tw.usersMenu({
+    gTW.new();    
+    $.get(execURL + "trend_menus_sel @menu_type='E'", function(data){
+        var _rows = data.rows;
+        $gMainContainer.html(function(){
+            $.each(_rows, function(){
+                gTW.usersMenu({
                       link      : "#"
-                    , imageId3  : this.image4_id 
-                    , imageId4  : this.image3_id
+                    , imageId3  : "/file/viewimagedb?sqlcode=t83&imageid=" + this.image4_id 
+                    , imageId4  : "/file/viewimagedb?sqlcode=t83&imageid=" + this.image3_id
                     , label     : this.menu_name
                     , labelBreakCSS:  "label-double"
                     , onClick   : "displaySubCategory(this," + this.menu_id+","+this.specs_id+")"
                 });
             });
-            return _tw.html();
+            return gTW.html();
         });
     });
 }
 
-function displaySubCategory(sel,menuId, specsId){
-    var _tw = new zsi.easyJsTemplateWriter("#main_container");
-    
+function displaySubCategory(menuId, specsId, callback){
+    gTW.new();
+    $gMainContainer.empty();
+   
     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId, function(data){
         var _rows = data.rows;
-        var _result = _rows.filter(function (item) {
+        var _criteria = _rows.filter(function (item) {
                 	return item.pcriteria_id === "";
                 });
-  
-        if(_result.length === 0){
+
+        if(_criteria.length === 0){
             displayUserMenus();
         }else{  
-            $(".navbar-nav.users").css("display","none"); // these are the main users menu which i hide temporarily
-            //$(".navbar-nav").last().after(function(){
-                $.each(_result, function(){
-                    var _cid = this.criteria_id;
-                    var _chartCon = "chart_container_" + _cid;
-                    var _data = _rows.filter(function (item) {
-                    	return item.pcriteria_id === _cid;
-                    });
-                    
-                    _tw.usersMenuGraph({
+           
+            $gMainContainer.html(function(){   
+                $.each(_criteria, function(){
+                    gTW.usersMenuGraph({
                           link      : "#"
-                        , imageId3  : 33
-                        , imageId4  : 32
+                        , imageId3  : "/file/viewimagedb?sqlcode=t83&imageid=33"
+                        , imageId4  : "/file/viewimagedb?sqlcode=t83&imageid=32"
                         , label     : this.criteria_title
                         , labelBreakCSS: "label-double"
-                        , chartId   : _chartCon
+                        , criteriaId   : this.criteria_id
+                        , criteriaName   : this.criteria_title
                     });
-            
-                    if(_data.length > 0){
-                        setChartTemplate(_data, _chartCon);
-                    }
                 });
-                //return _tw.html();
-           // }); 
-           
-           // Show div on scroll
-            $('.aniview').AniView({
-                animateThreshold: 200,
-                scrollPollInterval: 20
+                return gTW.html();
             });
-            
-            // Initialize sticky div
-            $(".users-menu-item").stick_in_parent({
-                //parent: ".userForm",
-                //spacer: ".manual_spacer"
-            });   
         } 
+        
+        callback(_rows);
     });
 }   
 
 //******************************* CHART FUNCTION *****************************//
 
-function setChartTemplate(o, div){
-    var _parentCid = o[0].pcriteria_id;
-    var _chartCon = "#" + div;
-    var _tw = new zsi.easyJsTemplateWriter(_chartCon).new();
+function sortBy(obj, key){
+    obj.sort(function(a, b) {
+      var nameA = a[key].toUpperCase(); // ignore upper and lowercase
+      var nameB = b[key].toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
     
-    $.each(o, function(i, v){
-        var _criteriaId = v.criteria_id;
-        var _criteriaTitle = v.criteria_title;
-        var _chartBody = "chartBody_" + _criteriaId;
-                
-        _tw.chart({
-            card_id: _criteriaId,
-            header_title: _criteriaTitle,
-            body_id: _chartBody
-        });
-
-        var index = 0;
-        var loadChart = function() {
-            
-            if (index < o.length) {
-                if(_criteriaId === 7 || _criteriaId === 8 || _criteriaId === 9 || _criteriaId === 10 || _criteriaId === 38 || _criteriaId === 39 || _criteriaId === 40 || _criteriaId === 41 || _criteriaId === 14 || _criteriaId === 67 ||  _criteriaId === 74){
-                    gtw = new zsi.easyJsTemplateWriter("#" + _chartBody).new();
-                    gtw.chartDiv({ 
-                        title: "", 
-                        title_class:"d-none", 
-                        header_id: "",
-                        header_class: "d-none",
-                        chart_my_id: "chartMY_" + _criteriaId,
-                        chart_region_id: "chartRegion_" + _criteriaId,
-                        chart_region_class: ( _criteriaId === 39 ||  _criteriaId === 40 || _criteriaId === 60 || _criteriaId === 67 || _criteriaId === 74 ? "d-none" : ""),
-                        footer_id: "chartTrendResult",
-                        footer_class: "d-none"
-                    });
-                    
-                    am4core.useTheme(am4themes_animated);
-                   
-                    if(_criteriaId === 39){
-                        displayNewWireTechDimension(_criteriaId);
-                    }
-                    else if(_criteriaId === 40){
-                       displayNewWireTech(_criteriaId);
-                    }
-                    else if(_criteriaId === 67 || _criteriaId === 74){
-                       displayChartRetainer(_criteriaId);
-                    }
-                    else{
-                       getDataByCriteriaId(_criteriaId, function(){
-                            setMYRange();
-                            //setPieChartData();
-                            //setColumnChartData();
-                            
-                            displayPieChart(function(){
-                                displayColumnChart(function(){
-                                    ++index;
-                                });
-                            });
-                        });
-                   }
-               }
-            } 
-        };
-        loadChart();
+      // names must be equal
+      return 0;
     });
+    
+    return obj;
 }
 
-function getDataByCriteriaId(criteriaId, callback){
-    if($.trim(criteriaId)){  
+function getFirstAndLastItem(obj, key) {
+    var firstItem = obj[0];
+    var lastItem = obj[obj.length-1];
+    
+    if(key) {
+        firstItem = firstItem[key];
+        lastItem = lastItem[key];
+    }
+    
+    var objOutput = {};
+    objOutput.first = firstItem;
+    objOutput.last = lastItem;
+    
+    return objOutput;
+} 
+
+function getDistinctKey(data){
+    var _key = "";
+    $.each(Object.keys(data[0]), function(i, key){
+       if(key !== "location" && key !== "location_dtl" && key !== "REGION_NAME" && key !== "MODEL_YEAR"){
+           _key = key;
+       }
+    });
+    return _key;
+}
+
+function isContain(string, contains){
+    var _res = false;
+    if (string.search(contains) > -1){
+        _res = true;
+    }
+    return _res;
+} 
+
+function getDataByCriteriaId(url, subCriteriaName, callback){
+    if(_url !== ""){
         var _param = "";
-        if(gPrmIncludeCYear==="Y") 
+        var _url = url;
+    
+        // Set additional parameters
+        if(gPrmIncludeCYear==="Y"){
             _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+        }
         else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
             _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
         }
 
-        $.get(execURL + "dynamic_wires_usage_summary @byRegion='Y',@byMY='Y',@criteria_id="+ criteriaId + _param
-        , function(data){
-            gData = [];
-            gPrmCriteriaId = criteriaId; //Re-set to maintain the value of gPrmCriteriaId 
-            
-            if(data.rows.length > 0) {
+        $.get(execURL + _url //+ param
+            , function(data){
                 gData = data.rows;
                 
-                if(criteriaId === 7){
+                if(isContain(subCriteriaName, "Overall")){
                     gRegionNames = gData.groupBy(["region"]);
                     gModelYears = gData.groupBy(["model_year"]);
                 }else{
@@ -219,73 +190,274 @@ function getDataByCriteriaId(criteriaId, callback){
                     gModelYears = gData.groupBy(["MODEL_YEAR"]);
                 }
                 
-                //sort by name
-                if(gRegionNames.length > 0){
-                    gRegionNames.sort(function(a, b) {
-                      var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-                      var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-                      if (nameA < nameB) {
-                        return -1;
-                      }
-                      if (nameA > nameB) {
-                        return 1;
-                      }
-                    
-                      // names must be equal
-                      return 0;
-                    });
-                }
-                //sort by name
-                if(gModelYears.length > 0){
-                    gModelYears.sort(function(a, b) {
-                      var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-                      var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-                      if (nameA < nameB) {
-                        return -1;
-                      }
-                      if (nameA > nameB) {
-                        return 1;
-                      }
-                    
-                      // names must be equal
-                      return 0;
-                    });
-                }
-            }
-            if(callback) callback();
+                gRegionNames = sortBy(gRegionNames, "name");
+                gModelYears = sortBy(gModelYears, "name");
+    
+                callback();
         });
     }
 }
 
-// function setPieChartData(callback){
-
-//     if(gData.length > 0) {
+function setChartSettings(o){
+    if(!$.isEmptyObject(o)){
+        var _pCid = o.pCriteriaId;
+        var _pCName = $.trim(o.pCriteriaName);
+        var _subCid = o.subCriteriaId;
+        var _subCName = $.trim(o.subCriteriaName);
+       
+        var _subCDiv = o.subCriteriaDiv;
+        var _chart = [{
+            pie: 1,
+            column: 2,
+            line: 3
+        }];
+        var _chartTmpl = "";
         
-//         gPieChartData = [];
-//         if(gPrmCriteriaId === 7){
-            
-//         }
-//         else if(gPrmCriteriaId === 8){
-            
-//         }
-//     }
-
-//     if(callback) callback();
-// }
-
-// function setColumnChartData(callback){
-//     gColumnChartData = [];
-//     if(gPrmCriteriaId === 7){
+        var _url = "";
+        var _staticMY = new Date().getFullYear() - 2;
         
-//     }
+        if(isContain(_pCName, "Vehicle Architecture")){
+        
+        }
+        else if(isContain(_pCName, "Wires and Cables")){
+            _url = "dynamic_wires_usage_summary @byRegion='Y',@byMY='Y',@criteria_id="+ _subCid;
+            
+            if(isContain(_subCName, "Overall wire usage lower than 0.5 CSA")){
+                _chart.pie //= "displayPieSmallWires()";
+                _chart.column //= "displayColumnSmallWires()";
+            }
+            else if(isContain(_subCName, "New Wire Sizes")){
+                _chart.pie //= displayPieNewWireSizes();
+                _chart.column //= displayColumnNewWireSizes();
+            }
+            else if(isContain(_subCName, "Smaller wire sizes in High Flexible areas")){
+                _chart.pie //= displayPieSMHighFlex();
+                _chart.column //= displayColumnSMHighFlex();
+            }
+            else if(isContain(_subCName, "Smaller wire sizes in Engine Compartment areas")){
+                _chart.pie //= displayPieSMEngineComp();
+                _chart.column //= displayColumnSMEngineComp();
+            }
+            else if(isContain(_subCName, "PVC wires in Engine Compartment")){
+                _chart.pie// = displayPiePVCEngineComp();
+                _chart.column //= displayColumnPVCEngineComp();
+            }
+            else if(isContain(_subCName, "New Conductor Technology with lesser dimensions")){
+
+                _url = "wire_tech_lower_upper_diameter @byMY="+ _staticMY +",@criteria_id="+ _subCid;
+               _chart.line //= displayWireTechDiameter();
+            }
+            else if(isContain(_subCName, "New Conductor Technology with lesser weight")){
+
+                _url = "wire_tech_lower_upper_weight @model_year="+ _staticMY +",@criteria_id="+ _subCid;
+                _chart.line //= displayWireTechWeight();
+            } 
+            else if(isContain(_subCName, "New Technology on wire Conductor")){
+                _chart.pie //= displayPieNewTechWireConductor();
+                _chart.column //= displayColumnNewTechWireConductor();
+            } 
+            else if(isContain(_subCName, "Overall wire usage lower than 1.0 CSA - Marc")){
+                _chart.pie //= displayPieOverallCSAMarc();
+                _chart.column //= displayColumnOverallCSAMarc();
+            }
+            else{
+                
+            }
+        }
+        else if(isContain(_pCName, "Power Distribution")){
+            
+        }
+        else if(isContain(_pCName, "Grounding Distribution")){
+            
+        }
+        else{
+            
+        }
+
+        var _result = {
+            url: _url,
+            chart: _chart
+        };
+       
+        return _result;
+    }
+}
+
+function displayChartByCriteria(data){
+    $gMainContainer.find(".d-criteria").each(function(){
+        var _pCid = $(this).attr("id");
+        var _pCName = $(this).attr("name");
+        var _$chartContainer = $(this).find(".users-menu-graph");
+        var _subCriterias = data.filter(function (item) {
+        	return item.pcriteria_id == _pCid;
+        });
+        
+        gTW.new();
+        $.each(_subCriterias, function(i, v){
+            var _subCid = v.criteria_id;
+            var _subCName = v.criteria_title;
+            var _subCDiv = "d_sub_criteria_" + _subCid;
+                
+            var _index = 0;
+            var _loadChart = function() {
+                if (_index < _subCriterias.length) {
+                    gTW.chart({
+                        card_id: _subCid,
+                        header_title: _subCName,
+                        body_id: _subCDiv
+                    });
+                    
+                    _$chartContainer.append(gTW.html());
+                    
+                    var _res = setChartSettings({
+                        pCriteriaId : _pCid,
+                        pCriteriaName : _pCName,
+                        subCriteriaId: _subCid,
+                        subCriteriaName: _subCName,
+                        subCriteriaDiv: _subCDiv
+                    });
+                
+                    getDataByCriteriaId(_res.url, _subCName, function(){
+                        console.log(_res);
+                        //displayChartType(_subCid, _subCDiv, function(){
+                             _index++;
+                        //});
+                     });
+                }
+            };
+            _loadChart();
+        });
+    });
+       
+    // Show div on scroll
+    $('.aniview').AniView({
+        animateThreshold: 200,
+        scrollPollInterval: 20
+    });
     
-//     //console.log("gColumnChartData", gColumnChartData);
-//     if(callback) callback();
+    // Initialize sticky div
+    $(".users-menu-item").stick_in_parent({
+        //parent: ".userForm",
+        //spacer: ".manual_spacer"
+    });   
+}
+
+function setChartTemplate(criteriaId, graphs, callback){
+    var _tw = new zsi.easyJsTemplateWriter();
+    var _container = [];
+    $("#chart_container").html(function(){
+        for(var i=1; i <= graphs; i++){
+            var _chartId = "chart_"+ criteriaId +"_"+ i;
+            _container.push(_chartId);
+            
+            _tw.chartCard({ 
+                id: _chartId,
+                header:"d-none"
+            });
+        }
+        return _tw.html();
+    });
+    
+    callback(_container);
+}
+
+function displayChartType(subCriteriaId, subCriteriaDiv, callback){
+    $("#chart_container").html(function(){
+        for(var i=1; i <= graphs; i++){
+            var _chartId = "chart_"+ criteriaId +"_"+ i;
+            _container.push(_chartId);
+            
+            _tw.chartCard({ 
+                id: _chartId,
+                header:"d-none"
+            });
+        }
+        return _tw.html();
+    });
+    var _chartDiv = "#chart_criteria_" + subCriteriaId;
+    gTW = new zsi.easyJsTemplateWriter(_chartDiv);
+    gTW.chartDiv({ 
+        title: "", 
+        title_class:"d-none", 
+        header_id: "",
+        header_class: "d-none",
+        chart_my_id: "chartMY_" + subCriteriaId,
+        chart_region_id: "chartRegion_" + subCriteriaId,
+        chart_region_class: ( _criteriaId === 39 ||  subCriteriaId === 40 || subCriteriaId === 60 || subCriteriaId === 67 || subCriteriaId === 74 ? "d-none" : ""),
+        footer_id: "chartTrendResult",
+        footer_class: "d-none"
+    });
+    
+    callback();
+}
+
+// function setChartTemplate(o, div){
+//     var _parentCid = o[0].pcriteria_id;
+//     var _chartCon = "#" + div;
+//     var _tw = new zsi.easyJsTemplateWriter(_chartCon).new();
+    
+//     $.each(o, function(i, v){
+//         var _criteriaId = v.criteria_id;
+//         var _criteriaTitle = v.criteria_title;
+//         var _chartBody = "chartBody_" + _criteriaId;
+                
+//         _tw.chart({
+//             card_id: _criteriaId,
+//             header_title: _criteriaTitle,
+//             body_id: _chartBody
+//         });
+
+//         var index = 0;
+//         var loadChart = function() {
+            
+//             if (index < o.length) {
+//                 if(_criteriaId === 7 || _criteriaId === 8 || _criteriaId === 9 || _criteriaId === 10 || _criteriaId === 38 || _criteriaId === 39 || _criteriaId === 40 || _criteriaId === 41 || _criteriaId === 14 || _criteriaId === 67 ||  _criteriaId === 74){
+//                     gtw = new zsi.easyJsTemplateWriter("#" + _chartBody).new();
+//                     gtw.chartDiv({ 
+//                         title: "", 
+//                         title_class:"d-none", 
+//                         header_id: "",
+//                         header_class: "d-none",
+//                         chart_my_id: "chartMY_" + _criteriaId,
+//                         chart_region_id: "chartRegion_" + _criteriaId,
+//                         chart_region_class: ( _criteriaId === 39 ||  _criteriaId === 40 || _criteriaId === 60 || _criteriaId === 67 || _criteriaId === 74 ? "d-none" : ""),
+//                         footer_id: "chartTrendResult",
+//                         footer_class: "d-none"
+//                     });
+                    
+//                     am4core.useTheme(am4themes_animated);
+                   
+//                     if(_criteriaId === 39){
+//                         displayNewWireTechDimension(_criteriaId);
+//                     }
+//                     else if(_criteriaId === 40){
+//                         displayNewWireTech(_criteriaId);
+//                     }
+//                     else if(_criteriaId === 67 || _criteriaId === 74){
+//                         displayChartRetainer(_criteriaId);
+//                     }
+//                     else{
+//                         getDataByCriteriaId(_criteriaId, function(){
+//                             setMYRange();
+//                             //setPieChartData();
+//                             //setColumnChartData();
+                            
+//                             displayPieChart(function(){
+//                                 displayColumnChart(function(){
+//                                     ++index;
+//                                 });
+//                             });
+//                         });
+//                   }
+//               }
+//             } 
+//         };
+//         loadChart();
+//     });
 // }
 
 function displayPieChart(callback){
     if(gData.length > 0){
-        
         if(gPrmCriteriaId === 7){
             displayPieSmallWires();
         }
@@ -4517,7 +4689,6 @@ function displayNewWireTech(criteriaId){
 
 function getDataNewWireTechDimension(criteriaId, callback){
     var _my = new Date().getFullYear() - 2;
-    var _wireGuage = "0.75";
     $.get(execURL + "wire_tech_lower_upper_diameter @byMY="+ _my +",@criteria_id="+ criteriaId 
     , function(data){
         var dataRows = [];
@@ -4625,33 +4796,6 @@ function displayNewWireTechDimension(criteriaId){
 
 //------------------- MECHANICAL (Retainer) ---------------------------------//
 
-function firstAndLast(array, key) {
-    var firstItem = array[0];
-    var lastItem = array[array.length-1];
-    
-    if(key) {
-        firstItem = firstItem[key];
-        lastItem = lastItem[key];
-    }
-    
-    var objOutput = {};
-    objOutput.first = firstItem;
-    objOutput.last = lastItem;
-    
-    return objOutput;
-} 
-
-function dynamicObjectKey(data){
-    var _dynamicKey = "";
-    $.each(Object.keys(data[0]), function(i, key){
-       if(key !== "location" && key !== "location_dtl" && key !== "REGION_NAME" && key !== "MODEL_YEAR"){
-           _dynamicKey = key;
-       }
-    });
-   
-    return _dynamicKey;
-}
-
 function getRetainerData(criteriaId, callback){
     $.get(execURL + "dynamic_retainers_sel @byMY='Y',@byRegion='Y',@criteria_id=" + criteriaId 
     , function(data){
@@ -4666,11 +4810,8 @@ function displayChartRetainer(criteriaId){
         var _modelYear = data.groupBy(["MODEL_YEAR"]);
         var _locationDtl = data.groupBy(["location_dtl"]);
         
-        var _dynamicKey = dynamicObjectKey(data);
+        var _dynamicKey = getDistinctKey(data);
         var _dynamicObj = data.groupBy([_dynamicKey]);
-       
-        console.log("_dynamicKey", _dynamicKey);
-        console.log("_dynamicObjByKey", _dynamicObj);
         
         gModelYears = _modelYear;
         setMYRange();
@@ -4786,8 +4927,8 @@ function displayChartRetainer(criteriaId){
             _createSeries(_nameNew, _name);
         }); 
         
-        var _mYear = firstAndLast(_modelYear , "name");
-        var _locDtl = firstAndLast(_locationDtl , "name");
+        var _mYear = getFirstAndLastItem(_modelYear , "name");
+        var _locDtl = getFirstAndLastItem(_locationDtl , "name");
         
         $.each(_modelYear, function(i, v) { 
             var _my = v.name;
@@ -4826,5 +4967,4 @@ function displayChartRetainer(criteriaId){
     });
 }
 
-
-  
+      
