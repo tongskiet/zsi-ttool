@@ -65,7 +65,10 @@ function toggleMenu(o){
 }
 		
 function displayTrendToolMenus(){ //load Main Menu
-    if (readCookie("zsi_login")==="Y"){
+    var     _getUrl = window.location.href
+            _search = "page/zsiuserlogin";
+    ;
+    if (readCookie("zsi_login")==="Y" ||  (_getUrl.search(_search)==0)){ //condition to removed errors in the menu when you are in the second login page.
     
         var _tw = new zsi.easyJsTemplateWriter();   
         var _$menu = $("#topMainMenu");
@@ -350,4 +353,4 @@ function deleteCookie(name) {
 function ttShowSlideMenu(val){ // trend tool menu slide
    $(val).slideToggle("fast");
 }
-     
+      
