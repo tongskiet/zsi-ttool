@@ -524,9 +524,9 @@ function getMYRange(){
 
 // ---------------------- All Wires --------------------------//
 function displaySWMap(){
-    console.log("gAll", gAll);
-    console.log("gRegionNames", gRegionNames);
-    console.log("gModelYears", gModelYears);
+    //console.log("gAll", gAll);
+    //console.log("gRegionNames", gRegionNames);
+    //console.log("gModelYears", gModelYears);
     
     am4core.useTheme(am4themes_dark);
     am4core.useTheme(am4themes_animated);
@@ -565,7 +565,6 @@ function displaySWMap(){
     //     if( _region==="Europe" ){
     //         var _europeAsia = am4geodata_region_world_europeLow.features;
     //             //_europeAsia.shift();
-    //             console.log(_europeAsia);
     //         _color = chart.colors.getIndex(2);
     //         _items = _europeAsia;
     //     }
@@ -583,8 +582,6 @@ function displaySWMap(){
     //     })
     // });
     
-    // console.log("groupData",groupData);
-    
     // // This array will be populated with country IDs to exclude from the world series
     // var excludedCountries = ["AQ"];
     
@@ -598,7 +595,6 @@ function displaySWMap(){
     //     var includedCountries = [];
         
     //     group.data.forEach(function(country){
-    //         //console.log(country.id)
     //         includedCountries.push(country.id);
     //         excludedCountries.push(country.id);
     //     });
@@ -645,7 +641,6 @@ function displaySWMap(){
     //     // what to do when country is clicked
     //     mapPolygonTemplate.events.on("hit", function (event) {
     //         //selectPolygon(event.target);
-    //         //console.log(event.target);
     //     })
       
     //     // States  
@@ -1078,7 +1073,6 @@ function displaySWMap(){
     });
     
     pieSeries.data = _data;
-    console.log("_data", _data);
     // Center on Pacific
     //chart.deltaLongitude = -160;
     
@@ -2486,4 +2480,4 @@ function displaySWDtlEachRegionPie(callback){
     if(callback) callback();
 }
 
-                   
+                    

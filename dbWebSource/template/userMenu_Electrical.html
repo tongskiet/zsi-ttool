@@ -52,9 +52,8 @@
 }
 .chart-div {
   width: 100%;
-  max-height: 380px;
+  min-height: 380px;
   height: 100vh;
-  border: 1px solid #333;
 }
 .chart-div-sub {
     width: 100%;
@@ -134,7 +133,7 @@
     <li name="chart">
         <div class="d-sub-criteria card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn">
             <div class="card-header bg-dark text-white rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
-            <div class="card-body p-0 mt-1">
+            <div class="card-body p-0 border-top border-danger">
                 <div class="{{body_class}}" id="{{body_id}}"></div>  
             </div>
         </div>
@@ -152,19 +151,11 @@
             </div>
         </div>
     </li>
-    <li name="chartCardWrapper">
-        <div class="my-2 bg-white">
-            <h6 class="border-bottom border-gray pb-2 mb-3 h6 {{title_class}}"><b>{{title}}</b></h6>
-            <div class="media">
-                <div id="{{id}}" class="chart-div"></div>
-            </div>
-        </div>
-    </li>
     <li name="chartCard">
-        <div class="card border-dark mb-1 {{class}}" style="{{style}}">
+        <div class="card border-dark rounded-0 mb-1 {{class}}" style="{{style}}">
           <div class="card-header {{header}} p-2 h6">{{title}}</div>
           <div class="card-body p-2">
-            <div id="{{id}}" class="row h-100"></div>
+            <div id="{{id}}" class="row h-100 chart-div"></div>
           </div>
         </div>
     </li>
