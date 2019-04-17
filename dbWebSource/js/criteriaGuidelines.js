@@ -1305,10 +1305,10 @@ function displayChartElectrical(criteriaId){
             
         }
         else if(_menu === "Network Topology"){
-            // setCharTemplate(criteriaId, 2, function(container){
-            //     displayPieNetworkTopology(container[0]);
-            //     displayColumnNetworkTopology(container[1]);
-            // });
+            setCharTemplate(criteriaId, 2, function(container){
+                displayPieNetworkTopology(container[0]);
+                displayColumnNetworkTopology(container[1]);
+            });
         }
     });
 }
@@ -1342,7 +1342,7 @@ function displayChartMechanical(criteriaId){
                 displayColumnGrommets(container[1]);
             });
         }
-        else if(_menu === "Though Shield Bracket"){
+        else if(_menu === "Trough,Shield & Bracket"){
             setCharTemplate(criteriaId, 2, function(container){
                 displayPieSTC(container[0]);
                 displayColumnSTC(container[1]);
@@ -1513,16 +1513,29 @@ function getFirstAndLastItem(obj, key) {
     return objOutput;
 } 
 
-function getDistinctKey(data){
-    var _key = "";
+function getDistinctKey(data, exclude=[]){
+    var _key = {};
+    var _value = "";
+    var _category = "";
+    var _columns = ["REGION_NAME", "MODEL_YEAR"]
+    if(exclude.length > 0){
+        _columns.push(exclude);
+    }
     if(data.length > 0){
         $.each(Object.keys(data[0]), function(i, key){
-           if(key !== "location" && key !== "location_dtl" && key !== "REGION_NAME" && key !== "MODEL_YEAR"){
-               _key = key;
+           if(_columns.indexOf(key) === -1){
+               if(isContain(key.toUpperCase(), "COUNT")){
+                    _value = key;
+               }else{
+                    _category = key;
+               } 
            }
         });
     }
-    return _key;
+    _key.value = _value
+    _key.category = _category
+    
+    return _key; 
 }
 
 function setCriteriaUrl(criteriaId){
@@ -1565,7 +1578,7 @@ function setCriteriaUrl(criteriaId){
         else if(_menuName === "Splice"){
             _url = "";
         }
-        else if(_menuName === "Though Shield Bracket"){
+        else if(_menuName === "Trough,Shield & Bracket"){
             _url = "dynamic_stc_sel @byMY='Y',@byRegion='Y',@criteria_id="+ criteriaId;
         }
     }
@@ -3883,26 +3896,35 @@ function displayWireTechWeight(container, callback){
 // Network Topology
 function displayPieNetworkTopology(container){
     var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+    
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
         
-        $.each(gData.groupBy(["RET"]), function(y, w) { 
+        $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
-            var _ret = w.name;
-            var _retNew = _ret.replace(".","_");
-
+            var _cName = w.name;
             var _res = w.items.filter(function (item) {
-            	return item.RET == _ret && item.MODEL_YEAR == _my;
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
             });
 
-            _count = _res.reduce(function (accumulator, currentValue) {
-                return accumulator + currentValue.COUNT_RING_EYELET_TYPE;
-            }, 0);
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }  
             
             _data.push({
                 model_year: +_my,
-                wire_guage: _ret,
-                wire_count: _count
+                category: _cName,
+                value: _count
             });
         });
         
@@ -3927,8 +3949,8 @@ function displayPieNetworkTopology(container){
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "wire_count";
-        pieSeries.dataFields.category = "wire_guage";
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -3980,8 +4002,13 @@ function displayPieNetworkTopology(container){
 
 function displayColumnNetworkTopology(container, callback){
     if(gData.length > 0){
-         var _data = [];
-        $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
+        var _data = [];
+        var _dynamicKey = getDistinctKey(gData);
+        var _value = _dynamicKey.value;
+        var _category = _dynamicKey.category;
+        var _dynamicObj = gData.groupBy([_category]);
+        
+        $.each(gRegionNames, function(i, r) { 
             $.each(gModelYears, function(x, my) { 
                 var _my = my.name;
                 var _region = r.name;
@@ -3990,19 +4017,25 @@ function displayColumnNetworkTopology(container, callback){
                 _obj.region = _region;
                 _obj.category = _my +"("+ _region +")";
                 
-                $.each(gData.groupBy(["RET"]), function(y, w) { 
+                $.each(_dynamicObj, function(y, w) { 
                     var _count = 0;
-                    var _ret = w.name;
-                    var _retNew = _ret.replace(".","_");
+                    var _cName = w.name;
+                    var _cNameNew = _cName.replace(".","_");
                     var _res = r.items.filter(function (item) {
-                    	return item.RET == _ret && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
                     });
                     
-                    _count = _res.reduce(function (accumulator, currentValue) {
-                        return accumulator + currentValue.COUNT_RING_EYELET_TYPE;
-                    }, 0);
+                    if(_value && _value !== ""){
+                        _count = _res.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0);    
+                    }else{
+                        for(; _count < _res.length; ){
+                            _count++;
+                        }
+                    }
     
-                    _obj[_retNew] = _count;
+                    _obj[_cNameNew] = _count;
                 });
                 _data.push(_obj);
             });
@@ -4060,12 +4093,11 @@ function displayColumnNetworkTopology(container, callback){
             range.locations.endCategory = 0.9;
         };
     
-        $.each(gData.groupBy(["RET"]), function(x, w) { 
-            var _ret = w.name;
-            var _retNew = _ret.replace(".","_");
-            var _field = _retNew;
+        $.each(_dynamicObj, function(x, w) { 
+            var _cName = w.name;
+            var _cNameNew = _cName.replace(".","_");
             
-            _createSeries(_field, _ret);
+            _createSeries(_cNameNew, _cName);
         });  
         
         $.each(gRegionNames, function(i, r) { 
@@ -4087,24 +4119,23 @@ function displayColumnNetworkTopology(container, callback){
 // Retainer
 function displayChartRetainer(container, callback){
     if(gData.length > 0){
-        var _region = gData.groupBy(["REGION_NAME"]);
-        var _modelYear = gData.groupBy(["MODEL_YEAR"]);
-        var _locationDtl = gData.groupBy(["location_dtl"]);
-        
-        var _dynamicKey = getDistinctKey(gData);
-        var _dynamicObj = gData.groupBy([_dynamicKey]);
-        
         var _data = [];
-        $.each(_region, function(i, r) { 
+        var _dynamicKey = getDistinctKey(gData, ["location"]);
+        var _value = _dynamicKey.value;
+        var _category = _dynamicKey.category;
+        var _dynamicObj = gData.groupBy([_category]);
+        var _locationGrp = gData.groupBy(["location_dtl"]);
+
+        $.each(gRegionNames, function(i, r) { 
             
-            $.each(_modelYear, function(x, my) {
+            $.each(gModelYears, function(x, my) {
                 var _regionName = r.name;
                 var _modelYear = my.name;
                 var _result = r.items.filter(function (item) {
                 	return item.MODEL_YEAR == _modelYear;
                 });
                 
-                $.each(_locationDtl, function(y, l) {
+                $.each(_locationGrp, function(y, l) {
                     var _locationDtl = l.name;
                     var _json = {
                         REGION_NAME : _regionName,
@@ -4113,17 +4144,21 @@ function displayChartRetainer(container, callback){
                     };
 
                     $.each(_dynamicObj, function(z, s) {
-                        
+                        var _count = 0;
                         var _name = s.name;
                         var _nameNew = _name.replace(" ","_");
-                        
                         var _result2 = _result.filter(function (item) {
-                        	return item.location_dtl == _locationDtl && item[_dynamicKey] == _name;
+                        	return item.location_dtl == _locationDtl && item[_category] == _name;
                         });
                         
-                        var _count = 0;
-                        for(; _count < _result2.length; ){
-                            _count++;
+                        if(_value && _value !== ""){
+                             _count = _result2.reduce(function (accumulator, currentValue) {
+                                return accumulator + currentValue[_value];
+                            }, 0)
+                        }else{
+                            for(; _count < _result2.length; ){
+                                _count++;
+                            }
                         }
                        
                         _json[_nameNew] = _count;
@@ -4205,13 +4240,13 @@ function displayChartRetainer(container, callback){
             _createSeries(_nameNew, _name);
         }); 
         
-        var _mYear = getFirstAndLastItem(_modelYear , "name");
-        var _locDtl = getFirstAndLastItem(_locationDtl , "name");
+
+        var _locDtl = getFirstAndLastItem(_locationGrp , "name");
         
-        $.each(_modelYear, function(i, v) { 
+        $.each(gModelYears, function(i, v) { 
             var _my = v.name;
             
-            $.each(_region, function(i, r) { 
+            $.each(gRegionNames, function(i, r) { 
                 var _reg = r.name;
                 var _first = _locDtl.first + "("+ _my +"-"+ _reg +")";
                 var _last = _locDtl.last + "("+ _my +"-"+ _reg +")";
@@ -4220,10 +4255,10 @@ function displayChartRetainer(container, callback){
             });
         });
         
-        $.each(_region, function(i, r) { 
+        $.each(gRegionNames, function(i, r) { 
             var _reg = r.name;
-            var _first = _locDtl.first + "("+ _mYear.first +"-"+ _reg +")";
-            var _last = _locDtl.last + "("+ _mYear.last +"-"+ _reg +")";
+            var _first = _locDtl.first + "("+ gMYFrom +"-"+ _reg +")";
+            var _last = _locDtl.last + "("+ gMYTo +"-"+ _reg +")";
             
             _createLabel(_first, _last, _reg, 0.1, 20);
         });
@@ -4231,43 +4266,43 @@ function displayChartRetainer(container, callback){
         //Add cursor
         chart.cursor = new am4charts.XYCursor();
         
-        //Add legend
-        chart.legend = new am4charts.Legend();
-        chart.legend.labels.template.fontSize = 10;
-        chart.legend.valueLabels.template.fontSize = 10;
-        chart.legend.itemContainers.template.dy = 10;
-        chart.legend.itemContainers.template.paddingTop = 1;
-        chart.legend.itemContainers.template.paddingBottom = 1;
-        
-        var markerTemplate = chart.legend.markers.template;
-        markerTemplate.width = 10;
-        markerTemplate.height = 10;
+        setLegendSize(chart);
     }
 }
 
 // Ground Eyelet
 function displayPieGroundEyelet(container){
     var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+    
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
         
-        $.each(gData.groupBy(["RET"]), function(y, w) { 
+        $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
-            var _ret = w.name;
-            var _retNew = _ret.replace(".","_");
-
+            var _cName = w.name;
+            //var _cNameNew = _cName.replace(".","_");
             var _res = w.items.filter(function (item) {
-            	return item.RET == _ret && item.MODEL_YEAR == _my;
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
             });
 
-            _count = _res.reduce(function (accumulator, currentValue) {
-                return accumulator + currentValue.COUNT_RING_EYELET_TYPE;
-            }, 0);
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }
             
             _data.push({
                 model_year: +_my,
-                wire_guage: _ret,
-                wire_count: _count
+                category: _cName,
+                value: _count
             });
         });
         
@@ -4292,8 +4327,8 @@ function displayPieGroundEyelet(container){
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "wire_count";
-        pieSeries.dataFields.category = "wire_guage";
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -4345,8 +4380,13 @@ function displayPieGroundEyelet(container){
 
 function displayColumnGroundEyelet(container, callback){
     if(gData.length > 0){
-         var _data = [];
-        $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
+        var _data = [];
+        var _dynamicKey = getDistinctKey(gData);
+        var _value = _dynamicKey.value;
+        var _category = _dynamicKey.category;
+        var _dynamicObj = gData.groupBy([_category]);
+        
+        $.each(gRegionNames, function(i,r) { 
             $.each(gModelYears, function(x, my) { 
                 var _my = my.name;
                 var _region = r.name;
@@ -4355,19 +4395,25 @@ function displayColumnGroundEyelet(container, callback){
                 _obj.region = _region;
                 _obj.category = _my +"("+ _region +")";
                 
-                $.each(gData.groupBy(["RET"]), function(y, w) { 
+                $.each(_dynamicObj, function(y, w) { 
                     var _count = 0;
-                    var _ret = w.name;
-                    var _retNew = _ret.replace(".","_");
+                    var _cName = w.name;
+                    var _cNameNew = _cName.replace(".","_");
                     var _res = r.items.filter(function (item) {
-                    	return item.RET == _ret && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
                     });
                     
-                    _count = _res.reduce(function (accumulator, currentValue) {
-                        return accumulator + currentValue.COUNT_RING_EYELET_TYPE;
-                    }, 0);
+                    if(_value && _value !== ""){
+                         _count = _res.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0);    
+                    }else{
+                        for(; _count < _res.length; ){
+                            _count++;
+                        }
+                    }
     
-                    _obj[_retNew] = _count;
+                    _obj[_cNameNew] = _count;
                 });
                 _data.push(_obj);
             });
@@ -4450,12 +4496,11 @@ function displayColumnGroundEyelet(container, callback){
             range.locations.endCategory = 0.9;
         };
     
-        $.each(gData.groupBy(["RET"]), function(x, w) { 
-            var _ret = w.name;
-            var _retNew = _ret.replace(".","_");
-            var _field = _retNew;
+        $.each(_dynamicObj, function(x, w) { 
+            var _cName = w.name;
+            var _cNameNew = _cName.replace(".","_");
             
-            _createSeries(_field, _ret);
+            _createSeries(_cNameNew, _cName);
         });  
         
         $.each(gRegionNames, function(i, r) { 
@@ -4467,11 +4512,7 @@ function displayColumnGroundEyelet(container, callback){
         //Add cursor
         chart.cursor = new am4charts.XYCursor();
         
-        //Add legend
-        //chart.legend = new am4charts.Legend();
-        
         setLegendSize(chart);
-        
         setWireTrend(_data);
     }
 }
@@ -4479,28 +4520,36 @@ function displayColumnGroundEyelet(container, callback){
 // Grommets
 function displayPieGrommets(container){
     var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+    
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
-        var _dynamicKey = getDistinctKey(gData);
-        var _dynamicObj = gData.groupBy([_dynamicKey]);
-        
-        $.each(_dynamicObj, function(y, w) { 
-            var _grommet = w.name;
-            var _grommetNew = _grommet.replace(".","_");
-
+        $.each(_dynamicObj, function(y, w) {
+            var _count = 0;
+            var _name = w.name;
+            //var _nameNew = _name.replace(".","_");
             var _res = w.items.filter(function (item) {
-            	return item[_dynamicKey] == _grommet && item.MODEL_YEAR == _my;
+            	return item[_category] == _name && item.MODEL_YEAR == _my;
             });
 
-           var _count = 0;
-            for(; _count < _res.length; ){
-                _count++;
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }
+            else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
             }
             
             _data.push({
                 model_year: +_my,
-                grommet_type: _grommet,
-                count: _count
+                category: _name,
+                value: _count
             });
         });
         
@@ -4525,8 +4574,8 @@ function displayPieGrommets(container){
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "count";
-        pieSeries.dataFields.category = "grommet_type";
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -4580,9 +4629,11 @@ function displayColumnGrommets(container, callback){
     if(gData.length > 0){
         var _data = [];
         var _dynamicKey = getDistinctKey(gData);
-        var _dynamicObj = gData.groupBy([_dynamicKey]);
+        var _value = _dynamicKey.value;
+        var _category = _dynamicKey.category;
+        var _dynamicObj = gData.groupBy([_category]);
         
-        $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
+        $.each(gRegionNames, function(i,r) { 
             $.each(gModelYears, function(x, my) { 
                 var _my = my.name;
                 var _region = r.name;
@@ -4592,18 +4643,23 @@ function displayColumnGrommets(container, callback){
                 _obj.category = _my +"("+ _region +")";
                 
                 $.each(_dynamicObj, function(y, w) { 
-                    var _grommet = w.name;
-                    var _grommetNew = _grommet.replace(".","_");
+                    var _count = 0;
+                    var _name = w.name;
+                    var _nameNew = _name.replace(".","_");
                     var _res = r.items.filter(function (item) {
-                    	return item[_dynamicKey] == _grommet && item.MODEL_YEAR == _my;
+                    	return item[_category] == _name && item.MODEL_YEAR == _my;
                     });
                     
-                    var _count = 0;
-                    for(; _count < _res.length; ){
-                        _count++;
+                    if(_value && _value !== ""){
+                         _count = _res.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0)
+                    }else{
+                        for(; _count < _res.length; ){
+                            _count++;
+                        }
                     }
-    
-                    _obj[_grommetNew] = _count;
+                    _obj[_nameNew] = _count;
                 });
                 _data.push(_obj);
             });
@@ -4662,11 +4718,10 @@ function displayColumnGrommets(container, callback){
         };
     
         $.each(_dynamicObj, function(x, w) { 
-            var _grommet = w.name;
-            var _grommetNew = _grommet.replace(".","_");
-            var _field = _grommetNew;
+            var _name = w.name;
+            var _nameNew = _name.replace(".","_");
             
-            _createSeries(_field, _grommet);
+            _createSeries(_nameNew, _name);
         });  
         
         $.each(gRegionNames, function(i, r) { 
@@ -4686,28 +4741,36 @@ function displayColumnGrommets(container, callback){
 // Though Shield Bracket
 function displayPieSTC(container){
     var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+        
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
-        var _dynamicKey = getDistinctKey(gData);
-        var _dynamicObj = gData.groupBy([_dynamicKey]);
         
         $.each(_dynamicObj, function(y, w) { 
-            var _grommet = w.name;
-            var _grommetNew = _grommet.replace(".","_");
-
+            var _count = 0;
+            var _cName = w.name;
+            //var _cNameNew = _cName.replace(".","_");
             var _res = w.items.filter(function (item) {
-            	return item[_dynamicKey] == _grommet && item.MODEL_YEAR == _my;
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
             });
-
-           var _count = 0;
-            for(; _count < _res.length; ){
-                _count++;
+            
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
             }
             
             _data.push({
                 model_year: +_my,
-                grommet_type: _grommet,
-                count: _count
+                category: _cName,
+                value: _count
             });
         });
         
@@ -4732,8 +4795,8 @@ function displayPieSTC(container){
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "count";
-        pieSeries.dataFields.category = "grommet_type";
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -4787,9 +4850,11 @@ function displayColumnSTC(container, callback){
     if(gData.length > 0){
         var _data = [];
         var _dynamicKey = getDistinctKey(gData);
-        var _dynamicObj = gData.groupBy([_dynamicKey]);
+        var _value = _dynamicKey.value;
+        var _category = _dynamicKey.category;
+        var _dynamicObj = gData.groupBy([_category]);
         
-        $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
+        $.each(gRegionNames, function(i,r) { 
             $.each(gModelYears, function(x, my) { 
                 var _my = my.name;
                 var _region = r.name;
@@ -4799,18 +4864,24 @@ function displayColumnSTC(container, callback){
                 _obj.category = _my +"("+ _region +")";
                 
                 $.each(_dynamicObj, function(y, w) { 
-                    var _grommet = w.name;
-                    var _grommetNew = _grommet.replace(".","_");
+                    var _count = 0;
+                    var _cName = w.name;
+                    var _cNameNew = _cName.replace(".","_");
                     var _res = r.items.filter(function (item) {
-                    	return item[_dynamicKey] == _grommet && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
                     });
                     
-                    var _count = 0;
-                    for(; _count < _res.length; ){
-                        _count++;
+                    if(_value && _value !== ""){
+                         _count = _res.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0);    
+                    }else{
+                        for(; _count < _res.length; ){
+                            _count++;
+                        }
                     }
     
-                    _obj[_grommetNew] = _count;
+                    _obj[_cNameNew] = _count;
                 });
                 _data.push(_obj);
             });
@@ -4869,11 +4940,10 @@ function displayColumnSTC(container, callback){
         };
     
         $.each(_dynamicObj, function(x, w) { 
-            var _grommet = w.name;
-            var _grommetNew = _grommet.replace(".","_");
-            var _field = _grommetNew;
+            var _cName = w.name;
+            var _cNameNew = _cName.replace(".","_");
             
-            _createSeries(_field, _grommet);
+            _createSeries(_cNameNew, _cName);
         });  
         
         $.each(gRegionNames, function(i, r) { 
@@ -4890,4 +4960,4 @@ function displayColumnSTC(container, callback){
     }
 }
 
-                                       
+                                         
