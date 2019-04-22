@@ -4,6 +4,7 @@ var  projectAccess = {}
     ,optionsURL  = base_url + "selectoption/code/" 
     ,bs = zsi.bs.ctrl
     ,svn = zsi.setValIfNull
+    ,gMenu = "E" // Initialize Menu 
 ; 
 
 
@@ -78,6 +79,7 @@ function displayTrendToolMenus(){ //load Main Menu
         var _getMenuItems = function(d){
             var _h = "";
              $.each(d, function(){
+               
                 _h += _tw.ttStandardMenu({
                       link      : "#"
                     , imageId1  : this.image2_id 
@@ -92,14 +94,15 @@ function displayTrendToolMenus(){ //load Main Menu
         _$menu.html("");
         $.get(execURL + "trend_menus_sel", function(data){
             var mnuGrps = data.rows.groupBy(["menu_type"]);
-            
-            $.each(mnuGrps, function(){
-                var _title =  (this.name.trim() ==="E" ? "ELECTRICAL" : "MECHANICAL");
+            $.each(mnuGrps, function(i, v){
+                var _meneName = this.name.trim();
+                var _title =  ( _meneName==="E" ? "ELECTRICAL" : "MECHANICAL");
                 var _h= _tw.ttStandardMenuGroup({
                                 id      : _title.toLowerCase() + _menu
-                               ,mID     : _title.toLowerCase() + _menu + _content
                                ,title   : _title
-                               ,onclick : "ttShowSlideMenu('#"+_title.toLowerCase() + _menu + _content+"')"
+                               ,style   : (_meneName !== gMenu ? "display:none": "")
+                               ,onclick : "ttSwitchMenu(\""+ _title +"\")"
+                               ,tooltip : "Switch to " + (_title==="ELECTRICAL" ? "MECHANICAL" : "ELECTRICAL")
                                ,value   : _getMenuItems( this.items)
                         }).html();
                 
@@ -350,7 +353,12 @@ function deleteCookie(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-function ttShowSlideMenu(val){ // trend tool menu slide
-   $(val).slideToggle("fast");
+function ttSwitchMenu(val){ // trend tool menu switch
+    $("#" + val.toLowerCase() + "Menu").hide();
+    if(val==="ELECTRICAL"){
+        $("#mechanicalMenu").fadeIn();
+    }else{
+        $("#electricalMenu").fadeIn();
+    }
 }
-      
+        

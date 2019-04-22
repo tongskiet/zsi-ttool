@@ -2,6 +2,7 @@
     ,bs                         = zsi.bs.ctrl
     ,bsButton                   = zsi.bs.button
     ,proc_url                   = base_url + "common/executeproc/"
+    ,gMenu                      = "M"
     ,gMenuId                    = parseInt(zsi.getUrlParamValue("mId"))
     ,gSpecsId                   = parseInt(zsi.getUrlParamValue("sId"))
     ,gPrmRegion                 = ""
@@ -1286,4 +1287,4 @@ function displayColumnSTC(container){
 
 
 
- 
+  
