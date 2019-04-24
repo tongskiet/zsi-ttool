@@ -330,7 +330,7 @@ function setChartSettings(o){
         else if(isContain(_pCName, "INLINE CONNECTOR")){
             
         }
-        else if(isContain(_pCName, "GROUND EYELET")){
+        else if(isContain(_pCName, "GROUND EYELET") || isContain(_pCName, "SPLICES") || isContain(_pCName, "BATTERY FUSE TERMINAL")){
             
             _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _subCid;
             _chart.pie = "displayPieGroundEyelet(container)";
@@ -350,17 +350,12 @@ function setChartSettings(o){
             _chart.pie = "displayPieGrommets(container)";
             _chart.column = "displayColumnGrommets(container)";
         }
-        else if(isContain(_pCName, "SPLICES")){
-            
-        }
+        
         else if(isContain(_pCName, "TROUGH/SHIELD/BRACKET")){
             
             _url = "dynamic_stc_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _subCid;
             _chart.pie = "displayPieSTC(container)";
             _chart.column = "displayColumnSTC(container)";
-        }
-        else if(isContain(_pCName, "BATTERY FUSE TERMINAL")){
-            
         }
         else{
             
@@ -470,55 +465,91 @@ function displayChartBySubCriteria(data, callback){
 function displayChartRetainer(container){
     if(gData.length > 0){
         var _data = [];
-        var _dynamicKey = getDistinctKey(gData, ["location"]);
+        var _excluded = ["LOCATION","SPECIFICLOCATION"]
+        var _dynamicKey = getDistinctKey(gData, _excluded);
         var _value = _dynamicKey.value;
         var _category = _dynamicKey.category;
         var _dynamicObj = gData.groupBy([_category]);
-        var _locationGrp = gData.groupBy(["location_dtl"]);
-
-        $.each(gRegionNames, function(i, r) { 
-            
-            $.each(gModelYears, function(x, my) {
-                var _regionName = r.name;
-                var _modelYear = my.name;
-                var _result = r.items.filter(function (item) {
-                	return item.MODEL_YEAR == _modelYear;
+        var _locationGrp = gData.groupBy(["SPECIFICLOCATION"]);
+        var _isMultiple = (_locationGrp[0].name === "undefined" ? false:true );
+        
+        if(_isMultiple){
+            $.each(gRegionNames, function(i, r) { 
+                $.each(gModelYears, function(x, my) {
+                    var _regionName = r.name;
+                    var _modelYear = my.name;
+                    var _result = r.items.filter(function (item) {
+                    	return item.MODEL_YEAR == _modelYear;
+                    });
+                    
+                    $.each(_locationGrp, function(y, l) {
+                        var _specLocation = l.name;
+                        var _json = {
+                            REGION_NAME : _regionName,
+                            MODEL_YEAR : +_modelYear,
+                            category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
+                        };
+    
+                        $.each(_dynamicObj, function(z, s) {
+                            var _count = 0;
+                            var _name = s.name;
+                            var _nameNew = _name.replace(" ","_");
+                            var _result2 = _result.filter(function (item) {
+                            	return item.SPECIFICLOCATION == _specLocation && item[_category] == _name;
+                            });
+    
+                            if(_value && _value !== ""){
+                                 _count = _result2.reduce(function (accumulator, currentValue) {
+                                    return accumulator + currentValue[_value];
+                                }, 0)
+                            }else{
+                                for(; _count < _result2.length; ){
+                                    _count++;
+                                }
+                            }
+                           
+                            _json[_nameNew] = _count;
+                        });
+                        
+                        _data.push(_json);
+                    }); 
                 });
-                
-                $.each(_locationGrp, function(y, l) {
-                    var _locationDtl = l.name;
-                    var _json = {
-                        REGION_NAME : _regionName,
-                        MODEL_YEAR : +_modelYear,
-                        category : _locationDtl +"("+ _modelYear +"-"+ _regionName +")"
-                    };
-
-                    $.each(_dynamicObj, function(z, s) {
+            });
+        }
+        else{
+             $.each(gRegionNames, function(i,r) { 
+                $.each(gModelYears, function(x, my) { 
+                    var _my = my.name;
+                    var _region = r.name;
+                    var _obj = {};
+                    _obj.year = +_my;
+                    _obj.region = _region;
+                    _obj.category = _my +"("+ _region +")";
+                    
+                    $.each(_dynamicObj, function(y, w) { 
                         var _count = 0;
-                        var _name = s.name;
-                        var _nameNew = _name.replace(" ","_");
-                        var _result2 = _result.filter(function (item) {
-                        	return item.location_dtl == _locationDtl && item[_category] == _name;
+                        var _cName = w.name;
+                        var _cNameNew = _cName.replace(" ","_");
+                        var _res = r.items.filter(function (item) {
+                        	return item[_category] == _cName && item.MODEL_YEAR == _my;
                         });
                         
                         if(_value && _value !== ""){
-                             _count = _result2.reduce(function (accumulator, currentValue) {
+                             _count = _res.reduce(function (accumulator, currentValue) {
                                 return accumulator + currentValue[_value];
-                            }, 0)
+                            }, 0);    
                         }else{
-                            for(; _count < _result2.length; ){
+                            for(; _count < _res.length; ){
                                 _count++;
                             }
                         }
-                       
-                        _json[_nameNew] = _count;
-                    });
-                    
-                    _data.push(_json);
-                }); 
-            });
-        });
         
+                        _obj[_cNameNew] = _count;
+                    });
+                    _data.push(_obj);
+                });
+            });
+        }
         // Display Chart
         am4core.useTheme(am4themes_animated);
         
@@ -527,92 +558,146 @@ function displayChartRetainer(container){
         chart.colors.step = 2;
         chart.padding(15, 15, 10, 15);
     
-        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "category";
-        categoryAxis.renderer.minGridDistance = 20;
-        categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.interactionsEnabled = false;
-        categoryAxis.renderer.labels.template.fontSize = 10;
-        categoryAxis.renderer.labels.template.valign = "top";
-        categoryAxis.renderer.labels.template.location = 0;
-        categoryAxis.renderer.labels.template.rotation = 270;
-        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (!isUD(text) ? text.replace(/\(.*/, "") : text);
-        });
-    
-        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        //valueAxis.title.text = "Count";
-        valueAxis.min = 0;
-        //valueAxis.max = 100;
-        valueAxis.strictMinMax = true;
-        valueAxis.calculateTotals = true;
-        valueAxis.renderer.minGridDistance = 10;
-        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-          return text + "%";
-        });
-    
-        // Create series
-        var _createSeries = function(field, name) {
-          var series = chart.series.push(new am4charts.ColumnSeries());
-          series.dataFields.valueY = field;
-          //series.dataFields.categoryXShow = "totalPercent";
-          series.dataFields.categoryX = "category";
-          series.name = name;
-          series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-          series.tooltip.fontSize = 10;
-          series.tooltip.dy = 0;
-          series.tooltip.align = "top";
-          series.stacked = true;
-          series.columns.template.width = am4core.percent(95);
-        }
+        if(_isMultiple){
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "category";
+            categoryAxis.renderer.minGridDistance = 20;
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.interactionsEnabled = false;
+            categoryAxis.renderer.labels.template.fontSize = 10;
+            categoryAxis.renderer.labels.template.valign = "top";
+            categoryAxis.renderer.labels.template.location = 0;
+            categoryAxis.renderer.labels.template.rotation = (_isMultiple ? 270: 0);
+            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+                return (!isUD(text) ? text.replace(/\(.*/, "") : text);
+            });
         
-        var _createLabel = function(category, endCategory, label, opacity, dy) {
-            var range = categoryAxis.axisRanges.create();
-            range.category = category;
-            range.endCategory = endCategory;
-            range.label.dataItem.text = label;
-            range.label.dy = dy;
-            //range.label.fontSize = 10;
-            range.label.fontWeight = "bold";
-            range.label.valign = "bottom";
-            range.label.location = 0.5;
-            range.label.rotation = 0;
-            range.axisFill.fill = am4core.color("#396478");
-            range.axisFill.fillOpacity = opacity;
-            range.locations.category = 0.1;
-            range.locations.endCategory = 0.9;
-        };
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            //valueAxis.title.text = "Count";
+            valueAxis.min = 0;
+            //valueAxis.max = 100;
+            valueAxis.strictMinMax = true;
+            valueAxis.calculateTotals = true;
+            valueAxis.renderer.minGridDistance = 10;
+            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+              return text + "%";
+            });
+        
+            // Create series
+            var _createSeries = function(field, name) {
+              var series = chart.series.push(new am4charts.ColumnSeries());
+              series.dataFields.valueY = field;
+              //series.dataFields.categoryXShow = "totalPercent";
+              series.dataFields.categoryX = "category";
+              series.name = name;
+              series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+              series.tooltip.fontSize = 10;
+              series.tooltip.dy = 0;
+              series.tooltip.align = "top";
+              series.stacked = (_isMultiple ? true: false);
+              series.columns.template.width = am4core.percent(95);
+            }
+            
+            var _createLabel = function(category, endCategory, label, opacity, dy) {
+                var range = categoryAxis.axisRanges.create();
+                range.category = category;
+                range.endCategory = endCategory;
+                range.label.dataItem.text = label;
+                range.label.dy = dy;
+                //range.label.fontSize = 10;
+                range.label.fontWeight = "bold";
+                range.label.valign = "bottom";
+                range.label.location = 0.5;
+                range.label.rotation = 0;
+                range.axisFill.fill = am4core.color("#396478");
+                range.axisFill.fillOpacity = opacity;
+                range.locations.category = 0.1;
+                range.locations.endCategory = 0.9;
+            };
+        }
+        else{
+            // Create axes
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "category";
+            categoryAxis.numberFormatter.numberFormat = "#";
+            //categoryAxis.title.text = "Wire 0.50 and Below";
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.renderer.minGridDistance = 20;
+            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+                return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+            });
+            
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            //valueAxis.title.text = "Count";
+            valueAxis.min = 0;
+            valueAxis.max = 100;
+            valueAxis.strictMinMax = true;
+            valueAxis.calculateTotals = true;
+            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+              return text + "%";
+            });
+            
+            // Create series
+            var _createSeries = function(field, name) {
+                var series = chart.series.push(new am4charts.ColumnSeries());
+                series.dataFields.valueY = field;
+                series.dataFields.valueYShow = "totalPercent";
+                series.dataFields.categoryX = "category";
+                series.name = name;
+                series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+            };
+             
+            var _createLabel = function(category, endCategory, label) {
+                var range = categoryAxis.axisRanges.create();
+                range.category = category;
+                range.endCategory = endCategory;
+                range.label.dataItem.text = label;
+                range.label.dy = 18;
+                range.label.fontWeight = "bold";
+                range.axisFill.fill = am4core.color("#396478");
+                range.axisFill.fillOpacity = 0.1;
+                range.locations.category = 0.1;
+                range.locations.endCategory = 0.9;
+            };
+        }
     
         $.each(_dynamicObj, function(i, v) { 
             var _name = v.name;
             var _nameNew = _name.replace(" ","_");
-            
+
             _createSeries(_nameNew, _name);
         }); 
         
-
-        var _locDtl = getFirstAndLastItem(_locationGrp , "name");
-        
-        $.each(gModelYears, function(i, v) { 
-            var _my = v.name;
+        if(!_isMultiple){
+            $.each(gRegionNames, function(i, r) { 
+                var _region = "("+ r.name +")";
+                
+                _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
+            });
+        }
+        else{
+            var _locDtl = getFirstAndLastItem(_locationGrp , "name");
+            
+            $.each(gModelYears, function(i, v) { 
+                var _my = v.name;
+                
+                $.each(gRegionNames, function(i, r) { 
+                    var _reg = r.name;
+                    var _first = _locDtl.first + "("+ _my +"-"+ _reg +")";
+                    var _last = _locDtl.last + "("+ _my +"-"+ _reg +")";
+                    
+                    _createLabel(_first, _last, _my, 0, 10);
+                });
+            });
             
             $.each(gRegionNames, function(i, r) { 
                 var _reg = r.name;
-                var _first = _locDtl.first + "("+ _my +"-"+ _reg +")";
-                var _last = _locDtl.last + "("+ _my +"-"+ _reg +")";
+                var _first = _locDtl.first + "("+ gMYFrom +"-"+ _reg +")";
+                var _last = _locDtl.last + "("+ gMYTo +"-"+ _reg +")";
                 
-                _createLabel(_first, _last, _my, 0, 10);
+                _createLabel(_first, _last, _reg, 0.1, 20);
             });
-        });
-        
-        $.each(gRegionNames, function(i, r) { 
-            var _reg = r.name;
-            var _first = _locDtl.first + "("+ gMYFrom +"-"+ _reg +")";
-            var _last = _locDtl.last + "("+ gMYTo +"-"+ _reg +")";
-            
-            _createLabel(_first, _last, _reg, 0.1, 20);
-        });
-        
+        }
         //Add cursor
         chart.cursor = new am4charts.XYCursor();
         
@@ -1287,4 +1372,4 @@ function displayColumnSTC(container){
 
 
 
-  
+   
