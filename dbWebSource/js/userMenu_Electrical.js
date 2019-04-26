@@ -596,7 +596,6 @@ function displayPieSmallWires(container){
         };
         
         chart.data = generateChartData();
-    
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "percent";
@@ -615,7 +614,8 @@ function displayPieSmallWires(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        //pieSeries.legendSettings.labelText = "Series: [bold {color}]{name}[/]";
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // //chart.legend.height = 50;
         // chart.legend.labels.template.fontSize = 12;
@@ -643,6 +643,13 @@ function displayPieSmallWires(container){
             
         });
         
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return "";
+            }
+            return text;
+        });
+        
         // pieSeries.labels.template.adapter.add("relativeRotation", function(relativeRotation, target) {
         //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
         //         return 90;
@@ -650,19 +657,19 @@ function displayPieSmallWires(container){
         //     return relativeRotation;
         // });
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
-            }
-            return radius;
-        });
+        // pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+        //         return 0;
+        //     }
+        //     return radius;
+        // });
         
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
-        });
+        // pieSeries.labels.template.adapter.add("fill", function(color, target) {
+        //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+        //         return am4core.color("#000");
+        //     }
+        //     return color;
+        // });
         
         setLegendSize(chart);
     };
@@ -738,6 +745,7 @@ function displayPieNewWireSizes(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
+        pieSeries.legendSettings.valueText = "{valueY.close}";
     
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
@@ -749,19 +757,26 @@ function displayPieNewWireSizes(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
+            return text;
         });
         
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
-        });
+        // pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+        //         return 0;
+        //     }
+        //     return radius;
+        // });
+        
+        // pieSeries.labels.template.adapter.add("fill", function(color, target) {
+        //     if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+        //         return am4core.color("#000");
+        //     }
+        //     return color;
+        // });
         
         setLegendSize(chart);
     };
@@ -837,7 +852,7 @@ function displayPieSMHighFlex(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
         // chart.legend.valueLabels.template.fontSize = 12;
@@ -848,18 +863,11 @@ function displayPieSMHighFlex(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -936,7 +944,7 @@ function displayPieSMEngineComp(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
         // chart.legend.valueLabels.template.fontSize = 12;
@@ -947,18 +955,11 @@ function displayPieSMEngineComp(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -1035,7 +1036,7 @@ function displayPiePVCEngineComp(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
         // chart.legend.valueLabels.template.fontSize = 12;
@@ -1046,18 +1047,11 @@ function displayPiePVCEngineComp(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -1226,7 +1220,7 @@ function displayPieNewTechWireConductor(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
         // chart.legend.valueLabels.template.fontSize = 12;
@@ -1237,18 +1231,11 @@ function displayPieNewTechWireConductor(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -1413,7 +1400,7 @@ function displayPieTwoWayConnector(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // chart.legend.labels.template.fontSize = 12;
         // chart.legend.valueLabels.template.fontSize = 12;
@@ -1424,18 +1411,11 @@ function displayPieTwoWayConnector(container){
         // markerTemplate.width = 12;
         // markerTemplate.height = 12;
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -1566,7 +1546,7 @@ function displayPieOverallCSAMarc(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
+        pieSeries.legendSettings.valueText = "{valueY.close}";
         // chart.legend = new am4charts.Legend();
         // //chart.legend.height = 50;
         // chart.legend.labels.template.fontSize = 12;
@@ -1590,18 +1570,11 @@ function displayPieOverallCSAMarc(container){
             
         });
         
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -3011,19 +2984,12 @@ function displayPiePowerDistribution(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-        
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.legendSettings.valueText = "{valueY.close}";
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
-        });
-        
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
+            return text;
         });
         
         setLegendSize(chart);
@@ -3224,30 +3190,15 @@ function displayPieNetworkTopology(container){
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
-    
-        chart.legend = new am4charts.Legend();
-        chart.legend.labels.template.fontSize = 12;
-        chart.legend.valueLabels.template.fontSize = 12;
-        chart.legend.itemContainers.template.paddingTop = 1;
-        chart.legend.itemContainers.template.paddingBottom = 1;
-        
-        var markerTemplate = chart.legend.markers.template;
-        markerTemplate.width = 12;
-        markerTemplate.height = 12;
-        
-        pieSeries.labels.template.adapter.add("radius", function(radius, target) {
+        pieSeries.legendSettings.valueText = "{valueY.close}";
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return 0;
+                return "";
             }
-            return radius;
+            return text;
         });
         
-        pieSeries.labels.template.adapter.add("fill", function(color, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return am4core.color("#000");
-            }
-            return color;
-        });
+        setLegendSize(chart);
     };
 
     $.each(gModelYears, function(i, v){
@@ -3375,4 +3326,4 @@ function displayColumnNetworkTopology(container, callback){
 }
 
 // ******************************** END CHART ********************************//
-  
+   
