@@ -66,9 +66,9 @@ function toggleMenu(o){
 }
 		
 function displayTrendToolMenus(){ //load Main Menu
-    var     _getUrl = window.location.href
+    var     _getUrl = window.location.href,
             _search = "page/zsiuserlogin";
-    ;
+
     if (readCookie("zsi_login")==="Y" ||  (_getUrl.search(_search)==0)){ //condition to removed errors in the menu when you are in the second login page.
     
         var _tw = new zsi.easyJsTemplateWriter();   
@@ -229,7 +229,7 @@ function loadChild(data,menu_id){
 
 function createMenuItems(data, menu_id){
     var html="";
-    var cls = (parseInt("0" +menu_id)===0?"navbar-nav": "dropdown-menu")
+    var cls = (parseInt("0" +menu_id)===0?"navbar-nav": "dropdown-menu");
     var hc= hasChild(data,menu_id); 
     if(hc) html +="<ul class='"+ cls + "'>";
         html +=loadChild(data,menu_id);
@@ -317,6 +317,14 @@ $(document).ready(function(){
    displayTrendToolMenus();
 });
 
+$(document).on("click", function(event){
+    if($(event.target).closest('.dropdown-toggle').length || $(event.target).closest('#topMainMenu').length){
+        return;
+    }else{
+        $("#topMainMenu").removeClass("show");
+    }
+});
+
 
 zsi.ready = function(callBack){
    $(document).ready(function(){
@@ -361,4 +369,4 @@ function ttSwitchMenu(val){ // trend tool menu switch
         $("#electricalMenu").fadeIn();
     }
 }
-        
+           

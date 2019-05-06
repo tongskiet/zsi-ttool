@@ -113,7 +113,7 @@ function displaySubCategory(menuId, specsId, callback){
 
 //******************************* CHART FUNCTION *****************************//
 
-function setLegendSize(chart){
+function setLegendSize(chart, callback){
     chart.legend = new am4charts.Legend();
     chart.legend.labels.template.fontSize = 10;
     chart.legend.valueLabels.template.fontSize = 10;
@@ -124,6 +124,8 @@ function setLegendSize(chart){
     var markerTemplate = chart.legend.markers.template;
     markerTemplate.width = 10;
     markerTemplate.height = 10;
+    
+    if(callback) callback(chart.legend);
 }
 
 function setTrendResult(o, wire_guage, container){
@@ -1419,6 +1421,7 @@ function displayPieSTC(container){
     var _value = _dynamicKey.value;
     var _category = _dynamicKey.category;
     var _dynamicObj = gData.groupBy([_category]);
+    var _chartArr = [];
         
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
@@ -1471,6 +1474,7 @@ function displayPieSTC(container){
         var pieSeries = chart.series.push(new am4charts.PieSeries());
         pieSeries.dataFields.value = "value";
         pieSeries.dataFields.category = "category";
+        pieSeries.dataFields.hidden = "hidden";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -1492,7 +1496,25 @@ function displayPieSTC(container){
             return text;
         });
         
-        setLegendSize(chart);
+        _chartArr.push(chart);
+        
+        if (year !== gMYFrom && year !== gMYTo) {
+            setLegendSize(chart, function(legend){
+                legend.itemContainers.template.events.on("up", (ev) => {
+                    var category = ev.target.dataItem.name;
+
+                    $.each(_chartArr, function(i, v){
+                        var _chart = v;
+                        _chart.data.forEach(function(item){
+                            if(item.category === category){
+                                item.hidden = !ev.target.isActive;
+                            }
+                        });
+                        _chart.invalidateData();
+                    });
+                });
+            });
+        }
     };
 
     $.each(gModelYears, function(i, v){
@@ -1621,4 +1643,4 @@ function displayColumnSTC(container){
 
 
 
-     
+          
