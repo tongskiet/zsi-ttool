@@ -236,29 +236,38 @@ function getFirstAndLastItem(obj, key) {
     return objOutput;
 } 
 
-function getDistinctKey(data, exclude=[]){
-    var _key = {};
+function getDistinctKey(data){
+    var _keys = {};
     var _value = "";
     var _category = "";
-    var _exclude = ["REGION_NAME", "MODEL_YEAR"];
-    if(exclude.length > 0){
-        _exclude.push(exclude);
-    }
+    var _location = "";
+    var _specification = "";
+
     if(data.length > 0){
         $.each(Object.keys(data[0]), function(i, key){
-           if(_exclude.indexOf(key) === -1){
-               if(isContain(key.toUpperCase(), "COUNT")){
+            var _key = key.toUpperCase();
+            if(_key !== "REGION_NAME" && _key !== "MODEL_YEAR"){
+                if(_key === "LOCATION"){
+                    _location = key;
+                }
+                else if(isContain(_key, "SPECIFIC")){
+                   _specification = key;
+                }
+                else if(isContain(_key, "COUNT") || isContain(_key, "SUM")){
                     _value = key;
-               }else{
+                }
+                else{
                     _category = key;
-               } 
-           }
+                } 
+            }
         });
     }
-    _key.value = _value;
-    _key.category = _category;
+    _keys.value = _value;
+    _keys.category = _category;
+    _keys.location = _location;
+    _keys.specification = _specification;
     
-    return _key; 
+    return _keys; 
 }
 
 function isContain(string, contains){
@@ -3326,4 +3335,4 @@ function displayColumnNetworkTopology(container, callback){
 }
 
 // ******************************** END CHART ********************************//
-   
+    

@@ -233,7 +233,7 @@ function getFirstAndLastItem(obj, key) {
     return objOutput;
 } 
 
-function getDistinctKey(data, exclude=[]){
+function getDistinctKey(data){
     var _keys = {};
     var _value = "";
     var _category = "";
@@ -250,7 +250,7 @@ function getDistinctKey(data, exclude=[]){
                 else if(isContain(_key, "SPECIFIC")){
                    _specification = key;
                 }
-                else if(isContain(_key, "COUNT")){
+                else if(isContain(_key, "COUNT") || isContain(_key, "SUM")){
                     _value = key;
                 }
                 else{
@@ -1011,7 +1011,7 @@ function displayPieGroundEyelet(container){
     
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
-        
+
         $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
@@ -1043,7 +1043,7 @@ function displayPieGroundEyelet(container){
     container.width = am4core.percent(100);
     container.height = am4core.percent(100);
     container.layout = "horizontal";
-    
+    console.log("_data", _data);
     var _createChart = function(data, year){
         var chart = container.createChild(am4charts.PieChart);
         chart.data = data;
@@ -1640,7 +1640,3 @@ function displayColumnSTC(container){
         setWireTrend(_data);
     }
 }
-
-
-
-          

@@ -348,7 +348,6 @@ function mouseover(imgId){
 }
 
 function mouseoverCriteria(imgId){
-    console.log("imgId",imgId);
     $("#img-box").css("display","block");
     $("#img-box img").attr("src",base_url + "file/viewImageDB?sqlCode=C89&imageId=" +  imgId  + "&ts=" + gTimeStamp );
 }
@@ -1011,7 +1010,6 @@ function displayCriteriaColumns(criteriaId,specsId){
                 ,_displayListIcon   = function($zRow,value){
                     var _colName = $zRow.find("select[name='column_name']").attr("selectedvalue");
                     var _criteriaColId = $zRow.find("#criteria_column_id").val();
-                    console.log("specsId",specsId);
                     var _href = "<a href='javascript:void(0);' class='btn btn-sm'  onclick='showModalCriteriaColumnValues(\""+ _colName +"\",\""+ _criteriaColId +"\",\""+ specsId +"\");'  ><i class='fas fa-link'></i> </a>";
                     var _link = ( (value =="IN" || value =="NOT IN") ?  _href : "");
                     $zRow.find(".lst-icon").html(_link);
@@ -1121,7 +1119,6 @@ function displayRemoveDuplicate(criteriaId,specsId){
 }
 
 function displayCriteriaColumnValues(colName,criteriaColId,specsId){
-    console.log("colName", colName)
     $("#gridCriteriaColumnValues").dataBind({
          sqlCode        : "C7"
         ,parameters     : { criteria_column_id : criteriaColId}
@@ -1544,7 +1541,7 @@ function getDistinctKey(data, exclude=[]){
                 else if(isContain(_key, "SPECIFIC")){
                    _specification = key;
                 }
-                else if(isContain(_key, "COUNT")){
+                else if(isContain(_key, "COUNT") || isContain(_key, "SUM")){
                     _value = key;
                 }
                 else{
@@ -4345,12 +4342,22 @@ function displayChartRetainer(container, callback){
           series.tooltip.fontSize = 8;
           series.tooltip.paddingTop = 1;
           series.tooltip.paddingBottom= 1;
-          series.tooltip.paddingBottom= 1;
           series.tooltip.dy = -10;
-          series.tooltip.align = "top";
+          //series.tooltip.align = "top";
           series.stacked = (_hasLocation ? true: false);
           series.columns.template.width = am4core.percent(95);
-
+          series.tooltip.valign  = "top";
+          series.tooltip.tooltipPosition = "fixed";
+          series.tooltip.background.filters.clear();
+          series.tooltip.pointerOrientation  = true;
+          series.tooltip.fixedWidthGrid = true;
+          series.tooltip.layout = "none";
+          series.tooltip.pointerOrientation = "horizontal";
+            //series.tooltip.label.minWidth = 40;
+            //series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
+          //series.tooltip.fitPointerToBounds = true;
         }
         
         var _createLabel = function(category, endCategory, label, opacity, dy) {
@@ -4401,8 +4408,11 @@ function displayChartRetainer(container, callback){
             series.name = name;
             series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
             series.tooltip.fontSize = 8;
-            series.tooltip.dy = -10;
-            series.tooltip.align = "top";
+            //series.tooltip.dy = -10;
+            //series.tooltip.align = "top";
+            series.tooltip.tooltipPosition = "fixed";
+            series.tooltip.background.filters.clear();
+            series.tooltip.fitPointerToBounds = true;
         };
          
         var _createLabel = function(category, endCategory, label) {
@@ -4846,7 +4856,8 @@ function displayChartCovering(container, callback){
               series.tooltip.align = "top";
               series.stacked = (_hasLocation ? true: false);
               series.columns.template.width = am4core.percent(95);
-
+              series.tooltipPosition = "fixed";
+              series.tooltip.background.filters.clear();
             }
             
             var _createLabel = function(category, endCategory, label, opacity, dy) {
@@ -4899,6 +4910,9 @@ function displayChartCovering(container, callback){
                 series.tooltip.fontSize = 8;
                 series.tooltip.dy = -10;
                 series.tooltip.align = "top";
+                series.tooltip.zIndex  = 1000;
+                series.tooltip.tooltipPosition = "fixed";
+                series.tooltip.background.filters.clear();
             };
              
             var _createLabel = function(category, endCategory, label) {
@@ -5386,4 +5400,4 @@ function displayColumnSTC(container, callback){
     }
 }
 
-                                                
+                                                  
