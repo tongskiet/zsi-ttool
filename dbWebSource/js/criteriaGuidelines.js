@@ -4344,20 +4344,21 @@ function displayChartRetainer(container, callback){
           series.tooltip.paddingBottom= 1;
           series.tooltip.dy = -10;
           //series.tooltip.align = "top";
-          series.stacked = (_hasLocation ? true: false);
-          series.columns.template.width = am4core.percent(95);
           series.tooltip.valign  = "top";
           series.tooltip.tooltipPosition = "fixed";
           series.tooltip.background.filters.clear();
-          series.tooltip.pointerOrientation  = true;
+          //series.tooltip.pointerOrientation  = true;
           series.tooltip.fixedWidthGrid = true;
           series.tooltip.layout = "none";
           series.tooltip.pointerOrientation = "horizontal";
-            //series.tooltip.label.minWidth = 40;
-            //series.tooltip.label.minHeight = 40;
-            series.tooltip.label.textAlign = "middle";
-            series.tooltip.label.textValign = "middle";
+          //series.tooltip.label.minWidth = 40;
+          //series.tooltip.label.minHeight = 40;
+          series.tooltip.label.textAlign = "middle";
+          series.tooltip.label.textValign = "middle";
           //series.tooltip.fitPointerToBounds = true;
+          
+          series.stacked = (_hasLocation ? true: false);
+          series.columns.template.width = am4core.percent(95);
         }
         
         var _createLabel = function(category, endCategory, label, opacity, dy) {
@@ -5400,4 +5401,4 @@ function displayColumnSTC(container, callback){
     }
 }
 
-                                                  
+                                                   

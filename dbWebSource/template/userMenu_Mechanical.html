@@ -55,7 +55,7 @@
 }
 .chart-div {
   width: 100%;
-  min-height: 380px;
+  min-height: calc(100vh - 180px);
   height: 100vh;
 }
 .chart-div-sub {
@@ -134,7 +134,7 @@
         </div>
     </li>
     <li name="chart">
-        <div class="d-sub-criteria card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn">
+        <div class="d-sub-criteria card rounded-0 border-0 aniview {{card_class}}" id="{{card_id}}" data-av-animation="fadeIn" style="{{style}}">
             <div class="card-header bg-dark text-white rounded-0 px-3 py-2 h6 {{header_class}}">{{header_title}}</div>
             <div class="card-body p-0 border-top border-danger">
                 <div class="{{body_class}}" id="{{body_id}}"></div>  

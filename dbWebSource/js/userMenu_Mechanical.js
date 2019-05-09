@@ -244,7 +244,7 @@ function getDistinctKey(data){
         $.each(Object.keys(data[0]), function(i, key){
             var _key = key.toUpperCase();
             if(_key !== "REGION_NAME" && _key !== "MODEL_YEAR"){
-                if(_key === "LOCATION"){
+                if(isContain(_key, "LOCATION") || _key === "SL"){
                     _location = key;
                 }
                 else if(isContain(_key, "SPECIFIC")){
@@ -400,7 +400,8 @@ function displayChartByCriteria(data){
             gTW.chart({
                 card_id: _subCid,
                 header_title: _subCName,
-                body_id: _subCDiv
+                body_id: _subCDiv,
+                card_class: "position-relative"
             });
             _$chartContainer.append(gTW.html());
                 
@@ -457,7 +458,7 @@ function displayChartBySubCriteria(data, callback){
             
             gTW.chartCard({ 
                 id: _chartId,
-                style: "min-height: 320px",
+                style: "min-height: calc(100vh - 115px)",
                 header:"d-none"
             });
             $("#d_sub_criteria_" + gSubCriteriaId).append(gTW.html());
@@ -480,16 +481,17 @@ function displayChartRetainer(container){
     var _value = _objKey.value;
     var _category = _objKey.category;
     var _location = _objKey.location;
-    var _specification = _objKey.specification;
+    //var _specification = _objKey.specification;
     
     var _categoryObj = gData.groupBy([_category]);
-    var _specObj = [];
-    var _hasLocation = false;
+    var _locationObj = gData.groupBy([_location]);
+    var _hasLocation = (_locationObj.length > 0 ? true: false);
     
-    if(_location!==""){
-        _hasLocation = true;
-        _specObj = gData.groupBy([_specification]);
-    }
+   // console.log("_specification:", _specification);
+    console.log("_location:", _location);
+    console.log("_value:", _value);
+    console.log("_category:", _category);
+    console.log("_locationObj", _locationObj);
     
     if(_hasLocation){
         $.each(gRegionNames, function(i, r) { 
@@ -500,22 +502,24 @@ function displayChartRetainer(container){
                 	return item.MODEL_YEAR == _modelYear;
                 });
                 
-                $.each(_specObj, function(y, l) {
+                $.each(_locationObj, function(y, l) {
                     var _specLocation = l.name;
                     var _json = {
                         REGION_NAME : _regionName,
                         MODEL_YEAR : +_modelYear,
                         category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
                     };
-
+                    
                     $.each(_categoryObj, function(z, s) {
                         var _count = 0;
                         var _name = s.name;
                         var _nameNew = _name.replace(" ","_");
                         var _result2 = _result.filter(function (item) {
-                        	return item[_specification] == _specLocation && item[_category] == _name;
+                        	return item[_location] == _specLocation && item[_category] == _name;
                         });
-
+                        console.log("location", _specLocation)
+                        console.log("_category", _category)
+                        console.log("_result2", _result2)
                         if(_value && _value !== ""){
                              _count = _result2.reduce(function (accumulator, currentValue) {
                                 return accumulator + currentValue[_value];
@@ -568,6 +572,9 @@ function displayChartRetainer(container){
             });
         });
     }
+    
+    console.log("data", _data);
+    
     // Display Chart
     am4core.useTheme(am4themes_animated);
     
@@ -669,7 +676,19 @@ function displayChartRetainer(container){
             series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
             series.tooltip.fontSize = 8;
             series.tooltip.dy = -10;
-            series.tooltip.align = "top";
+            //series.tooltip.align = "top";
+            
+            series.tooltip.valign  = "top";
+            series.tooltip.tooltipPosition = "fixed";
+            series.tooltip.background.filters.clear();
+            //series.tooltip.pointerOrientation  = true;
+            series.tooltip.fixedWidthGrid = true;
+            series.tooltip.layout = "none";
+            series.tooltip.pointerOrientation = "horizontal";
+            //series.tooltip.label.minWidth = 40;
+            //series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
         };
          
         var _createLabel = function(category, endCategory, label) {
@@ -694,7 +713,7 @@ function displayChartRetainer(container){
     }); 
     
     if(_hasLocation){
-       var _specName = getFirstAndLastItem(_specObj , "name");
+       var _specName = getFirstAndLastItem(_locationObj , "name");
         
         $.each(gModelYears, function(i, v) { 
             var _my = v.name;
@@ -1640,3 +1659,4 @@ function displayColumnSTC(container){
         setWireTrend(_data);
     }
 }
+  
