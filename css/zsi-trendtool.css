@@ -94,3 +94,186 @@
 .zsi-logo:before {
   content: "\e917";
 }
+
+/* -----------------------------Added By Tong-------------------------------------- */
+body{
+	overflow: hidden !important;
+	background: #fff;
+}
+main {
+    position: absolute;
+	top: 72px;
+	height: calc(100vh - 75px);
+	height: -o-calc(100vh - 75px); /* opera */ 
+	height: -webkit-calc(100vh - 75px); /* google, safari */
+	height: -moz-calc(100vh - 75px); /* firefox */
+	overflow: auto !important;
+}
+.navbar-main{
+	min-height: 29px !important;
+    padding: .1rem .3rem !important; 
+}
+/* .navbar-nav{ */
+    /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+/* } */
+.navbar-brand{
+	padding-top: .3125rem;
+    padding-bottom: .3125rem;
+	font-size: 1.25rem;
+}
+.divider{
+    display: block;
+    color:  rgba(255,255,255,.75);
+}
+.navbar-sub {
+    
+}
+.navbar-sub {
+	position: fixed;
+    top: 43px;
+    z-index: 1020;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    min-height: 29px !important;
+    color: rgba(255, 255, 255, .75);
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    background-color: rgba(230, 0, 18);
+}
+
+.navbar-sub .nav-link {
+    padding: .1rem 1rem !important;
+    color: #fff !important;
+	font-size: .8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+.navbar-sub .dropdown-menu .nav-link{
+	color: #f11716 !important;
+}
+.navbar-sub .dropdown-menu .nav-link:hover{
+	color: #fff !important;
+}
+.navbar-sub .nav-link:hover {
+    color: #fff;
+}
+.navbar-sub .active {
+    font-weight: 500;
+    color: #343a40;
+}
+.navbar-sub .navbar-toggler {
+    color: rgba(255,255,255,.5);
+}
+
+/* -------------------------MEDIA QUERY--------------------------------- */
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+
+}
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    .navbar-sub .nav-item{
+        border-left: solid 1px  rgba(238, 70, 84);;
+    }
+	.navbar-sub .dropdown-menu .nav-item{
+		border: 0;
+	}
+    .navbar-sub .nav-item:first-child{
+        border-left: none;
+    }
+}
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+
+}
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+
+}
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {  }
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+    main {
+        top: 74px;
+    }
+    .navbar-sub{
+        padding: 0 .4rem !important;
+    }
+}
+/* Medium devices (tablets, less than 992px) */
+@media (max-width: 991.98px) { 
+
+}
+/* Large devices (desktops, less than 1200px) */
+@media (max-width: 1199.98px) { 
+
+}
+/* -------------------------END MEDIA QUERY------------------------------- */
+.zContainer{
+	width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.lear-logo{
+	position: relative;
+	top: 3px;
+}
+.dropdown-menu-right{
+	right: 0 !important;
+	left: auto;
+}
+.fa-user-circle {
+	margin: 0 !important;
+}
+.pageTitle {
+    background-color: #fff !important;
+    color: black !important;
+    font-size: 1.1em !important;
+    height: 26px !important;
+    margin-bottom: 3px !important;
+    padding-left: 20px !important;
+    padding-top: -2px !important;
+    margin-left: 0px !important; 
+    margin-right: 0px !important;
+	margin-top: 0px !important;
+}
+.bd-callout {
+    padding: .1rem .5rem;
+    margin-top: .55rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid rgba(230, 0, 18);
+}
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: "";
+    background-color: rgba(0,0,0,0);
+}
+footer {
+	position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 1px 5px;
+    background: #fff;
+    z-index: 2000;
+}
+footer p{
+	margin: 0;
+	font-size: 10px;
+}
+#topMainMenu{
+	margin-top: 7px !important;
+    left: -6px !important;
+}
