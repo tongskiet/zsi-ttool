@@ -100,7 +100,7 @@ function displayTrendToolMenus(){ //load Main Menu
                 var _h= _tw.ttStandardMenuGroup({
                                 id      : _title.toLowerCase() + _menu
                                ,title   : _title
-                               ,style   : (_meneName !== gMenu ? "display:none": "")
+                               ,style   : ""//(_meneName !== gMenu ? "display:none": "")
                                ,onclick : "ttSwitchMenu(\""+ _title +"\")"
                                ,tooltip : "Switch to " + (_title==="ELECTRICAL" ? "MECHANICAL" : "ELECTRICAL")
                                ,value   : _getMenuItems( this.items)
@@ -369,4 +369,4 @@ function ttSwitchMenu(val){ // trend tool menu switch
         $("#electricalMenu").fadeIn();
     }
 }
-           
+            

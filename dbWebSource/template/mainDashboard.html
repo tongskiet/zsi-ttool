@@ -1,135 +1,95 @@
 <style>
-    .chart-div {
-      width: 100%;
-      max-height: 350px;
-      height: 100vh;
-      border: 1px solid #333;
-    }
-    .chart-div-sub {
-        width: 100%;
-        max-height: 100%;
-    }
-    .card-header {
-        background-color: rgba(0,0,0,.03);
-    }
-    #chart_map {
-        min-height: 400px;
-        height: 100vh;
-        margin-top: -13vh;
-        background-color: #30303d; 
-        color: #fff;
-    }
+.pageTitle {
+    display: none;
+}
+.db-card::before{   
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(217, 217, 217, 0.2);
+    z-index: 1;
+    visibility: hidden;
+}
+.db-card:hover::before{
+    visibility: visible;
+} 
+.bg-card-light{
+    background-color: rgba(217, 217, 217, 0.6)
+}
+.z-index-1 {
+    z-index: 1;
+}
 </style>
 
-<div class="zPanel">
-    <div class="row">
-        <!--<div class="col-12">-->
-        <!--    <div class="d-flex  flex-wrap flex-md-nowrap align-items-center mb-1 justify-content-end">-->
-        <!--        <div class="btn-toolbar mb-2 mb-md-0">-->
-        <!--            <div class="input-group ">-->
-        <!--                <div class="input-group-prepend">-->
-        <!--                    <div class="input-group-text">-->
-        <!--                      <input type="checkbox" id="include_cyear" aria-label="Checkbox to include current year"> -->
-        <!--                      <span class="pl-1">Include Current Year</span>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--                <div class="input-group-prepend">-->
-        <!--                    <span class="input-group-text">No. of Years :</span>-->
-        <!--                </div>-->
-        <!--                <input type="number" min="1" max="10" step="1" value="" class="form-control" id="no_of_years">-->
-                        
-        <!--                <div class="input-group-prepend">-->
-        <!--                    <span class="input-group-text">Chart Type :</span>-->
-        <!--                </div>-->
-        <!--                <select class="custom-select" id="chart_type">-->
-        <!--                    <option selected>Choose...</option>-->
-        <!--                    <option value="Pie Chart">Pie Chart</option>-->
-        <!--                    <option value="Bar Graph" selected>Bar Graph</option>-->
-        <!--                </select>-->
-        <!--                <div class="input-group-append">-->
-        <!--                    <button class="btn btn-dark" type="button" id="btnSearch">Go</button>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <!--    </div>-->
-        <!--</div>-->
-        <div class="col-12">
-            <div id="chart_map"></div>
-            <!--<div id="chart_container"></div>-->
+<div class="position-absolute  w-100 h-100" id="chart_map"></div>
+
+<div class="zContainer position-absolute fixed-top z-index-1">
+    <div class="row mb-2">
+        <div class="col-md-6 pr-1 pr-md-5">
+            <img src="/images/trend2.png" class="w-100 h-100" alt="Trend">
+        </div>
+        <div class="col-md-6 pl-1 pl-md-5">
+            <h2 class="pt-0 pt-md-5 mb-0 text-center text-md-right font-weight-bold font-italic">
+                Forecasts diverse automotive trends on materials, best practices and
+                extensive OEM design architectures based from the wide collection of data in Lear Benchmarking
+                Database.</h2>
         </div>
     </div>
- </div>
- <ul id="localTemplates">
-     <li name="chartDiv">
-        <div id="{{id}}">
-            <div class="bg-secondary text-white px-3 py-2">{{title}}</div>
-            <div class="bg-white rounded shadow-sm px-3 py-2 mb-2">
-                <div id="{{div_header_id}}"></div>
-                <div class="d-flex">
-                    <div class="p-1 flex-fill w-50">
-                        <h6 class="border-bottom border-gray py-2 mb-2"><b>By Model Year</b></h6>
-                        <div id="{{by_model_year_id}}" class="chart-div"></div>
-                        <hr class="my-2">
-                    </div>
-                    <div class="p-1 flex-fill w-50">
-                        <h6 class="border-bottom border-gray py-2 mb-2"><b>By Region</b></h6>
-                        <div id="{{by_region_id}}" class="chart-div"></div>
-                        <hr class="my-2">
-                    </div>
+</div>
+
+<div class="zContainer position-absolute fixed-bottom z-index-1">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <div class="db-card row no-gutters border rounded overflow-hidden flex-md-row mb-3 shadow-sm h-md-250 position-relative bg-card-light">
+                <div class="col-auto d-none d-lg-block">
+                    <img src="/images/electrical.png" width="200" height="200" alt="The Electrical Systems">
                 </div>
-                <div id="{{div_middle_id}}"></div>
-                <div class="d-flex">
-                    <div class="p-1 flex-fill w-50">
-                        <div id="{{each_model_year_id}}" class="chart-div-sub"></div>
-                    </div>
-                    <div class="p-1 flex-fill w-50">
-                        <div id="{{each_region_id}}" class="chart-div-sub"></div>
-                    </div>
-                </div>
-                <div id="{{div_footer_id}}"></div>
-            </div>
-        </div>
-    </li>
-    <li name="chartCardWrapper">
-        <div class="my-2 bg-white">
-            <h6 class="border-bottom border-gray pb-2 mb-3"><b>{{title}}</b></h6>
-            <div class="media">
-                <div id="{{id}}" class="chart-div"></div>
-            </div>
-        </div>
-    </li>
-    <li name="chartCard">
-        <div class="card border-dark mb-1 {{class}}" style="{{style}}">
-          <div class="card-header {{header}} p-2">{{title}}</div>
-          <div class="card-body p-2">
-            <div id="{{id}}" class="row h-100"></div>
-          </div>
-        </div>
-    </li>
-    <li name="trendResult">
-        <div class="w-100 mb-2">
-           <div class="bg-danger text-white px-2 py-1">Result</div>
-           <div class="d-flex bg-white rounded shadow-sm px-3 pb-2">
-                <div class="p-2 flex-fill w-50">
-                    <div class="font-weight-bold text-uppercase">TREND :</div> 
-                    <div class="px-3">{{{trend}}}</div> 
-                </div>
-                <div class="p-2 flex-fill w-50">
-                    <div class="font-weight-bold text-uppercase">OPPORTUNITIES/EVOLUTION :</div> 
-                    <div class="px-3">{{{opportunity}}}</div> 
+                <div class="col p-2 px-4 d-flex flex-column position-static">
+                    <h5 class="mb-0 pb-1 text-uppercase text-secondary border-bottom border-secondary font-weight-bold">
+                        The Electrical Systems
+                    </h5>
+                    <h5 class="mb-0 text-uppercase text-secondary font-weight-bold">Trend</h5>
+                    <p class="h6 card-text mb-auto font-weight-normal text-secondary">Know the latest trend in
+                        electrical systems’ main key drivers such as wires and cables, grounding distribution, safety/critical circuits, etc. With
+                        these information, you can understand OEM’s strategy or uniqueness in assembly to apply for new design and technology
+                    </p>
+                    <a href="electricalkeydrivers"
+                        class="stretched-link text-right text-uppercase text-decoration-none text-danger font-weight-bold">View
+                        All Trends <i class="fas fa-angle-double-right"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </li>
-</ul>
- 
+        <div class="col-md-6">
+            <div class="db-card row no-gutters border rounded overflow-hidden flex-md-row mb-3 shadow-sm h-md-250 position-relative bg-card-light">
+                <div class="col-auto d-none d-lg-block">
+                    <img src="/images/mechanical.png" width="200" height="200" alt="The Mechanical Systems">
+                </div>
+                <div class="col p-2 px-4 d-flex flex-column position-static">
+                    <h5 class="mb-0 pb-1 text-uppercase text-secondary border-bottom border-secondary font-weight-bold">
+                        The Mechanical Systems
+                    </h5>
+                    <h5 class="mb-0 text-uppercase text-secondary font-weight-bold">Trend</h5>
+                    <p class="h6 mb-auto font-weight-normal text-secondary">Know the latest trend in mechanical
+                        systems’ main key drivers such as inline connector, clips and retainers, grommet, and etc. With these information, you can
+                        understand OEM’s strategy or uniqueness in assembly to apply for new design and technology.
+                    </p>
+                    <a href="mechanicalkeydrivers"
+                        class="stretched-link text-right text-uppercase text-decoration-none text-danger font-weight-bold">View
+                        All Trends <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>
 <script src="../amcharts4/maps.js"></script>
-<script src="../amcharts4/themes/dark.js"></script>    
 <script src="../amcharts4/themes/animated.js"></script>   
-<script src="../amcharts4/geodata/worldLow.js"></script>    
 <script src="../amcharts4/geodata/continentsLow.js"></script>  
-<script src="../amcharts4/geodata/region/world/asiaLow.js"></script>    
-<script src="../amcharts4/geodata/region/world/europeLow.js"></script>    
-<script src="../amcharts4/geodata/region/world/northAmericaLow.js"></script>    
+  
