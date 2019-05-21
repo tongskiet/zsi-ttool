@@ -4236,4 +4236,4 @@ function displayColumnChart(container){
         setWireTrend(_data);
     }
 }
-     
+      

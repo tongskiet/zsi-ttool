@@ -237,12 +237,10 @@ main {
     color: black !important;
     font-size: 1.1em !important;
     height: 26px !important;
-    margin-bottom: 3px !important;
-    padding-left: 20px !important;
-    padding-top: -2px !important;
-    margin-left: 0px !important; 
-    margin-right: 0px !important;
-	margin-top: 0px !important;
+	padding: 3px 15px !important;
+    margin: 0 0 10px !important;
+	-webkit-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
 }
 .bd-callout {
     padding: .1rem .5rem;
@@ -260,6 +258,7 @@ main {
     pointer-events: auto;
     content: "";
     background-color: rgba(0,0,0,0);
+	cursor: pointer;
 }
 footer {
 	position: fixed;
