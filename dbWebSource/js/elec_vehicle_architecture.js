@@ -38,4 +38,4 @@ function displaySubMenus(){
         
         _$menu.append(_h);
     });
-} 
+}  

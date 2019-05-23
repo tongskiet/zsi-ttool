@@ -2,12 +2,14 @@
 .pageTitle {
     display: none;
 }
-.emTitle{
-    color:red;
+.emTitle a{
+    color:#343A40;
     font-size:larger;
-}
-.emTitle a{color:#343A40;
     text-decoration:none;
+}
+.emTitle .active a{
+    color: red;
+    font-weight: bold;
 }
 .main-menu-card .stretched-link{
    font-size: 18px;
@@ -17,26 +19,30 @@
 }
 </style>
 <div class="zContainer">
-    <div class="emTitle py-2"><a href="electricalkeydrivers">Electrical Key Drivers | </a> Mechanical Key Drivers </div>
+    <!--<div class="emTitle py-2"><a href="electricalkeydrivers">Electrical Key Drivers | </a> Mechanical Key Drivers </div>-->
+    <ul class="emTitle list-inline py-2 mb-1">
+      <li class="list-inline-item "><a href="electricalkeydrivers" class="text-decoration-none">Electrical Key Drivers</a></li>
+      <li class="list-inline-item ">|</li>
+      <li class="list-inline-item active"><a href="mechanicalkeydrivers" class="text-decoration-none">Mechanical Key Drivers</a></li>
+    </ul>
     
     <div class="row" id="main-menu"></div>
 </div>
 
 <ul id="localTemplates">
     <li name="main_menu_card">
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <div class="main-menu-card card shadow-sm rounded-0 mb-3">
-                <div class="card-header rounded-0 bg-dark py-1 h5 text-center">
-                    <a href="{{link}}" class="stretched-link text-white text-decoration-none text-uppercase">{{title}}</a>
+                <div class="card-header rounded-0 bg-dark py-1 h5 text-center" style="{{{header_style}}}">
+                    <a href="{{link}}" class="stretched-link text-white text-decoration-none text-uppercase" onClick="{{{onClick}}}">{{title}}</a>
                 </div>
-                <div class="card-body py-2">
-                    <div class="row no-gutters border-0 overflow-hidden flex-md-row h-md-250 position-relative bg-card-light" style="{{{body_style}}}">
-                        <div class="col-auto d-none d-lg-block">
-                            <img src="{{{img_src}}}" width="158" height="158" alt="{{title}}">
+                <div class="card-body px-4 py-2">
+                    <div class="d-flex flex-column align-items-start position-relative overflow-hidden p-2" style="{{{body_style}}}">
+                        <div class="position-absolute shadow-sm">
+                            <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">
                         </div>
-                        <div class="col p-2 px-4 d-flex flex-column position-static">
-                          
-                           
+                        <div class="position-relative shadow-sm mt-auto ml-auto mb-1 w-75 h-75">
+                            <img class="img-second w-100 h-100" src="{{{graph_src}}}" alt="{{title}}">
                         </div>
                     </div>
                 </div>
