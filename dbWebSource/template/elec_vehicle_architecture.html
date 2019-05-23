@@ -47,22 +47,19 @@ i.fa-play{
 </div>
 <ul id="localTemplates">
     <li name="sub_menu_card">
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <div class="sub-menu-card card shadow-sm rounded-0 mb-3">
-                <div class="card-header rounded-0 px-2 py-1 border-bottom-0">
+                <div class="card-header rounded-0 px-2 py-1 border-bottom-0" style="{{{header_style}}}">
                     <div class="d-flex">
                         <div class="align-self-center pr-2"><i class="fas fa-play mr-1"></i></div>
                         <div class="align-self-center text-dark">
                             <a href="{{link}}" class="stretched-link text-decoration-none">{{title}}</a>
                         </div>
                     </div>
-                    <!--<a href="{{link}}" class="stretched-link text-decoration-none" onClick="{{{onClick}}}">-->
-                    <!--    <i class="fas fa-play mr-1"></i> {{title}}-->
-                    <!--</a>-->
                 </div>
                 <div class="card-body p-1">
-                    <div class="row no-gutters border rounded overflow-hidden flex-md-row h-md-250 position-relative bg-card-light" style="{{{body_style}}}">
-                        <img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="rounded mx-auto d-block" alt="...">
+                    <div class="border border-dark position-relative" style="{{{body_style}}}">
+                        <img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="w-100 h-100" alt="...">
                     </div>
                 </div>
             </div>

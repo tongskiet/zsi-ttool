@@ -17,13 +17,14 @@ function displayMenus(){
             var _menuLink = _menuName.toLowerCase().replace(/&/g,"and");
                 _menuLink = _menuLink.replace(/ /g,"_");
             _h += _tw.main_menu_card({
-                  title     : _menuName
-                , link      : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
-                , body_style : "height:" +_cardHeight + "px"
-                , img_src  : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
+                  title         : _menuName
+                , link          : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
+                , body_style    : "height:" +_cardHeight + "px"
+                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
+                , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
                 //, onClick       : "displaySubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+","+this.specs_id+")"
             }).html();
         });
          _$menu.append(_h);
     });
-}
+} 
