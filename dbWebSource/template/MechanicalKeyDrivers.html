@@ -2,29 +2,73 @@
 .pageTitle {
     display: none;
 }
+.emTitle{
+    color:red;
+    font-size:larger;
+}
 .emTitle a{
     color:#343A40;
-    font-size:larger;
-    text-decoration:none;
-}
-.emTitle .active a{
-    color: red;
-    font-weight: bold;
 }
 .main-menu-card .stretched-link{
-   font-size: 18px;
+    font-size: 18px;
 }
 .main-menu-card:hover .stretched-link::after{
     background-color: rgba(0, 0, 0, 0.2);
 }
+
+/*----------------------FLIP CSS------------------*/
+.flip-container {
+  position: absolute;
+  width: 158px;
+  height: 158px;
+}
+.flip-container {
+    webkit-perspective: 1000px;
+    -moz-perspective: 1000px;
+    -o-perspective: 1000px;
+    perspective: 1000px;
+}
+.flip-card {
+    width: 100%;
+    height: 100%;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transition: all 0.5s linear;
+    -moz-transform-style: preserve-3d;
+    -moz-transition: all 0.5s linear;
+    -o-transform-style: preserve-3d;
+    -o-transition: all 0.5s linear;
+    transform-style: preserve-3d;
+    transition: all 0.5s linear;
+}
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+.face.back {
+    display: block;
+    width: 100%;
+    height: 100%;
+    -webkit-transform: rotateY(180deg);
+    -webkit-box-sizing: border-box;
+    -moz-transform: rotateY(180deg);
+    -moz-box-sizing: border-box;
+    -o-transform: rotateY(180deg);
+    -o-box-sizing: border-box;
+    transform: rotateY(180deg);
+}
+.main-menu-card:hover .flip-card{
+    transform: rotateY(180deg);
+    box-shadow: -5px 5px 5px #aaa;
+}
+/*------------------END------------------------*/
 </style>
 <div class="zContainer">
-    <!--<div class="emTitle py-2"><a href="electricalkeydrivers">Electrical Key Drivers | </a> Mechanical Key Drivers </div>-->
-    <ul class="emTitle list-inline py-2 mb-1">
-      <li class="list-inline-item "><a href="electricalkeydrivers" class="text-decoration-none">Electrical Key Drivers</a></li>
-      <li class="list-inline-item ">|</li>
-      <li class="list-inline-item active"><a href="mechanicalkeydrivers" class="text-decoration-none">Mechanical Key Drivers</a></li>
-    </ul>
+    <div class="emTitle py-2"><a href="electricalkeydrivers" class="text-decoration-none">Electrical Key Drivers | </a> <span class="font-weight-bold"> Mechanical Key Drivers</span></div>
     
     <div class="row" id="main-menu"></div>
 </div>
@@ -38,9 +82,23 @@
                 </div>
                 <div class="card-body px-4 py-2">
                     <div class="d-flex flex-column align-items-start position-relative overflow-hidden p-2" style="{{{body_style}}}">
-                        <div class="position-absolute shadow-sm">
-                            <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">
+                        <div class="flip-container">
+                            <div class="flip-card shadow-sm">
+                                <div class="front face">
+                                    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">
+                                </div>
+                                <div class="back face center">
+                                    <img class="img-second" src="{{{img2_src}}}" width="158" height="158" alt="{{title}}">  
+                                </div>
+                            </div>
                         </div>
+                        
+                        <!--<div class="image-front position-absolute shadow-sm">-->
+                        <!--    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">-->
+                        <!--</div>-->
+                        <!--<div class="img-back position-absolute shadow-sm">-->
+                        <!--    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">-->
+                        <!--</div>-->
                         <div class="position-relative shadow-sm mt-auto ml-auto mb-1 w-75 h-75">
                             <img class="img-second w-100 h-100" src="{{{graph_src}}}" alt="{{title}}">
                         </div>

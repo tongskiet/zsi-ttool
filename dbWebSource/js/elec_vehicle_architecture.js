@@ -16,6 +16,26 @@ function displaySubMenus(){
     var _$menu = $("#sub-menu");
         _$menu.html("");
 
+    // $.get(execURL + "trend_menus_sel @menu_type='E'", function(data){
+    //     var _dataRows = data.rows;
+    //     var _h = "";
+    //     $.each(_dataRows, function(i, v){
+    //         var _menuName = $.trim(v.menu_name);
+    //         var _menuLink = _menuName.toLowerCase().replace(/&/g,"and");
+    //             _menuLink = _menuLink.replace(/ /g,"_");
+    //         _h += _tw.main_menu_card({
+    //               title         : _menuName
+    //             , link          : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
+    //             , body_style    : "height:" +_cardHeight + "px"
+    //             , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
+    //             , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
+    //             , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
+    //         }).html();
+    //     });
+    //     _$menu.append(_h);
+    // });
+
+
     $.get(execURL + "criterias_sel @trend_menu_id="+ gMenuId, function(data){
         var _dataRows = data.rows;
         var _h = "";
@@ -38,4 +58,4 @@ function displaySubMenus(){
         
         _$menu.append(_h);
     });
-}  
+}   

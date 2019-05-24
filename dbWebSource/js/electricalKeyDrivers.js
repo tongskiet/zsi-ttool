@@ -21,10 +21,10 @@ function displayMenus(){
                 , link          : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
                 , body_style    : "height:" +_cardHeight + "px"
                 , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
+                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
                 , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
-                //, onClick       : "displaySubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+","+this.specs_id+")"
             }).html();
         });
          _$menu.append(_h);
     });
-} 
+}  

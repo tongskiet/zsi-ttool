@@ -805,25 +805,28 @@ function displayCriteria(menuId,specsId){
     		        this.addClass(gClsMma);
                     var _mouseMoveEvent = "onmouseover='mouseoverCriteria(\"" + svn(d,"image1_id") +  "\");' onmouseout='mouseout();'";
     		        var _image1       = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image1_id") + "\",\"image1_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
-    		        if(svn(d,"pcriteria_id"))
-    		            return "";
-    		        else if(d !==null)
-    		            return _image1;
-    		        else 
-    		            return "";
+    		        return (d !== null ? _image1 : "");
+    		      //  if(svn(d,"pcriteria_id"))
+    		      //      return "";
+    		      //  else if(d !==null)
+    		      //      return _image1;
+    		      //  else 
+    		      //      return "";
     		    }
-    		}	 	 	
+    		}	 	 
+    		
     		,{ text:"Image 2"      , width:100     , style:"text-align:center;" 
     		    ,onRender : function(d){ 
     		        this.addClass(gClsMma);
                     var _mouseMoveEvent = "onmouseover='mouseover(\"" + svn(d,"image2_id") +  "\");' onmouseout='mouseout();'";
     		        var _image2         = "<a href='javascript:void(0);' " + _mouseMoveEvent + " class='btn btn-sm;'  onclick='showModalUploadCriteriaImage(" + svn(d,"criteria_id") + ",\"" + svn(d,"image2_id") + "\",\"image2_id\",\"" + svn(d,"criteria_title") + "\");' ><span class='fas fa-file-upload' style='font-size:12pt;' ></span> </a>";
-    		        if(svn(d,"pcriteria_id"))
-    		            return "";
-    		        else if(d !==null)
-    		            return _image2;
-    		        else 
-    		            return "";
+    		        return (d !== null ? _image2 : "");
+    		      //  if(svn(d,"pcriteria_id"))
+    		      //      return "";
+    		      //  else if(d !==null)
+    		      //      return _image2;
+    		      //  else 
+    		      //      return "";
     		    }
     		}
 	    ]
@@ -1742,7 +1745,7 @@ function displayPieSmallWires(container){
         });
         
         _data.push({
-            type: "Wire sizes above 0.50 CSA",
+            type: "Wire sizes above and equal to 0.50 CSA",
             model_year : +_my,
             percent :  +_big,
             subs : _subBig
@@ -7884,4 +7887,4 @@ function displayColumnSTC(container, callback){
     // }
 }
 
-                                                    
+                                                      

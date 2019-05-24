@@ -3,14 +3,13 @@
     display: none;
 }
 .emTitle{
-    color:red;
-    font-size:larger;
+    color: red;
+    font-size: larger;
+    padding: 10px 15px;
 }
-
-.emTitle a{color:#343A40;
-    text-decoration:none;
+.emTitle a{
+    color: #343A40;
 }
-
 .text-decoration-none {
     text-decoration: none !important;
 }
@@ -40,12 +39,34 @@ i.fa-play{
 }
 </style>
 <div class="zContainer">
+    <!--<div class="emTitle row no-gutter"><span class="font-weight-bold">Electrical Key Drivers </span><a href="mechanicalkeydrivers" class="text-decoration-none"> | Mechanical Key Drivers</a> </div>-->
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Electrical Key Drivers</a>
+        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false"> Mechanical Key Drivers</a>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          <div class="d-flex align-items-stretch">...</div>
+          
+      </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <div class="d-flex align-items-stretch">...</div>
+      </div>
+    </div>
+    
     <div class="bd-callout">
         <h2 class="m-0">VEHICLE ARCHITECTURE</h2> 
      </div>
     <div class="row" id="sub-menu"></div>
 </div>
 <ul id="localTemplates">
+    <li name="menu_title">
+        <div class="bd-callout">
+        <h2 class="m-0">VEHICLE ARCHITECTURE</h2> 
+     </div>
+    </li>
     <li name="sub_menu_card">
         <div class="col-md-6 col-lg-4">
             <div class="sub-menu-card card shadow-sm rounded-0 mb-3">
