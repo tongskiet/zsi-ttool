@@ -69,7 +69,7 @@ function displayTrendToolMenus(){ //load Main Menu
     var     _getUrl = window.location.href,
             _search = "page/zsiuserlogin";
 
-    if (readCookie("zsi_login")==="Y" ||  (_getUrl.search(_search)==0)){ //condition to removed errors in the menu when you are in the second login page.
+    //if (readCookie("zsi_login")==="Y" ||  (_getUrl.search(_search)==0)){ //condition to removed errors in the menu when you are in the second login page.
     
         var _tw = new zsi.easyJsTemplateWriter();   
         var _$menu = $("#topMainMenu");
@@ -79,6 +79,9 @@ function displayTrendToolMenus(){ //load Main Menu
         var _getMenuItems = function(d){
             var _h = "";
              $.each(d, function(){
+                // console.log("menuType: ",this.menu_type);
+                // console.log("menuId: ",this.menu_id);
+                // console.log("specsId: ",this.specs_id);
                
                 _h += _tw.ttStandardMenu({
                       link      : "#"
@@ -110,9 +113,27 @@ function displayTrendToolMenus(){ //load Main Menu
     
             });
         });
-    }
+   // }
 }
 
+// function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu base on Main Menu
+//     var _tw = new zsi.easyJsTemplateWriter(); 
+//     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
+//         d = data.rows;
+//         if(d.length == 0){
+//           // displayTrendToolMenus()   
+//         }
+//         else{
+//             if(menuType==="E"){
+//                 window.location.href = "/page/userMenu_Electrical?mId=" + menuId + "&sId=" + specsId;
+//             }
+//             else if(menuType==="M"){
+//                 window.location.href = "/page/userMenu_Mechanical?mId=" + menuId + "&sId=" + specsId;
+//             }
+            
+//         }
+//     });
+// }
 function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu base on Main Menu
     var _tw = new zsi.easyJsTemplateWriter(); 
     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
@@ -122,13 +143,14 @@ function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu bas
         }
         else{
             if(menuType==="E"){
-                window.location.href = "/page/userMenu_Electrical?mId=" + menuId + "&sId=" + specsId;
+                window.location.href = "/page/elec_mech_key_drivers?type=E&Id=" + menuId;
             }
             else if(menuType==="M"){
-                window.location.href = "/page/userMenu_Mechanical?mId=" + menuId + "&sId=" + specsId;
+                window.location.href = "/page/elec_mech_key_drivers?type=M&Id=" + menuId;
             }
             
         }
+
     });
 }
 
@@ -152,6 +174,7 @@ else
 function isLocalStorageSupport(){
     if(typeof(Storage) !== "undefined") return true; else return false;
 }
+
 
 function loadMenu(){
     //console.log(readCookie("zsi_login"));
@@ -197,8 +220,22 @@ function displayMenu(data){
     //call highlight event;
     setCurrentMenuEvent();
     highlightCurrentMenu();
+    AddSystemMenu();
 
 }
+
+function AddSystemMenu(){
+    var ul =  $(".fa-cogs").closest("li").find("ul");
+    var createLI  = function(link, text,icon){
+        return '<li class="nav-item"><a href="/' + link + '"  class="nav-link"><i class="'+ icon +'"> </i> ' + text + '</a></li>';
+    };
+    
+    ul.append( createLI('page'          ,'Pages'           ,'fab fa-leanpub'));
+    ul.append( createLI('pagetemplate'  ,'Page Templates'  ,'far fa-newspaper'));
+    ul.append( createLI('javascript'    ,'Javascripts'     ,'fab fa-js'));
+    ul.append( createLI('sql'           ,'SQL Console'     ,'fas fa-database'));
+}
+
 
 function hasChild(data,menu_id){
     for(var x=0; x<data.length;x++ ){
@@ -369,4 +406,4 @@ function ttSwitchMenu(val){ // trend tool menu switch
         $("#electricalMenu").fadeIn();
     }
 }
-            
+                 

@@ -1,7 +1,5 @@
-$color_1: #fff;
-$background-color_1: #ff0021;
-
 .tt-menu {
+	margin-top: 5px !important;
 	a {
 		margin: 0;
 		padding: 0;
@@ -9,7 +7,6 @@ $background-color_1: #ff0021;
 		background: none;
 		position: relative;
 	}
-	margin-top: 5px !important;
 }
 .menu-content {
 	margin: 5px 0 0 0;
@@ -29,6 +26,16 @@ $background-color_1: #ff0021;
 				opacity: 0;
 				transition: 0.8s;
 			}
+			a {
+				transition: padding-top 0.6s;
+				padding-top: 24px;
+				.text {
+					.transparent-bg {
+						transition: background-color 0.8s;
+						background-color: rgba(00,00,00,0.5);
+					}
+				}
+			}
 		}
 		a {
 			position: relative;
@@ -36,33 +43,36 @@ $background-color_1: #ff0021;
 			float: inherit;
 			height: inherit;
 			width: inherit;
+			.text {
+				text-align: center;
+				font-size: 0.75em;
+				color: #fff;
+				font-weight: bold;
+				padding-left: 0px !important;
+				line-height: 13px;
+				display: table-cell;
+				vertical-align: middle;
+				height: inherit;
+				width: inherit;
+				position: relative;
+				padding-bottom: 0px !important;
+				opacity: initial;
+				.transparent-bg {
+					height: 45px;
+					width: inherit;
+					display: table-cell;
+					vertical-align: middle;
+					span {
+						display: block;
+					}
+				}
+			}
 			.img {
 				position: absolute;
 				height: inherit;
 				width: inherit;
 				left: 0;
 				top: 0;
-			}
-			.text {
-				font-size: 0.75em;
-				color: $color_1;
-				font-weight: bold;
-				padding-left: 3px;
-				line-height: 13px;
-				padding-top: 2px;
-				display: table-cell;
-				vertical-align: bottom;
-				height: inherit;
-				width: inherit;
-				position: relative;
-				padding-bottom: 3px;
-				opacity: 0;
-				transition: opacity 0.5s;
-			}
-			&:hover {
-				.text {
-					opacity: 1;
-				}
 			}
 		}
 	}
@@ -78,9 +88,9 @@ $background-color_1: #ff0021;
 	width: 300px !important;
 }
 .ddmenu-header {
-	background-color: $background-color_1;
-	color: $color_1;
-	padding: .1rem 1rem;
+	background-color: #ff0021;
+	color: #fff;
+	padding: 0.1rem 1rem;
 	margin-top: 0 !important;
 }
 #electricalMenu {
