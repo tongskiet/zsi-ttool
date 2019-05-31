@@ -20,11 +20,16 @@ function displayMenus(){
                   title         : _menuName
                 , link          : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
                 , body_style    : "height:" +_cardHeight + "px"
-                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
-                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
+                // original
+                // , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
+                // , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
+                
+                // updated
+                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
+                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id
                 , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
             }).html();
         });
          _$menu.append(_h);
     });
-}  
+}   
