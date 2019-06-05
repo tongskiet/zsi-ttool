@@ -2,60 +2,131 @@
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
-    ,gMenuName          = parseInt(zsi.getUrlParamValue("name"))
-    ,gMenuId            = parseInt(zsi.getUrlParamValue("id"));
+    ,gMenuName          = zsi.getUrlParamValue("name")
+    ,gMenuId            = zsi.getUrlParamValue("id")
+    ,gMenuType          = zsi.getUrlParamValue("type");
     
  zsi.ready(function(){
-    displaySubMenus();
+    displayMenus();
+    setScrollToTop();
 });
 
-function displaySubMenus(){
+function setScrollToTop(){
+    $('main').scroll(function() {
+        if ($(this).scrollTop() >= 50) {    // If page is scrolled more than 50px
+            $('#btnGoTop').fadeIn(200);     // Fade in the arrow
+        } else {
+            $('#btnGoTop').fadeOut(200);    // Else fade out the arrow
+        }
+    });
+    
+    $('#btnGoTop').click(function() {       // When arrow is clicked
+        $('main').animate({
+            scrollTop : 0                   // Scroll to top of body
+        }, 500);
+    });
+}
+
+function setTabSelection(){
+    if(gMenuType==="E"){
+        $('#nav-tab a[href="#nav-elec"]').tab('show');
+    }else{
+        $('#nav-tab a[href="#nav-mech"]').tab('show');
+    } 
+}
+
+function getMainMenu(callback){
+    $.get(procURL + "trend_menus_sel", function(data){
+        callback(data.rows);
+    });
+}
+
+function getSubMenu(id, callback){
+    $.get(procURL + "criterias_sel @trend_menu_id="+ id, function(data){
+        callback(data.rows);
+    });
+}
+
+function displayMenus(){
+    var _tw = new zsi.easyJsTemplateWriter();
+    var _$menuElec = $("#menuElectrical");
+    var _$menuMech = $("#menuMechanical");
+        _$menuElec.html("");
+        _$menuMech.html("");
+
+    setTabSelection();
+    getMainMenu(function(rows){
+        $(rows.groupBy(["menu_type"])).each(function(i, v){
+            var _mType = $.trim(v.name);
+            var _mItems = v.items;
+            var _mCount = _mItems.length;
+            var _mainH = "";
+            var _ctr = 0;
+          
+            $(_mItems).each(function(i, v){
+                var _mId = v.menu_id;
+                var _mName = $.trim(v.menu_name);
+                
+                _mainH += _tw.menu_title({
+                    id : "section" + _mId,
+                    title : _mName,
+                    body_id : "section_content"+ _mId
+                }).html();
+                
+       
+                if(_mType === "E"){
+                    _$menuElec.html(_mainH);
+                }else{
+                    _$menuMech.html(_mainH);
+                }
+                
+                setSubMenu(_mId, _mType, function(){
+                    _ctr++;
+                    if(_ctr === _mCount){
+                        if(gMenuId !== "") {
+                            if(_mType === gMenuType) slideToSection(gMenuId);
+                        }
+                    }
+                    
+                });
+            });
+        });
+    });
+}    
+
+function setSubMenu(mId, mType, callback){
     var _tw = new zsi.easyJsTemplateWriter(); 
     var _mainHeight = $("main").height() - 200;
     var _cardHeight = _mainHeight / 2;    
-    var _$menu = $("#sub-menu");
-        _$menu.html("");
-
-    // $.get(execURL + "trend_menus_sel @menu_type='E'", function(data){
-    //     var _dataRows = data.rows;
-    //     var _h = "";
-    //     $.each(_dataRows, function(i, v){
-    //         var _menuName = $.trim(v.menu_name);
-    //         var _menuLink = _menuName.toLowerCase().replace(/&/g,"and");
-    //             _menuLink = _menuLink.replace(/ /g,"_");
-    //         _h += _tw.main_menu_card({
-    //               title         : _menuName
-    //             , link          : "elec_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
-    //             , body_style    : "height:" +_cardHeight + "px"
-    //             , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
-    //             , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
-    //             , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
-    //         }).html();
-    //     });
-    //     _$menu.append(_h);
-    // });
-
-
-    $.get(execURL + "criterias_sel @trend_menu_id="+ gMenuId, function(data){
-        var _dataRows = data.rows;
-        var _h = "";
-        
-        $.each(_dataRows, function(i, v){
-            if(v.pcriteria_id!==""){
+    var _subH = "";
+    
+    getSubMenu(mId, function(rows){
+        $(rows).each(function(i, v){
+            if(v.pcriteria_id !== ""){
                 var _cTitle = $.trim(v.criteria_title);
-                var _cLink = _cTitle.toLowerCase().replace(/&/g,"and");
-                    _cLink = _cLink.replace(/ /g,"_");
-                    
-                _h += _tw.sub_menu_card({
-                          title     : _cTitle
-                        , link      : "elec_" + _cLink + "?name="+ _cTitle +"&id="+ v.menu_id
-                        , body_style : "height:" +_cardHeight + "px"
-                        //, img_src  : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
-                        //, onClick       : "displaySubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+","+this.specs_id+")"
-                    }).html();
+                var _cLink = (mType === "E" ? "electrical" : "mechanical") + "_criteria";
+                // var _cLink = _cTitle.toLowerCase().replace(/&/g,"and");
+                //     _cLink = _cLink.replace(/ /g,"_");
+                
+                _subH += _tw.menu_card({
+                      title     : _cTitle
+                    , link      : _cLink + "?id="+ v.criteria_id +"&name="+ _cTitle
+                    , body_style : "height:" +_cardHeight + "px"
+                    //, img_src  : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
+                    //, onClick       : "displaySubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+","+this.specs_id+")"
+                }).html();
             }
         });
+        $("#section_content"+ mId).html(_subH);
         
-        _$menu.append(_h);
+        callback();
     });
-}   
+}
+
+function slideToSection(id) {
+    $('main').animate({
+        scrollTop: $('#section'+ id).offset().top - 80
+    });
+}
+
+         

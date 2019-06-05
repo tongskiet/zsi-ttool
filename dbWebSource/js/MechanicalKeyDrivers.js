@@ -18,13 +18,13 @@ function displayMenus(){
                 _menuLink = _menuLink.replace(/ /g,"_");
             _h += _tw.main_menu_card({
                   title         : _menuName
-                , link          : "mech_" + _menuLink + "?name="+ _menuName +"&id="+ v.menu_id
+                , link          : "criteria_single_m?id="+ v.menu_id +"&name="+ _menuName.replace(/&/g, '_')
                 , body_style    : "height:" +_cardHeight + "px"
-                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
-                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id 
+                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id
+                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
                 , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
             }).html();
         });
          _$menu.append(_h);
     });
-}    
+}        

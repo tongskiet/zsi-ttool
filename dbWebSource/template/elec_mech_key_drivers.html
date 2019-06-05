@@ -10,36 +10,29 @@
 .emTitle a{
     color: #343A40;
 }
-.text-decoration-none {
-    text-decoration: none !important;
+
+.nav-item.active{
+    font-weight: bold;
 }
-a.stretched-link.text-decoration-none{
+
+/* Section CSS */
+.section-card, 
+.section-card > .card-header{
+    background-color: rgb(242,242,242);
+}
+.section-card:hover .stretched-link::after{
+    background-color: rgba(127, 127, 127, 0.2);
+}
+.section-card a.stretched-link{
     color:#000000;
     font-weight:bold;
 }
-
-i.fa-play{
+.section-card i.fa-play{
     color:red; font-weight:bold; 
-}
-/*.rounded-0{background:#e9e9e9;}*/
-#sub-menu .card
-,#sub-menu .card-header
-{
-    
-}
-.sub-menu-card, 
-.sub-menu-card > .card-header{
-    background-color: rgb(242,242,242);
-}
-/*.sub-menu-card .stretched-link{*/
-/*   font-size: 18px;*/
-/*}*/
-.sub-menu-card:hover .stretched-link::after{
-    background-color: rgba(127, 127, 127, 0.2);
 }
 
 /* Scrool To Top CSS */
-#btnGoTop {
+.btn-arrow {
     position: fixed;
     bottom: 30px;
     right: 30px;
@@ -47,7 +40,6 @@ i.fa-play{
     background: rgba(0, 0, 0, 0.7);
     width: 50px;
     height: 50px;
-    display: block;
     cursor: pointer;
     text-align: center;
     -webkit-border-radius: 35px;
@@ -61,32 +53,49 @@ i.fa-play{
     transition: all 0.3s ease;
     z-index: 1001;
 }
-#btnGoTop i {
+.btn-arrow i{
     color: #fff;
     margin: 0;
     position: relative;
     /*left: 16px;*/
-    top: 13px;
+    /*top: 13px;*/
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -ms-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
 }
-#btnGoTop:hover {
+.btn-arrow:hover {
     background: rgba(0, 0, 0, 0.9);
+}
+#btnGoTop {
+    bottom: 80px;
+}
+#btnNext{
+    display: block;
+    bottom: 25px;
+}
+#btnGoTop i{
+    top: 13px;
+}
+#btnNext i{
+    bottom: -13px;
 }
 #btnGoTop:hover i {
     color: #fff;
     top: 5px;
+}
+#btnNext:hover i {
+    color: #fff;
+    bottom: -20px;
 }
 </style>
 <div class="zContainer">
     <!--<div class="emTitle row no-gutter"><span class="font-weight-bold">Electrical Key Drivers </span><a href="mechanicalkeydrivers" class="text-decoration-none"> | Mechanical Key Drivers</a> </div>-->
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link" id="nav-elec-tab" data-toggle="tab" href="#nav-elec" role="tab" aria-controls="nav-elec" aria-selected="true">Electrical Key Drivers</a>
-        <a class="nav-item nav-link" id="nav-mech-tab" data-toggle="tab" href="#nav-mech" role="tab" aria-controls="nav-mech" aria-selected="false"> Mechanical Key Drivers</a>
+        <a class="nav-item nav-link text-dark" id="nav-elec-tab" data-toggle="tab" href="#nav-elec" role="tab" aria-controls="nav-elec" aria-selected="true">Electrical Key Drivers</a>
+        <a class="nav-item nav-link text-dark" id="nav-mech-tab" data-toggle="tab" href="#nav-mech" role="tab" aria-controls="nav-mech" aria-selected="false"> Mechanical Key Drivers</a>
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -103,18 +112,22 @@ i.fa-play{
     </div>
     
     <!-- Return to Top -->
-    <span id="btnGoTop"><i class="fas fa-angle-up fa-2x"></i></span>
+    <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
+     <!-- Return to Top -->
+    <span class="btn-arrow" id="btnNext" title="Show Next Criteria"><i class="fas fa-angle-down fa-2x"></i></span>
 </div>
 <ul id="localTemplates">
-    <li name="menu_title">
-        <div class="bd-callout" id="{{id}}">
-            <h3 class="m-0 text-uppercase">{{title}}</h3> 
+    <li name="section">
+        <div class="section {{class}}" id="{{id}}">
+            <div class="section-header bd-callout" id="{{header_id}}">
+                <h3 class="m-0 text-uppercase">{{title}}</h3> 
+            </div>
+            <div class="section-body row" id="{{body_id}}"></div>
         </div>
-        <div class="row" id="{{body_id}}"></div>
     </li>
-    <li name="menu_card">
+    <li name="section_card">
         <div class="col-md-6 col-lg-4" id="{{id}}">
-            <div class="sub-menu-card card shadow-sm rounded-0 mb-3">
+            <div class="section-card card shadow-sm rounded-0 mb-3">
                 <div class="card-header rounded-0 px-2 py-1 border-bottom-0" style="{{{header_style}}}">
                     <div class="d-flex">
                         <div class="align-self-center pr-2"><i class="fas fa-play mr-1"></i></div>
@@ -124,11 +137,20 @@ i.fa-play{
                     </div>
                 </div>
                 <div class="card-body p-1">
-                    <div class="border border-dark position-relative" style="{{{body_style}}}">
-                        <img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="w-100 h-100" alt="...">
+                    <div class="border border-dark position-relative section-card-body" id="{{chart_id}}" style="{{{body_style}}}">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                                <i class="fas fa-spinner fa-3x fa-pulse"></i>
+                            </div>
+                        </div>
+                        <!--<img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="w-100 h-100" alt="...">-->
                     </div>
                 </div>
             </div>
         </div>
     </li>
 </ul>
+<script src="../amcharts4/core.js"></script>
+<script src="../amcharts4/charts.js"></script>
+<script src="../amcharts4/themes/animated.js"></script>

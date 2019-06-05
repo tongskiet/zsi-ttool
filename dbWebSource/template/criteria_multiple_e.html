@@ -1,0 +1,141 @@
+<style>
+.pageTitle {
+    display: none;
+}
+.nav-item.active{
+    font-weight: bold;
+}
+
+/* Section CSS */
+.section-card, 
+.section-card > .card-header{
+    background-color: rgb(242,242,242);
+}
+.section-card:hover .stretched-link::after{
+    background-color: rgba(127, 127, 127, 0.2);
+}
+.section-card a.stretched-link{
+    color:#000000;
+    font-weight:bold;
+}
+.section-card i.fa-play{
+    color:red; font-weight:bold; 
+}
+
+/* Scrool To Top CSS */
+.btn-arrow {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.7);
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    text-align: center;
+    -webkit-border-radius: 35px;
+    -moz-border-radius: 35px;
+    border-radius: 35px;
+    display: none;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+.btn-arrow i{
+    color: #fff;
+    margin: 0;
+    position: relative;
+    /*left: 16px;*/
+    /*top: 13px;*/
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+.btn-arrow:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+#btnGoTop {
+    bottom: 80px;
+}
+#btnNext{
+    display: block;
+    bottom: 25px;
+}
+#btnGoTop i{
+    top: 13px;
+}
+#btnNext i{
+    bottom: -13px;
+}
+#btnGoTop:hover i {
+    color: #fff;
+    top: 5px;
+}
+#btnNext:hover i {
+    color: #fff;
+    bottom: -20px;
+}
+</style>
+<div class="zContainer">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link text-dark active" id="nav-elec-tab"  href="#nav-elec" >Electrical Key Drivers</a>
+        <a class="nav-item nav-link text-dark" id="nav-mech-tab"  href="criteria_multiple_m"> Mechanical Key Drivers</a>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-elec" role="tabpanel" aria-labelledby="nav-elec-tab">
+            <div class="d-flex align-items-stretch">
+                <div id="menuElectrical"></div>
+            </div> 
+        </div>
+    </div>
+    
+    <!-- Return to Top -->
+    <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
+     <!-- Return to Top -->
+    <span class="btn-arrow" id="btnNext" title="Show Next Criteria"><i class="fas fa-angle-down fa-2x"></i></span>
+</div>
+<ul id="localTemplates">
+    <li name="section">
+        <div class="section {{class}}" id="{{id}}">
+            <div class="section-header bd-callout" id="{{header_id}}">
+                <h3 class="m-0 text-uppercase title">{{title}}</h3> 
+            </div>
+            <div class="section-body row" id="{{body_id}}"></div>
+        </div>
+    </li>
+    <li name="section_card">
+        <div class="col-md-6 col-lg-4" id="{{id}}">
+            <div class="section-card card shadow-sm rounded-0 mb-3">
+                <div class="card-header rounded-0 px-2 py-1 border-bottom-0" style="{{{header_style}}}">
+                    <div class="d-flex">
+                        <div class="align-self-center pr-2"><i class="fas fa-play mr-1"></i></div>
+                        <div class="align-self-center text-dark">
+                            <a href="{{link}}" class="stretched-link text-decoration-none">{{title}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-1">
+                    <div class="border border-dark position-relative section-card-body" id="{{chart_id}}" style="{{{body_style}}}">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                                <i class="fas fa-spinner fa-3x fa-pulse"></i>
+                            </div>
+                        </div>
+                        <!--<img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="w-100 h-100" alt="...">-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+<script src="../amcharts4/core.js"></script>
+<script src="../amcharts4/charts.js"></script>
+<script src="../amcharts4/themes/animated.js"></script>

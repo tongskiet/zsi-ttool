@@ -89,7 +89,7 @@ function displayTrendToolMenus(){ //load Main Menu
                     , imageId2  : this.image1_id
                     , label     : this.menu_name.toUpperCase()
                     , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
-                    , onClick       : "displayTrendToolSubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+","+this.specs_id+")"
+                    , onClick       : "displayTrendToolSubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+",\""+ $.trim(this.menu_name) +"\")"
                 }).html();
             });
             return _h;
@@ -134,7 +134,7 @@ function displayTrendToolMenus(){ //load Main Menu
 //         }
 //     });
 // }
-function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu base on Main Menu
+function displayTrendToolSubMenu(sel, menuType, menuId, menuName){ //Sub Menu base on Main Menu
     var _tw = new zsi.easyJsTemplateWriter(); 
     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
         d = data.rows;
@@ -143,10 +143,10 @@ function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu bas
         }
         else{
             if(menuType==="E"){
-                window.location.href = "/page/elec_mech_key_drivers?type=E&Id=" + menuId;
+                window.location.href = "/page/criteria_single_e?id=" + menuId +"&name="+ menuName.replace(/&/g, '_');
             }
             else if(menuType==="M"){
-                window.location.href = "/page/elec_mech_key_drivers?type=M&Id=" + menuId;
+                window.location.href = "/page/criteria_single_m?id=" + menuId +"&name="+ menuName.replace(/&/g, '_');
             }
             
         }
@@ -406,4 +406,14 @@ function ttSwitchMenu(val){ // trend tool menu switch
         $("#electricalMenu").fadeIn();
     }
 }
-                 
+function isTeamMemberOrAdmin(){
+    return true;
+    /*
+    var _pa = projectAccess; 
+    if((_pa.isProjTeamMember==="Y") || (_pa.isAdmin==="Y") || (_pa.is_zsi==="Y" ))
+        return true;
+    else
+        return false;
+        */
+} 
+                    
