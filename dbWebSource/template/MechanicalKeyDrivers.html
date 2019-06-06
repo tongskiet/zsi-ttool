@@ -19,8 +19,8 @@
 /*----------------------FLIP CSS------------------*/
 .flip-container {
   position: absolute;
-  width: 158px;
-  height: 158px;
+  width: 200px;
+  height: 200px;
 }
 .flip-container {
     webkit-perspective: 1000px;
@@ -70,13 +70,13 @@
 <div class="zContainer">
     <div class="emTitle py-2"><a href="electricalkeydrivers" class="text-decoration-none">Electrical Key Drivers | </a> <span class="font-weight-bold"> Mechanical Key Drivers</span></div>
     
-    <div class="row" id="main-menu"></div>
+    <div class="row no-gutters" id="main-menu"></div>
 </div>
 
 <ul id="localTemplates">
     <li name="main_menu_card">
-        <div class="col-md-6 col-lg-4">
-            <div class="main-menu-card card shadow-sm rounded-0 mb-3">
+        <div class="col-md-6 col-lg-4 pr-2">
+            <div class="main-menu-card card shadow-sm rounded-0 mb-2">
                 <div class="card-header rounded-0 bg-dark py-1 h5 text-center" style="{{{header_style}}}">
                     <a href="{{link}}" class="stretched-link text-white text-decoration-none text-uppercase" onClick="{{{onClick}}}">{{title}}</a>
                 </div>
@@ -85,21 +85,14 @@
                         <div class="flip-container">
                             <div class="flip-card shadow-sm">
                                 <div class="front face">
-                                    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">
+                                    <img class="img-first" src="{{{img_src}}}" width="200" height="200" alt="{{title}}">
                                 </div>
                                 <div class="back face center">
-                                    <img class="img-second" src="{{{img2_src}}}" width="158" height="158" alt="{{title}}">  
+                                    <img class="img-second" src="{{{img2_src}}}" width="200" height="200" alt="{{title}}">  
                                 </div>
                             </div>
                         </div>
-                        
-                        <!--<div class="image-front position-absolute shadow-sm">-->
-                        <!--    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">-->
-                        <!--</div>-->
-                        <!--<div class="img-back position-absolute shadow-sm">-->
-                        <!--    <img class="img-first" src="{{{img_src}}}" width="158" height="158" alt="{{title}}">-->
-                        <!--</div>-->
-                        <div class="position-relative shadow-sm mt-auto ml-auto mb-1 w-75 h-75">
+                        <div class="position-relative shadow-sm mt-auto ml-auto mr-0 mb-1 w-75" style="min-height:180px">
                             <img class="img-second w-100 h-100" src="{{{graph_src}}}" alt="{{title}}">
                         </div>
                     </div>

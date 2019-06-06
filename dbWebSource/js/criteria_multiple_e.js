@@ -2,27 +2,38 @@
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
-    ,gMenuId            = zsi.getUrlParamValue("id")
-    ,gMenuName          = zsi.getUrlParamValue("name")
-    ,gCriteriaRows      = [];
+    ,gMenuId            
+    ,gMenuName          = ""
+    ,gCriteriaRows      = []
+    ,gMYRange           = ""
+    ,gHarnessName       = ""
+    ,gRegionNames       = []
+    ,gModelYears        = []
+    ,gMYFrom            = ""
+    ,gMYTo              = ""
+    ,gData              = []
+    ,gPrmRegion         = ""
+    ,gPrmNoYears        = ""
+    ,gPrmChartType      = ""
+    ,gPrmIncludeCYear   = "N";
     
 zsi.ready(function(){
-    // getMainMenu(function(mainRows){
-    //     var _count = mainRows.length;
-    //     var _ctr = 0;
-    //     $.each(mainRows, function(i, v){
-    //         getSubMenu(v.menu_id, function(subRows){
-    //             _ctr++;
-    //             v.items = subRows;
+    getMainMenu(function(mainRows){
+        var _count = mainRows.length;
+        var _ctr = 0;
+        $.each(mainRows, function(i, v){
+            getSubMenu(v.menu_id, function(subRows){
+                _ctr++;
+                v.items = subRows;
                 
-    //             if(_ctr === _count) {
-    //                 gCriteriaRows = mainRows;
-    //                 displayMenus();
-    //             }
-    //         });
-    //     });
-    // });
-    displayMenus();
+                if(_ctr === _count) {
+                    gCriteriaRows = mainRows;
+                    displayMenus(mainRows);
+                }
+            });
+        });
+    });
+    //displayMenus();
 });
 
 function getMainMenu(callback){
@@ -35,6 +46,21 @@ function getSubMenu(id, callback){
     $.get(procURL + "criterias_sel @trend_menu_id="+ id, function(data){
         callback(data.rows);
     });
+}
+
+function isSectionInView(elem, partial){
+    var container = $("main");
+    var contHeight = container.height();
+    var contTop = container.scrollTop();
+    var contBottom = contTop + contHeight ;
+ 
+    var elemTop = $(elem).offset().top - container.offset().top;
+    var elemBottom = elemTop + $(elem).height();
+    
+    var isTotal = (elemTop >= 0 && elemBottom <=contHeight);
+    var isPart = ((elemTop < 0 && elemBottom > 0 ) || (elemTop > 0 && elemTop <= container.height())) && partial ;
+    
+    return  isTotal  || isPart ;
 }
 
 function initScrollToSection() {
@@ -72,12 +98,12 @@ function initScrollToSection() {
     	}
     	
     	if (_scrollTop > _lastScrollTop){ // downscroll code
-           if (_$nextSection.length > 0 && isSectionInView(_$nextHeader, true)){
+          if (_$nextSection.length > 0 && isSectionInView(_$nextHeader, true)){
                 _$activeSection.removeClass("active");
                 _$nextSection.addClass("active");
                     
-                gMenuId = _$nextSection.attr('id').split("_")[1];
-                setChartView();
+                gMenuId = _$nextSection.attr('menu_id');
+                setChartPerSection();
             }
         } 
         else { // upscroll code
@@ -85,8 +111,8 @@ function initScrollToSection() {
                 _$activeSection.removeClass("active");
                 _$prevSection.addClass("active"); 
                     
-                gMenuId = _$prevSection.attr('id').split("_")[1];
-                setChartView();
+                gMenuId = _$prevSection.attr('menu_id');
+                setChartPerSection();
             }
         }
         _lastScrollTop = _scrollTop;
@@ -99,8 +125,8 @@ function initScrollToSection() {
         $(".section:first-child").addClass("active");
         $(".section:last-child").removeClass("active");
 
-        gMenuId = "";
-        setChartView();
+        // gMenuId = $(".section.active").attr("menu_id");
+        // setChartPerSection();
     });
     
     $('#btnNext').click(function() {
@@ -113,79 +139,131 @@ function initScrollToSection() {
             _$activeSection.removeClass("active");
             _$nextsection.addClass("active");
             
-            gMenuId = _$nextsection.attr("id").split("_")[1];
-            setChartView();
+            gMenuId = _$nextsection.attr("menu_id");
+            setChartPerSection();
         }
     });
 }
 
 function displayMenus(rows){
-    var _tw = new zsi.easyJsTemplateWriter();
+    var _data = rows;
     var _mainHeight = $("main").height() - 200;
-    var _cardHeight = _mainHeight / 2; 
-    var _$menuElec = $("#menuElectrical");
-        _$menuElec.html("");
-    var _mainH = "";
-    var _ctr = 0;
+    var _cardHeight = _mainHeight / 2;
     
-    // $.each(gCriteriaRows, function(i, v){ 
-    //     var _mId = v.menu_id;
-    //     var _mName = $.trim(v.menu_name);
-        
-    //     _mainH += _tw.section({
-    //         title : _mName,
-    //         id : "section_" + _mId,
-    //         class : (i === 0 ? "active":""),
-    //         header_id : "section_header_" + _mId,
-    //         body_id : "section_body_"+ _mId
-    //     }).html();
-
-    //     $.each(v.items, function(i, v){
-    //         if(v.pcriteria_id !== ""){
-    //             var _cId = v.criteria_id;
-    //             var _cTitle = $.trim(v.criteria_title);
-    //             var _cLink = "chart_electrical?cat="+ _mName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_');
-                
-    //             _mainH += _tw.section_card({
-    //                   title     : _cTitle
-    //                 , chart_id  : "chart_"+ _mId +"_"+ _cId
-    //                 , link      : _cLink
-    //                 , body_style : "height:" +_cardHeight + "px"
-    //             }).html();
-            
-    //             _$menuElec.html(_mainH);
-    //         }
-    //     }); 
-    // });
-
-    getMainMenu(function(rows){
-        var _count = rows.length;
-        var _mainH = "";
-        var _ctr = 0;
-        
-        $(rows).each(function(i, v){
-            var _mId = v.menu_id;
-            var _mName = $.trim(v.menu_name);
-            
-            _mainH += _tw.section({
-                title : _mName,
-                id : "section_" + _mId,
-                class : (i === 0 ? "active":""),
-                header_id : "section_header_" + _mId,
-                body_id : "section_body_"+ _mId
+    var _createChart = function(o, callback){
+        if(!isUD(o)){
+            var _tw = new zsi.easyJsTemplateWriter();
+            var _menuId = o.menu_id;
+            var _menuName = o.menu_name;
+            var _menuItems = o.items; 
+            var _count = _menuItems.length;
+            var _subBodyId = "section_body_"+ _menuId;
+            var _ctr = 0;
+            var _time = 500;
+            var _mainH = _tw.section({
+                title : _menuName,
+                body_id : _subBodyId
             }).html();
-
-            _$menuElec.html(_mainH);
             
-            setSubMenu(_mId, _mName, function(){
-                _ctr++;
-                if(_ctr === _count){  
-                    initScrollToSection();
-                    setChartView();
+            $("#menuElectrical").append(_mainH);
+            
+            $.each(_menuItems, function(i, v){
+                if(v.pcriteria_id !== ""){
+                    var _cId = v.criteria_id;
+                    var _cName = v.criteria_title;
+                    var _cLink = "chart_electrical?menu="+ _menuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cName.replace(/&/g, '_');
+                    var _chartId = "chart_"+ _menuId +"_"+ _cId;
+                    var _subH = _tw.section_card({
+                          title         : _cName
+                        , chart_id      : _chartId
+                        , criteria_id   : _cId
+                        , link          : _cLink
+                        , body_style    : "height:" +_cardHeight + "px"
+                    }).html();
+                    
+                    $("#"+ _subBodyId).append(_subH);
+                    
+                    setTimeout( function(){ 
+                        var _res = setChartSettings({
+                                criteriaId: _cId,
+                                criteriaName: _cName,
+                                menuName: _menuName
+                            });
+        
+                        getDataByCriteriaId(_res.url, _cName, function(){
+                            setMYRange();
+                            
+                            var _fnName = new Function("container", _res.chart.default);
+                                _fnName(_chartId);
+                        });
+                        
+                    },  _time);
+                        _time += 500;
+                
+                    //callback();
                 }
             });
+        }
+    };
+    
+    _createChart(_data.shift());
+    
+    $("main").scroll(function() {
+        var _scrollTop = $(this).scrollTop();
+        var _scrollHeight = $(this)[0].scrollHeight;
+    	var _scrollPosition = $(this).height() + _scrollTop;
+
+    	if ((_scrollHeight - _scrollPosition) / _scrollHeight === 0) { //Scroll reach bottom page
+	        _createChart(_data.shift());
+    	}
+    	
+    	if (_scrollTop >= 50) {    
+            $('#btnGoTop').fadeIn(200);
+        } else {
+            $('#btnGoTop').fadeOut(200); 
+        }
+    });
+    
+    $('#btnGoTop').click(function(){ 
+        $('main').animate({
+            scrollTop: 0
         });
     });
+    
+    $('#btnNext').click(function(){
+        _createChart(_data.shift());
+    });
+    
+    // getMainMenu(function(rows){
+    //     var _count = rows.length;
+    //     var _mainH = "";
+    //     var _ctr = 0;
+        
+    //     $(rows).each(function(i, v){
+    //         var _mId = v.menu_id;
+    //         var _mName = $.trim(v.menu_name);
+             
+    //         _mainH += _tw.section({
+    //             title : _mName,
+    //             id : "section_" + _mId,
+    //             class : (i === 0 ? "active":""),
+    //             menu_id: _mId,
+    //             header_id : "section_header_" + _mId,
+    //             body_id : "section_body_"+ _mId
+    //         }).html();
+
+    //         _$menuElec.html(_mainH);
+            
+    //         setSubMenu(_mId, _mName, function(){
+    //             _ctr++;
+    //             if(_ctr === _count){
+    //                 gMenuId = rows[0].menu_id;  
+    //                 initScrollToSection();
+    //                 setChartPerSection();
+    //             }
+    //         });
+    //     });
+    // });
 }    
 
 function setSubMenu(mId, _mName, callback){
@@ -202,10 +280,11 @@ function setSubMenu(mId, _mName, callback){
                 var _cLink = "chart_electrical?menu="+ _mName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_');
                 
                 _subH += _tw.section_card({
-                      title     : _cTitle
-                    , chart_id  : "chart_"+ mId +"_"+ _cId
-                    , link      : _cLink
-                    , body_style : "height:" +_cardHeight + "px"
+                      title         : _cTitle
+                    , chart_id      : "chart_"+ mId +"_"+ _cId
+                    , criteria_id   : _cId
+                    , link          : _cLink
+                    , body_style    : "height:" +_cardHeight + "px"
                 }).html();
             }
         });
@@ -214,18 +293,36 @@ function setSubMenu(mId, _mName, callback){
     });
 }
 
-function setChartView(){
+function setChartPerSection(){
     var _time = 500;
-    var _$section = (gMenuId!=="" ? $("#section_" + gMenuId) : $(".section:first-child"));
-    
+    var _$section = $("#section_" + gMenuId);
+    var _$sectionCard = _$section.find(".section-card");
+    var _menuName = _$section.find(".menu-name").text();
+    var _sCount = _$sectionCard.length;
+    var _ctr = 0;
+  
     if(!_$section.hasClass("shown")){
         _$section.addClass("shown");
-        _$section.find(".section-card").each(function(){
-            var _menuName = $(this).find(".title").text();
+        _$sectionCard.each(function(){
+            var _cId = $(this).attr("cid");
+            var _cName = $(this).find(".criteria-name").text();
             var _chartId = $(this).find(".section-card-body").attr("id");  
         
             setTimeout( function(){ 
-                displayChart(_chartId, _menuName);
+                var _res = setChartSettings({
+                        criteriaId: _cId,
+                        criteriaName: _cName,
+                        menuName: _menuName
+                    });
+    
+                if(_res.url !== ""){
+                    getDataByCriteriaId(_res.url, _cName, function(){
+                        setMYRange();
+                        
+                        var _fnName = new Function("container", _res.chart.default);
+                            _fnName(_chartId);
+                    });
+                }
             }, _time);
             
             _time += 500;
@@ -233,112 +330,128 @@ function setChartView(){
     }
 }
 
-function displayChart(chart_id){
-    // Themes begin
-    am4core.useTheme(am4themes_animated);
+function setChartSettings(o){
+    if(!$.isEmptyObject(o)){
+        var _cId = o.criteriaId;
+        var _cName = $.trim(o.criteriaName);
+        var _menuName = $.trim(o.menuName).toUpperCase();
+        var _url = "";
+        var _result = {};
+        var _chart = {default:"", pie:"", column:"", line: ""};
+        var _staticMY = new Date().getFullYear() - 2;
 
-    am4core.options.commercialLicense = true;
-    
-    // Create chart instance
-    var container = am4core.create(chart_id, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
-    
-    function createChart(data) {
-    
-      // Create chart
-      var chart = container.createChild(am4charts.PieChart);
-    
-      // Add data
-      chart.data = data;
-    
-      // Add and configure Series
-      var pieSeries = chart.series.push(new am4charts.PieSeries());
-      pieSeries.dataFields.value = "litres";
-      pieSeries.dataFields.category = "country";
-      pieSeries.labels.template.disabled = true;
-      pieSeries.ticks.template.disabled = true;
-      
-    };
-    
-    createChart([{
-      "country": "Lithuania",
-      "litres": 501
-    }, {
-      "country": "Czechia",
-      "litres": 301
-    }, {
-      "country": "Ireland",
-      "litres": 201
-    }, {
-      "country": "Germany",
-      "litres": 165
-    }, {
-      "country": "Australia",
-      "litres": 139
-    }, {
-      "country": "Austria",
-      "litres": 128
-    }, {
-      "country": "UK",
-      "litres": 99
-    }, {
-      "country": "Belgium",
-      "litres": 60
-    }, {
-      "country": "The Netherlands",
-      "litres": 50
-    }]);
-    
-    createChart([{
-      "country": "Lithuania",
-      "litres": 250
-    }, {
-      "country": "Czechia",
-      "litres": 360
-    }, {
-      "country": "Ireland",
-      "litres": 150
-    }, {
-      "country": "Germany",
-      "litres": 200
-    }]);
-    
-    createChart([{
-      "country": "Czechia",
-      "litres": 301
-    }, {
-      "country": "Ireland",
-      "litres": 600
-    }, {
-      "country": "Germany",
-      "litres": 240
-    }, {
-      "country": "Austria",
-      "litres": 128
-    }, {
-      "country": "UK",
-      "litres": 99
-    }, {
-      "country": "Belgium",
-      "litres": 60
-    }]);
-} 
+        if(isContain(_menuName, "VEHICLE ARCHITECTURE") || isContain(_menuName, "GROUNDING DISTRIBUTION")){
+            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            // _chart.pie = "displayCommonPieChart(container)";
+            // _chart.column = "displayCommonColumnChart(container)";
+        }
+        else if(isContain(_menuName, "WIRES & CABLES")){
+            _url = "dynamic_wires_usage_summary @byRegion='Y',@byMY='Y',@criteria_id="+ _cId;
+            
+            if(isContain(_cName, "Overall wire usage lower than 0.5 CSA")){
+                _chart.default = "displayPieOverallChart(container)";
+                // _chart.pie = "displayPieSmallWires(container)";
+                // _chart.column = "displayColumnSmallWires(container)";
+            }
+            else if(isContain(_cName, "New Wire Sizes")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+            else if(isContain(_cName, "Smaller wire sizes in High Flexible areas")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+            else if(isContain(_cName, "Smaller wire sizes in Engine Compartment areas")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+            else if(isContain(_cName, "PVC wires in Engine Compartment")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+            else if(isContain(_cName, "New Conductor Technology with lesser dimensions")){
+                _url = "wire_tech_lower_upper_diameter @byMY="+ _staticMY +",@criteria_id="+ _cId;
+                // _chart.default = "displayWireTechDiameter(container)";
+                // _chart.line = "displayWireTechDiameter(container)";
+            }
+            else if(isContain(_cName, "New Conductor Technology with lesser weight")){
+                _url = "wire_tech_lower_upper_weight @model_year="+ _staticMY +",@criteria_id="+ _cId;
+                // _chart.default = "displayWireTechWeight(container)";
+                // _chart.line = "displayWireTechWeight(container)";
+            } 
+            else if(isContain(_cName, "2.5 wire gauge for cigar lighters and power outlet")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+            else if(isContain(_cName, "New Technology on wire Conductor")){
+                _chart.default = "displayCommonPieChart(container)";
+                // _chart.pie = "displayCommonPieChart(container)";
+                // _chart.column = "displayCommonColumnChart(container)";
+            }
+        }
+        else if(isContain(_menuName, "POWER DISTRIBUTION")){
+            _url = "dynamic_power_distributions_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            // _chart.pie = "displayCommonPieChart(container)";
+            // _chart.column = "displayCommonColumnChart(container)";
+        }
+        else if(isContain(_menuName, "SAFETY CRITICAL CIRCUITS")){ 
+            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            // _chart.pie = "displayPieNetworkTopology(container)";
+            // _chart.column = "displayCommonColumnChart(container)";
+        }
+        else if(isContain(_menuName, "NETWORK TOPOLOGY")){ 
+            _url = "dynamic_network_topology_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            // _chart.pie = "displayPieNetworkTopology(container)";
+            // _chart.column = "displayCommonColumnChart(container)";
+        }
 
-function isSectionInView(elem, partial){
-    var container = $("main");
-    var contHeight = container.height();
-    var contTop = container.scrollTop();
-    var contBottom = contTop + contHeight ;
- 
-    var elemTop = $(elem).offset().top - container.offset().top;
-    var elemBottom = elemTop + $(elem).height();
+        _result.url = _url;
+        _result.chart = _chart;
+       
+        return _result;
+    }
+}
+
+function getDataByCriteriaId(url, criteriaName, callback){
+    if(url !== ""){
+        var _param = "";
+        var _url = url;
     
-    var isTotal = (elemTop >= 0 && elemBottom <=contHeight);
-    var isPart = ((elemTop < 0 && elemBottom > 0 ) || (elemTop > 0 && elemTop <= container.height())) && partial ;
+        // Set additional parameters
+        if(gPrmIncludeCYear==="Y"){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+        }
+        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
+        }
+
+        $.get(execURL + _url //+ param
+            , function(data){
+                gData = data.rows;
+                
+                if(isContain(criteriaName, "Overall")){
+                    gRegionNames = gData.groupBy(["region"]);
+                    gModelYears = gData.groupBy(["model_year"]);
+                }else{
+                    gRegionNames = gData.groupBy(["REGION_NAME"]);
+                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
+                }
+                
+                gRegionNames = sortBy(gRegionNames, "name");
+                gModelYears = sortBy(gModelYears, "name");
     
-    return  isTotal  || isPart ;
+                callback();
+        });
+    }
 }
 
 //******************************* CHART FUNCTION *****************************//
@@ -350,6 +463,8 @@ function setLegendSize(chart){
     chart.legend.itemContainers.template.dy = 10;
     chart.legend.itemContainers.template.paddingTop = 1;
     chart.legend.itemContainers.template.paddingBottom = 1;
+    chart.legend.labels.template.truncate = false;
+    chart.legend.labels.template.wrap = true;
         
     var markerTemplate = chart.legend.markers.template;
     markerTemplate.width = 10;
@@ -471,7 +586,7 @@ function getDistinctKey(data){
     if(data.length > 0){
         $.each(Object.keys(data[0]), function(i, key){
             var _key = key.toUpperCase();
-            if(_key !== "REGION_NAME" && _key !== "MODEL_YEAR"){
+            if(_key !== "REGION" && _key !== "MODEL_YEAR"){
                 if(isContain(_key, "LOCATION") || _key === "SL"){
                     _location = key;
                 }
@@ -503,39 +618,6 @@ function isContain(string, contains){
     return _res;
 } 
 
-function getDataByCriteriaId(url, subCriteriaName, callback){
-    if(_url !== ""){
-        var _param = "";
-        var _url = url;
-    
-        // Set additional parameters
-        if(gPrmIncludeCYear==="Y"){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-        }
-        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-        }
-
-        $.get(execURL + _url //+ param
-            , function(data){
-                gData = data.rows;
-                
-                if(isContain(subCriteriaName, "Overall")){
-                    gRegionNames = gData.groupBy(["region"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }else{
-                    gRegionNames = gData.groupBy(["REGION_NAME"]);
-                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                }
-                
-                gRegionNames = sortBy(gRegionNames, "name");
-                gModelYears = sortBy(gModelYears, "name");
-    
-                callback();
-        });
-    }
-}
-
 function setWireTrend(data, pContainer){
     if(data.length > 0){
         var _trend = "";
@@ -553,185 +635,640 @@ function setWireTrend(data, pContainer){
     }
 }
 
-function setChartSettings(o){
-    if(!$.isEmptyObject(o)){
-        var _pCid = o.pCriteriaId; //Parent Criteria Id
-        var _pCName = $.trim(o.pCriteriaName).toUpperCase();
-        var _subCid = o.subCriteriaId;
-        var _subCName = $.trim(o.subCriteriaName);
-        var _url = "";
-        var _result = {};
-        var _chart = {pie:"", column:"", line: ""};
-        var _staticMY = new Date().getFullYear() - 2;
-
-        if(isContain(_pCName, "VEHICLE ARCHITECTURE") || isContain(_pCName, "GROUNDING DISTRIBUTION")){
-             _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _subCid;
-            _chart.pie = "displayPieChart(container)";
-            _chart.column = "displayColumnChart(container)";
-        }
-        else if(isContain(_pCName, "WIRES AND CABLES")){
-            _url = "dynamic_wires_usage_summary @byRegion='Y',@byMY='Y',@criteria_id="+ _subCid;
-            
-            if(isContain(_subCName, "Overall wire usage lower than 0.5 CSA")){
-                _chart.pie = "displayPieSmallWires(container)";
-                _chart.column = "displayColumnSmallWires(container)";
-            }
-            else if(isContain(_subCName, "New Wire Sizes")){
-                _chart.pie = "displayPieNewWireSizes(container)";
-                _chart.column = "displayColumnNewWireSizes(container)";
-            }
-            else if(isContain(_subCName, "Smaller wire sizes in High Flexible areas")){
-                _chart.pie = "displayPieSMHighFlex(container)";
-                _chart.column = "displayColumnSMHighFlex(container)";
-            }
-            else if(isContain(_subCName, "Smaller wire sizes in Engine Compartment areas")){
-                _chart.pie = "displayPieSMEngineComp(container)";
-                _chart.column = "displayColumnSMEngineComp(container)";
-            }
-            else if(isContain(_subCName, "PVC wires in Engine Compartment")){
-                _chart.pie = "displayPiePVCEngineComp(container)";
-                _chart.column = "displayColumnPVCEngineComp(container)";
-            }
-            else if(isContain(_subCName, "New Conductor Technology with lesser dimensions")){
-                _url = "wire_tech_lower_upper_diameter @byMY="+ _staticMY +",@criteria_id="+ _subCid;
-                _chart.line = "displayWireTechDiameter(container)";
-            }
-            else if(isContain(_subCName, "New Conductor Technology with lesser weight")){
-                _url = "wire_tech_lower_upper_weight @model_year="+ _staticMY +",@criteria_id="+ _subCid;
-                _chart.line = "displayWireTechWeight(container)";
-            } 
-            else if(isContain(_subCName, "New Technology on wire Conductor")){
-                _chart.pie = "displayPieNewTechWireConductor(container)";
-                _chart.column = "displayColumnNewTechWireConductor(container)";
-            } 
-            else if(isContain(_subCName, "Overall wire usage lower than 1.0 CSA")){
-                _chart.pie = "displayPieOverallCSAMarc(container)";
-                _chart.column = "displayColumnOverallCSAMarc(container)";
-            }
-            else{
-                
-            }
-        }
-        else if(isContain(_pCName, "POWER DISTRIBUTION")){
-            _url = "dynamic_power_distributions_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _subCid;
-            _chart.pie = "displayPiePowerDistribution(container)";
-            _chart.column = "displayColumnPowerDistribution(container)";
-        }
-        else if(isContain(_pCName, "NETWORK DISTRIBUTION")){ 
-            _url = "dynamic_network_topology_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _subCid;
-            _chart.pie = "displayPieNetworkTopology(container)";
-            _chart.column = "displayColumnNetworkTopology(container)";
-        }
-        else{
-            
-        }
-
-        _result.url = _url;
-        _result.chart = _chart;
-       
-        return _result;
-    }
-}
-
-function displayChartByCriteria(data){
-    var _promises = [];
-    $gMainContainer.find(".d-criteria").each(function(){
-        var _d = new $.Deferred;
-        var _pCid = $(this).attr("id");
-        var _pCName = $(this).attr("name");
-        var _$chartContainer = $(this).find(".users-menu-graph");
-        var _subCriterias = data.filter(function (item) {
-        	return item.pcriteria_id == _pCid;
-        });
-
-        gTW.new();
-        $.each(_subCriterias, function(i, v){
-            var _subCid = v.criteria_id;
-            var _subCName = v.criteria_title;
-            var _subCDiv = "d_sub_criteria_" + _subCid;
-            
-            //var _loadChart = function() {
-                //if (_index < _subClength) {
-                    gTW.chart({
-                        card_id: _subCid,
-                        header_title: _subCName,
-                        body_id: _subCDiv
-                    });
-                    
-                    _$chartContainer.append(gTW.html());
-                        
-                    var _res = setChartSettings({
-                        pCriteriaId : _pCid,
-                        pCriteriaName : _pCName,
-                        subCriteriaId: _subCid,
-                        subCriteriaName: _subCName,
-                        subCriteriaDiv: _subCDiv
-                    });
-                    
-                    if(_res.url !== ""){
-                        getDataByCriteriaId(_res.url, _subCName, function(){
-                            gSubCriteriaId = _subCid;
-                            setMYRange();
-                            
-                            displayChartBySubCriteria(_res, function(){
-                                _d.resolve();
-                            })
-                        });
-                    }else{
-                        _d.resolve();
-                    }
-                    _promises.push(_d.promise());
-                //}
-               
-            //};
-            //_loadChart();
-        });
-    });
+//------------------------------- COMMON CHARTS ------------------------------//
+function displayCommonPieChart(container){
+    var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
     
-    $.when.apply($, _promises).done(function(){
-        // Show div on scroll
-        $('.aniview').AniView({
-            animateThreshold: 200,
-            scrollPollInterval: 20
-        });
+    $.each(gModelYears, function(x, my) { 
+        var _my = my.name;
         
-        // Initialize sticky div
-        $(".users-menu-item").stick_in_parent({
-            //parent: ".userForm",
-            //spacer: ".manual_spacer"
-        });  
-         //console.log(arguments)
-    });
-}
-
-function displayChartBySubCriteria(data, callback){
-    gTW.new();
-    
-    var _res = data;
-    var _keys = Object.keys(_res.chart);
-    for (var _key of _keys) {
-        var _value = _res.chart[_key];
-        var _chartId = _key +"_"+ gSubCriteriaId;
-        
-        if (_value !== "") {
-            
-            gTW.chartCard({ 
-                id: _chartId,
-                style: "min-height: 320px",
-                header:"d-none"
+        $.each(_dynamicObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _res = w.items.filter(function (item) {
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
             });
-            $("#d_sub_criteria_" + gSubCriteriaId).append(gTW.html());
+
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }  
             
-            // Call function name
-            var _fnName = new Function("container", _value);
-                _fnName(_chartId);
-        }
-    }
+            _data.push({
+                model_year: +_my,
+                category: _cName,
+                value: _count
+            });
+        });
+        
+    });
+
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
     
-    callback();
+    var container = am4core.create(container, am4core.Container);
+    container.width = am4core.percent(100);
+    container.height = am4core.percent(100);
+    container.layout = "horizontal";
+    
+    var _createChart = function(data, year){
+        var chart = container.createChild(am4charts.PieChart);
+        chart.data = data;
+        chart.paddingTop= 15;
+        chart.paddingBottom = 15;
+        
+        var title = chart.titles.create();
+        title.text =  "MY" + year;
+        title.fontSize = 10;
+        title.fontWeight = 800;
+        title.marginBottom = 0;
+        
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+        pieSeries.paddingBottom = 10;
+        pieSeries.colors.step = 2;
+        
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.fontSize = 10;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        //pieSeries.labels.template.relativeRotation = 90;
+        pieSeries.labels.template.fill = am4core.color("white");
+        pieSeries.legendSettings.valueText = "{valueY.close}";
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return "";
+            }
+            return text;
+        });
+        
+        setLegendSize(chart);
+    };
+
+    $.each(gModelYears, function(i, v){
+        var _my = v.name;
+        var _res = _data.filter(function (item) {
+        	return item.model_year == _my;
+        });
+
+        _createChart(_res, _my);
+    });
 }
 
+function displayCommonColumnChart(container){
+    var _data = [];
+    var _objKey = getDistinctKey(gData);
+    var _value = _objKey.value;
+    var _category = _objKey.category;
+    var _location = _objKey.location;
+    var _categoryObj = gData.groupBy([_category]);
+    var _locationObj = gData.groupBy([_location]);
+    var _hasLocation = (_location ? true: false);
+
+    if(_hasLocation){
+        $.each(gRegionNames, function(i, r) { 
+            $.each(gModelYears, function(x, my) {
+                var _regionName = r.name;
+                var _modelYear = my.name;
+                var _result = r.items.filter(function (item) {
+                	return item.MODEL_YEAR == _modelYear;
+                });
+                
+                $.each(_locationObj, function(y, l) {
+                    var _specLocation = l.name;
+                    var _json = {
+                        REGION_NAME : _regionName,
+                        MODEL_YEAR : +_modelYear,
+                        category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
+                    };
+                    
+                    $.each(_categoryObj, function(z, s) {
+                        var _count = 0;
+                        var _name = s.name;
+                        var _nameNew = _name.replace(" ","_");
+                        var _result2 = _result.filter(function (item) {
+                        	return item[_location] == _specLocation && item[_category] == _name;
+                        });
+
+                        if(_value && _value !== ""){
+                             _count = _result2.reduce(function (accumulator, currentValue) {
+                                return accumulator + currentValue[_value];
+                            }, 0)
+                        }else{
+                            for(; _count < _result2.length; ){
+                                _count++;
+                            }
+                        }
+                       
+                        _json[_nameNew] = _count;
+                    });
+                    
+                    _data.push(_json);
+                }); 
+            });
+        });
+    }
+    else{
+         $.each(gRegionNames, function(i,r) { 
+            $.each(gModelYears, function(x, my) { 
+                var _my = my.name;
+                var _region = r.name;
+                var _obj = {};
+                _obj.year = +_my;
+                _obj.region = _region;
+                _obj.category = _my +"("+ _region +")";
+                
+                $.each(_categoryObj, function(y, w) { 
+                    var _count = 0;
+                    var _cName = w.name;
+                    var _cNameNew = _cName.replace(" ","_");
+                    var _res = r.items.filter(function (item) {
+                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                    });
+                    
+                    if(_value && _value !== ""){
+                         _count = _res.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0);    
+                    }else{
+                        for(; _count < _res.length; ){
+                            _count++;
+                        }
+                    }
+    
+                    _obj[_cNameNew] = _count;
+                });
+                _data.push(_obj);
+            });
+        });
+    }
+    
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
+
+    var chart = am4core.create(container, am4charts.XYChart);
+    chart.data = _data;
+    chart.colors.step = 2;
+    chart.padding(15, 15, 10, 15);
+
+    if(_hasLocation){
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.renderer.labels.template.fontSize = 10;
+        categoryAxis.renderer.labels.template.valign = "top";
+        categoryAxis.renderer.labels.template.location = 0;
+        categoryAxis.renderer.labels.template.rotation = (_hasLocation ? 270: 0);
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (!isUD(text) ? text.replace(/\(.*/, "") : text);
+        });
+    
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        //valueAxis.title.text = "Count";
+        valueAxis.min = 0;
+        //valueAxis.max = 100;
+        valueAxis.strictMinMax = true;
+        valueAxis.calculateTotals = true;
+        valueAxis.renderer.minGridDistance = 10;
+        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+          return text + "%";
+        });
+    
+        // Create series
+        var _createSeries = function(field, name) {
+          var series = chart.series.push(new am4charts.ColumnSeries());
+          series.dataFields.valueY = field;
+          //series.dataFields.categoryXShow = "totalPercent";
+          series.dataFields.categoryX = "category";
+          series.name = name;
+          series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+          series.tooltip.fontSize = 8;
+          series.tooltip.paddingTop = 1;
+          series.tooltip.paddingBottom= 1;
+          series.tooltip.paddingBottom= 1;
+          series.tooltip.dy = -10;
+          series.tooltip.align = "top";
+          series.stacked = (_hasLocation ? true: false);
+          series.columns.template.width = am4core.percent(95);
+
+        }
+        
+        var _createLabel = function(category, endCategory, label, opacity, dy) {
+            var range = categoryAxis.axisRanges.create();
+            range.category = category;
+            range.endCategory = endCategory;
+            range.label.dataItem.text = label;
+            range.label.dy = dy;
+            //range.label.fontSize = 10;
+            range.label.fontWeight = "bold";
+            range.label.valign = "bottom";
+            range.label.location = 0.5;
+            range.label.rotation = 0;
+            range.axisFill.fill = am4core.color("#396478");
+            range.axisFill.fillOpacity = opacity;
+            range.locations.category = 0.1;
+            range.locations.endCategory = 0.9;
+        };
+    }
+    else{
+        // Create axes
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.numberFormatter.numberFormat = "#";
+        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+        });
+        
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        //valueAxis.title.text = "Count";
+        valueAxis.min = 0;
+        valueAxis.max = 100;
+        valueAxis.strictMinMax = true;
+        valueAxis.calculateTotals = true;
+        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+          return text + "%";
+        });
+        
+        // Create series
+        var _createSeries = function(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueY = field;
+            series.dataFields.valueYShow = "totalPercent";
+            series.dataFields.categoryX = "category";
+            series.name = name;
+            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+            series.tooltip.fontSize = 8;
+            series.tooltip.dy = -10;
+            //series.tooltip.align = "top";
+            
+            series.tooltip.valign  = "top";
+            series.tooltip.tooltipPosition = "fixed";
+            series.tooltip.background.filters.clear();
+            //series.tooltip.pointerOrientation  = true;
+            series.tooltip.fixedWidthGrid = true;
+            series.tooltip.layout = "none";
+            series.tooltip.pointerOrientation = "horizontal";
+            //series.tooltip.label.minWidth = 40;
+            //series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
+        };
+         
+        var _createLabel = function(category, endCategory, label) {
+            var range = categoryAxis.axisRanges.create();
+            range.category = category;
+            range.endCategory = endCategory;
+            range.label.dataItem.text = label;
+            range.label.dy = 18;
+            range.label.fontWeight = "bold";
+            range.axisFill.fill = am4core.color("#396478");
+            range.axisFill.fillOpacity = 0.1;
+            range.locations.category = 0.1;
+            range.locations.endCategory = 0.9;
+        };
+    }
+    
+    $.each(_categoryObj, function(i, v) { 
+        var _name = v.name;
+        var _nameNew = _name.replace(" ","_");
+
+        _createSeries(_nameNew, _name);
+    }); 
+    
+    if(_hasLocation){
+       var _specName = getFirstAndLastItem(_locationObj , "name");
+        
+        $.each(gModelYears, function(i, v) { 
+            var _my = v.name;
+            
+            $.each(gRegionNames, function(i, r) { 
+                var _reg = r.name;
+                var _first = _specName.first + "("+ _my +"-"+ _reg +")";
+                var _last = _specName.last + "("+ _my +"-"+ _reg +")";
+                
+                _createLabel(_first, _last, _my, 0, 10);
+            });
+        });
+        
+        $.each(gRegionNames, function(i, r) { 
+            var _reg = r.name;
+            var _first = _specName.first + "("+ gMYFrom +"-"+ _reg +")";
+            var _last = _specName.last + "("+ gMYTo +"-"+ _reg +")";
+            
+            _createLabel(_first, _last, _reg, 0.1, 20);
+        }); 
+    }
+    else{
+        $.each(gRegionNames, function(i, r) { 
+            var _region = "("+ r.name +")";
+            
+            _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
+        });
+    }
+    
+    //Add cursor
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.fullWidthLineX = false;
+    chart.cursor.lineX.strokeWidth = 0;
+    chart.cursor.lineX.fill = am4core.color("#000");
+    chart.cursor.lineX.fillOpacity = 0.1;
+    chart.cursor.behavior = "panX";
+    chart.cursor.lineY.disabled = true;
+    
+    setLegendSize(chart);
+    //setWireTrend(_data);
+}
+
+function displayCommonLineChart(container){
+    
+}
+
+function displayCustomLineChart(container){
+     var lowerLimit = 0;
+    var upperLimit = 0;
+    var _wireTypes = gData.groupBy(["wire_type"]);
+    var _newData = $.each(_wireTypes, function(i, v){
+        var _length = v.items.length;
+        
+        $.each(v.items, function(x, y){
+            if(lowerLimit < y.wire_ll) lowerLimit = y.wire_ll;
+            
+            if(upperLimit < y.wire_ul) upperLimit = y.wire_ul;
+        });
+        
+        var _sum = v.items.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.avg_weight;
+        }, 0);
+        
+        var _ll = v.items.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.wire_ll;
+        }, 0);
+        
+        var _ul = v.items.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.wire_ul;
+        }, 0);
+        
+        lowerLimit = (_ll / _length);
+        upperLimit = (_ul / _length);
+        v.avg_weight = (_sum / _length);
+    
+        return v;
+    });
+    
+    am4core.useTheme(am4themes_animated);   
+      
+    var chart = am4core.create(container, am4charts.XYChart);
+    chart.data = _newData;
+    chart.numberFormatter.numberFormat = "#.#####";
+    
+    // Create axes
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.dataFields.category = "name";
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.renderer.minGridDistance = 20;
+    categoryAxis.renderer.labels.template.horizontalCenter = "right";
+    categoryAxis.renderer.labels.template.verticalCenter = "middle";
+    categoryAxis.renderer.labels.template.rotation = 310;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    //valueAxis.max = 5;
+    //valueAxis.title.text = "Avg. Weight";
+    valueAxis.renderer.minGridDistance = 20;
+    //valueAxis.renderer.numberFormatter.numberFormat = "#.#####";
+    valueAxis.numberFormatter = new am4core.NumberFormatter();
+    valueAxis.numberFormatter.numberFormat = "#.0000";
+    
+     var axisTooltip = valueAxis.tooltip;
+    //axisTooltip.background.fill = am4core.color("#07BEB8");
+    // axisTooltip.background.strokeWidth = 0;
+    // axisTooltip.background.cornerRadius = 3;
+    // axisTooltip.background.pointerLength = 0;
+    // axisTooltip.dy = 5;
+    axisTooltip.numberFormatter = new am4core.NumberFormatter();
+    axisTooltip.numberFormatter.numberFormat = "#.#####";
+    
+    var axisTooltip = valueAxis.tooltip;
+    
+    // Create series
+    var series = chart.series.push(new am4charts.LineSeries());
+    series.dataFields.valueY = "avg_weight";
+    series.dataFields.categoryX = "name";
+    series.name = "Avg. Weight";
+    series.tooltipText = "{name}: [bold]{valueY}[/]";
+    series.strokeWidth = 2;
+    
+    // Add simple bullet
+    var circleBullet = series.bullets.push(new am4charts.CircleBullet());
+    circleBullet.circle.strokeWidth = 1;
+    
+    // Create value axis range
+    var range = valueAxis.axisRanges.create();
+    range.value = upperLimit;
+    range.grid.stroke = am4core.color("#396478");
+    range.grid.strokeWidth = 2;
+    range.grid.strokeOpacity = 1;
+    range.label.inside = true;
+    range.label.text = "Upper Weight";
+    range.label.fill = range.grid.stroke;
+    //range.label.align = "right";
+    range.label.verticalCenter = "bottom";
+    
+    var range2 = valueAxis.axisRanges.create();
+    range2.value = lowerLimit;
+    range2.grid.stroke = am4core.color("#A96478");
+    range2.grid.strokeWidth = 2;
+    range2.grid.strokeOpacity = 1;
+    range2.label.inside = true;
+    range2.label.text = "Lower Weight";
+    range2.label.fill = range2.grid.stroke;
+    //range2.label.align = "right";
+    range2.label.verticalCenter = "bottom";
+    
+    // Add cursor
+    chart.cursor = new am4charts.XYCursor();
+}
+
+// Wires & Cables
 //--------------------------------- PIE CHART --------------------------------//
+function displayPieOverallChart(container){
+    var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+        _dynamicObj = sortBy(_dynamicObj, "name");
+    
+    $.each(gModelYears, function(x, my) { 
+        var _my = my.name;
+        
+        $.each(_dynamicObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _res = w.items.filter(function (item) {
+            	return item[_category] == _cName && item.model_year == _my;
+            });
+
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }  
+            
+            var _sub = [];
+            $.each(_res.groupBy(['wire_gauge']), function(y, wire){
+                var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);
+                
+                _sub.push({
+                    category: wire.name,
+                    value: _sumWire
+                });
+            });
+            
+            if(_cName.indexOf("Other") != -1){
+                _cName = "Wire sizes above 0.50 CSA";
+            }
+            if(_cName.indexOf("Small") != -1){
+                _cName = "Wire sizes below 0.50 CSA";
+            }
+
+            _data.push({
+                model_year: +_my,
+                category: _cName,
+                value: _count,
+                subs: _sub
+            });
+        });
+        
+    });
+
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
+    
+    var container = am4core.create(container, am4core.Container);
+    container.width = am4core.percent(100);
+    container.height = am4core.percent(100);
+    container.layout = "horizontal";
+    
+    var _createChart = function(data, year, hiddenInLegend){
+        var chart = container.createChild(am4charts.PieChart);
+        //chart.data = data;
+        chart.paddingTop= 15;
+        chart.paddingBottom = 15;
+
+        var title = chart.titles.create();
+        title.text =  "MY" + year;
+        //title.fontSize = 12;
+        title.fontWeight = 800;
+        title.marginBottom = 0;
+        
+        var selected;
+        var generateChartData = function() {
+            var chartData = [];
+            for (var i = 0; i < data.length; i++) {
+                if (i == selected) {
+                    for (var x = 0; x < data[i].subs.length; x++) {
+                        chartData.push({
+                            category: data[i].subs[x].category,
+                            value: data[i].subs[x].value,
+                            color: data[i].color,
+                            pulled: true
+                        });
+                    }
+                } else {
+                    chartData.push({
+                        category: data[i].category,
+                        value: data[i].value,
+                        color: data[i].color,
+                        id: i
+                    });
+                }
+            }
+            return chartData;
+        };
+        
+        chart.data = generateChartData();
+        
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+        pieSeries.paddingBottom = 10;
+        pieSeries.colors.step = 2;
+        pieSeries.hiddenInLegend = hiddenInLegend;
+        
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.fontSize = 10;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        //pieSeries.labels.template.relativeRotation = 90;
+        pieSeries.labels.template.fill = am4core.color("white");
+        pieSeries.legendSettings.valueText = "{valueY.close}";
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return "";
+            }
+            return text;
+        });
+        
+        pieSeries.slices.template.events.on("hit", function(event) {
+            if(event.target.dataItem.dataContext.id !== 0){
+                if (event.target.dataItem.dataContext.id !== undefined ) {
+                    selected = event.target.dataItem.dataContext.id;
+                } else {
+                    selected = undefined;
+                }
+                chart.data = generateChartData();
+            }
+            
+        });
+        
+        setLegendSize(chart);
+    };
+
+    var _pieSeries = [];
+    $.each(gModelYears, function(i, v){
+        var _my = v.name;
+        var _res = _data.filter(function (item) {
+        	return item.model_year == _my;
+        });
+
+        _pieSeries = _createChart(_res, _my, (i > 0 ? true : false));
+        //_pieSeries.push(_series);
+    });
+}
 
 function displayPieSmallWires(container){
     //Set Data
@@ -1394,26 +1931,35 @@ function displayPiePVCEngineComp(container){
 
 function displayPieNewTechWireConductor(container){
     var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+    
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
         
-        $.each(gData.groupBy(["WireGauge"]), function(y, w) { 
+        $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
-            var _wire = w.name;
-            var _wireNew = _wire.replace(".","_");
-
+            var _cName = w.name;
             var _res = w.items.filter(function (item) {
-            	return item.WireGauge == _wire && item.MODEL_YEAR == _my;
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
             });
-          
-            _count = _res.reduce(function (accumulator, currentValue) {
-                return accumulator + currentValue.COUNT_WIRE_GAUGE;
-            }, 0);
+
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }  
             
             _data.push({
                 model_year: +_my,
-                wire_guage: _wire,
-                wire_count: _count
+                category: _cName,
+                value: _count
             });
         });
         
@@ -1438,8 +1984,8 @@ function displayPieNewTechWireConductor(container){
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "wire_count";
-        pieSeries.dataFields.category = "wire_guage";
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
         pieSeries.slices.template.propertyFields.fill = "color";
         pieSeries.slices.template.propertyFields.isActive = "pulled";
         pieSeries.slices.template.strokeWidth = 0;
@@ -1448,22 +1994,12 @@ function displayPieNewTechWireConductor(container){
         
         pieSeries.ticks.template.disabled = true;
         pieSeries.alignLabels = false;
-        pieSeries.labels.template.fontSize = 12;
+        pieSeries.labels.template.fontSize = 10;
         pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
         pieSeries.labels.template.radius = am4core.percent(-40);
         //pieSeries.labels.template.relativeRotation = 90;
         pieSeries.labels.template.fill = am4core.color("white");
         pieSeries.legendSettings.valueText = "{valueY.close}";
-        // chart.legend = new am4charts.Legend();
-        // chart.legend.labels.template.fontSize = 12;
-        // chart.legend.valueLabels.template.fontSize = 12;
-        // chart.legend.itemContainers.template.paddingTop = 1;
-        // chart.legend.itemContainers.template.paddingBottom = 1;
-        
-        // var markerTemplate = chart.legend.markers.template;
-        // markerTemplate.width = 12;
-        // markerTemplate.height = 12;
-        
         pieSeries.labels.template.adapter.add("text", function(text, target) {
             if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
                 return "";
@@ -1482,97 +2018,6 @@ function displayPieNewTechWireConductor(container){
 
         _createChart(_res, _my);
     });
-    
-    // var _data = [];
-    // $.each(gModelYears, function(x, my) {
-    //     $.each(gData.groupBy(["REGION_NAME"]), function(y, r) { 
-    //         var _count = 0;
-    //         var _my = my.name;
-    //         var _region = r.name;
-    //         var _res = r.items.filter(function (item) {
-    //         	return item.REGION_NAME == _region && item.MODEL_YEAR == _my;
-    //         });
-      
-    //         _count = _res.reduce(function (accumulator, currentValue) {
-    //             return accumulator + currentValue.wire_count;
-    //         }, 0);
-            
-    //         _data.push({
-    //             model_year: +_my,
-    //             region_name: _region,
-    //             wire_count: _count
-    //         });
-    //     });
-    // });
-
-    // var container = am4core.create("chartMY_" + gPrmCriteriaId, am4core.Container);
-    // container.width = am4core.percent(100);
-    // container.height = am4core.percent(100);
-    // container.layout = "horizontal";
-    
-    // var _createChart = function(data, year){
-    //     var chart = container.createChild(am4charts.PieChart);
-    //     chart.data = data;
-    //     chart.paddingTop= 15;
-    //     chart.paddingBottom = 15;
-        
-    //     var title = chart.titles.create();
-    //     title.text =  "MY" + year;
-    //     //title.fontSize = 12;
-    //     title.fontWeight = 800;
-    //     title.marginBottom = 0;
-        
-    //     // Add and configure Series
-    //     var pieSeries = chart.series.push(new am4charts.PieSeries());
-    //     pieSeries.dataFields.value = "wire_count";
-    //     pieSeries.dataFields.category = "region_name";
-    //     pieSeries.slices.template.propertyFields.fill = "color";
-    //     pieSeries.slices.template.propertyFields.isActive = "pulled";
-    //     pieSeries.slices.template.strokeWidth = 0;
-    //     pieSeries.paddingBottom = 10;
-    //     pieSeries.colors.step = 2;
-        
-    //     pieSeries.ticks.template.disabled = true;
-    //     pieSeries.alignLabels = false;
-    //     pieSeries.labels.template.fontSize = 12;
-    //     pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
-    //     pieSeries.labels.template.radius = am4core.percent(-40);
-    //     //pieSeries.labels.template.relativeRotation = 90;
-    //     pieSeries.labels.template.fill = am4core.color("white");
-    
-    //     chart.legend = new am4charts.Legend();
-    //     chart.legend.labels.template.fontSize = 12;
-    //     chart.legend.valueLabels.template.fontSize = 12;
-    //     chart.legend.itemContainers.template.paddingTop = 1;
-    //     chart.legend.itemContainers.template.paddingBottom = 1;
-        
-    //     var markerTemplate = chart.legend.markers.template;
-    //     markerTemplate.width = 12;
-    //     markerTemplate.height = 12;
-        
-    //     pieSeries.labels.template.adapter.add("radius", function(radius, target) {
-    //         if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-    //             return 0;
-    //         }
-    //         return radius;
-    //     });
-        
-    //     pieSeries.labels.template.adapter.add("fill", function(color, target) {
-    //         if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-    //             return am4core.color("#000");
-    //         }
-    //         return color;
-    //     });
-    // };
-
-    // $.each(gModelYears, function(i, v){
-    //     var _my = v.name;
-    //     var _res = _data.filter(function (item) {
-    //     	return item.model_year == _my;
-    //     });
-
-    //     _createChart(_res, _my);
-    // });
 }
 
 function displayPieTwoWayConnector(container){
@@ -2074,7 +2519,7 @@ function displayColumnNewWireSizes(container){
     
     setLegendSize(chart);
     
-    setWireTrend(_data);
+    //setWireTrend(_data);
 }
 
 function displayColumnSMHighFlex(container){
@@ -2203,7 +2648,7 @@ function displayColumnSMHighFlex(container){
     
     setLegendSize(chart);
     
-    setWireTrend(_data);
+    //setWireTrend(_data);
 }
 
 function displayColumnSMEngineComp(container){
@@ -2307,7 +2752,7 @@ function displayColumnSMEngineComp(container){
     
     setLegendSize(chart);
     
-    setWireTrend(_data);
+    //setWireTrend(_data);
 }
 
 function displayColumnPVCEngineComp(container){
@@ -2411,118 +2856,7 @@ function displayColumnPVCEngineComp(container){
     
     setLegendSize(chart);
     
-    setWireTrend(_data);
-    
-    // var _data = [];
-    // $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
-    //     $.each(gModelYears, function(x, my) { 
-    //         var _my = my.name;
-    //         var _region = r.name;
-    //         var _obj = {};
-    //         _obj.year = +_my;
-    //         _obj.region = _region;
-    //         _obj.category = _my +"("+ _region +")";
-            
-    //         $.each(gData.groupBy(["WireInsulation"]), function(y, w) { 
-    //             var _count = 0;
-    //             var _harness = w.name;
-    //             var _harnessNew = _harness.replace(".","_");
-    //             var _res = r.items.filter(function (item) {
-    //             	return item.WireInsulation == _harness && item.MODEL_YEAR == _my;
-    //             });
-                
-    //             _count = _res.reduce(function (accumulator, currentValue) {
-    //                 return accumulator + currentValue.COUNT_WIRE_GAUGE;
-    //             }, 0);
-
-    //             _obj[_harnessNew] = _count;
-    //         });
-    //         _data.push(_obj);
-    //     });
-    // });
-    
-    // var chart = am4core.create(container, am4charts.XYChart);
-    // chart.data = _data;
-    // chart.colors.step = 2;
-    // chart.maskBullets = false;
-    
-    // // Create axes
-    // var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    // categoryAxis.dataFields.category = "category";
-    // categoryAxis.numberFormatter.numberFormat = "#";
-    // //categoryAxis.title.text = "Wire 0.50 and Below";
-    // categoryAxis.renderer.grid.template.location = 0;
-    // categoryAxis.renderer.minGridDistance = 20;
-    // categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-    //     return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
-    // });
-    
-    // var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    // valueAxis.title.text = "Count";
-    // valueAxis.min = 0;
-    // //valueAxis.max = 100;
-    // //valueAxis.strictMinMax = true;
-    // //valueAxis.calculateTotals = true;
-    // // valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-    // //   return text + "%";
-    // // });
-    
-    // // Create series
-    // var _createSeries = function(field, name) {
-    //     var series = chart.series.push(new am4charts.ColumnSeries());
-    //     series.dataFields.valueY = field;
-    //     //series.dataFields.valueYShow = "totalPercent";
-    //     series.dataFields.categoryX = "category";
-    //     series.name = name;
-    //     series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-    // };
-     
-    // var _createLabel = function(category, endCategory, label) {
-    //     var range = categoryAxis.axisRanges.create();
-    //     range.category = category;
-    //     range.endCategory = endCategory;
-    //     range.label.dataItem.text = label;
-    //     range.label.dy = 18;
-    //     range.label.fontWeight = "bold";
-    //     range.axisFill.fill = am4core.color("#396478");
-    //     range.axisFill.fillOpacity = 0.1;
-    //     range.locations.category = 0.1;
-    //     range.locations.endCategory = 0.9;
-    // };
-
-    // var colorSet = new am4core.ColorSet();
-    // $.each(gData.groupBy(["WireInsulation"]), function(x, w) { 
-    //     var _harness = w.name;
-    //     var _field = _harness.replace(".","_");
-        
-    //     _createSeries(_field, _harness);
-    // });  
-    
-    // $.each(gRegionNames, function(i, r) { 
-    //     var _region = "("+ r.name +")";
-        
-    //     _createLabel(gMYFrom + _region, gMYTo + _region, r.name);
-    // });
-    
-    // //Add cursor
-    // chart.cursor = new am4charts.XYCursor();
-    
-    // //Add legend
-    // chart.legend = new am4charts.Legend();
-    
-    // setLegendSize(chart);
-    
-    // var _trend = "";
-    // var lastObj = _data[_data.length - 1];
-    // $.each(lastObj, function(k, v){
-    //     var _key = $.trim(k).toLowerCase();
-    //     if( _key.indexOf("harness") > -1 && v !== 0){
-    //         _trend += k + '<br>';
-    //     }
-    // });
-    
-    // var _tw = new zsi.easyJsTemplateWriter()
-    // $("#chart_container").append( _tw.trendResult({ trend: _trend }).html() );
+    //setWireTrend(_data);
 }
 
 function displayColumnNewTechWireConductor(container){
@@ -2626,78 +2960,7 @@ function displayColumnNewTechWireConductor(container){
     
     setLegendSize(chart);
     
-    setWireTrend(_data);
-    
-    // var _data = [];
-    // $.each(gData.groupBy(["REGION_NAME"]), function(i,r) { 
-    //     var _obj = {};
-    //     $.each(gModelYears, function(x, my) { 
-    //         var _my = my.name;
-    //         var _region = r.name;
-    //         var _count = 0;
-            
-    //         var _res = r.items.filter(function (item) {
-    //         	return item.MODEL_YEAR == _my;
-    //         });
-            
-    //         _count = _res.reduce(function (accumulator, currentValue) {
-    //             return accumulator + currentValue.wire_count;
-    //         }, 0);
-        
-    //         _obj[_my] = _count;
-    //         _obj.category = _region;
-    //     });
-        
-    //     _data.push(_obj);
-    // });
-    
-    // var chart = am4core.create(container, am4charts.XYChart);
-    // chart.data = _data;
-    // chart.colors.step = 2;
-    // chart.maskBullets = false;
-    
-    // // Create axes
-    // var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    // categoryAxis.dataFields.category = "category";
-    // categoryAxis.numberFormatter.numberFormat = "#";
-    // //categoryAxis.title.text = "Wire 0.50 and Below";
-    // categoryAxis.renderer.grid.template.location = 0;
-    // categoryAxis.renderer.minGridDistance = 20;
-    
-    // var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    // valueAxis.title.text = "Count";
-    // valueAxis.min = 0;
-    // valueAxis.max = 100;
-    // valueAxis.strictMinMax = true;
-    // valueAxis.calculateTotals = true;
-    // valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-    //   return text + "%";
-    // });
-    
-    
-    // var _createSeries = function(field){
-    //     var series = chart.series.push(new am4charts.ColumnSeries());
-    //     series.columns.template.width = am4core.percent(80);
-    //     series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-    //     //series.columns.template.tooltipText = "{name}: {valueY.value}";
-    //     series.name = field;
-    //     series.dataFields.categoryX = "category";
-    //     series.dataFields.valueY = field;
-    //     series.dataFields.valueYShow = "totalPercent";
-    //     series.stacked = false;
-    // };
-   
-    // $.each(gModelYears, function(i, v){
-    //     _createSeries(v.name);
-    // });
-    
-    // //Add cursor
-    // chart.cursor = new am4charts.XYCursor();
-    
-    // //Add legend
-    // chart.legend = new am4charts.Legend();
-    
-    // setWireTrend(_data);
+    //setWireTrend(_data);
 }
 
 function displayColumnTwoWayConnector(container){
@@ -2799,7 +3062,7 @@ function displayColumnTwoWayConnector(container){
     //chart.legend = new am4charts.Legend();
     
     setLegendSize(chart);
-    setWireTrend(_data);
+    //setWireTrend(_data);
 }
 
 function displayColumnOverallCSAMarc(container){
@@ -3146,8 +3409,7 @@ function displayWireTechWeight(container, callback){
     //chart.legend = new am4charts.Legend();
 }
 
-
-//--------------------------------- END LINE CHART -------------------------------//
+//-------------------------- END WIRES AND CABLES CHART-----------------------//
 
 // Power Distribution
 function displayPiePowerDistribution(container){
@@ -3508,119 +3770,371 @@ function displayColumnPowerDistribution(container, callback){
         chart.cursor.lineY.disabled = true;
         
         setLegendSize(chart);
-        setWireTrend(_data);
+        //setWireTrend(_data);
     }
-    // if(gData.length > 0){
-    //     var _data = [];
-    //     var _dynamicKey = getDistinctKey(gData);
-    //     var _value = _dynamicKey.value;
-    //     var _category = _dynamicKey.category;
-    //     var _dynamicObj = gData.groupBy([_category]);
+}
+
+// Grounding Distribution
+function displayPieChart(container){
+    var _data = [];
+    var _dynamicKey = getDistinctKey(gData);
+    var _value = _dynamicKey.value;
+    var _category = _dynamicKey.category;
+    var _dynamicObj = gData.groupBy([_category]);
+    
+    $.each(gModelYears, function(x, my) { 
+        var _my = my.name;
         
-    //     $.each(gRegionNames, function(i, r) { 
-    //         $.each(gModelYears, function(x, my) { 
-    //             var _my = my.name;
-    //             var _region = r.name;
-    //             var _obj = {};
-    //             _obj.year = +_my;
-    //             _obj.region = _region;
-    //             _obj.category = _my +"("+ _region +")";
-                
-    //             $.each(_dynamicObj, function(y, w) { 
-    //                 var _count = 0;
-    //                 var _cName = w.name;
-    //                 var _cNameNew = _cName.replace(".","_");
-    //                 var _res = r.items.filter(function (item) {
-    //                 	return item[_category] == _cName && item.MODEL_YEAR == _my;
-    //                 });
+        $.each(_dynamicObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _res = w.items.filter(function (item) {
+            	return item[_category] == _cName && item.MODEL_YEAR == _my;
+            });
+
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }  
+            
+            _data.push({
+                model_year: +_my,
+                category: _cName,
+                value: _count
+            });
+        });
+        
+    });
+
+    var container = am4core.create(container, am4core.Container);
+    container.width = am4core.percent(100);
+    container.height = am4core.percent(100);
+    container.layout = "horizontal";
+    
+    var _createChart = function(data, year){
+        var chart = container.createChild(am4charts.PieChart);
+        chart.data = data;
+        chart.paddingTop= 15;
+        chart.paddingBottom = 15;
+        
+        var title = chart.titles.create();
+        title.text =  "MY" + year;
+        //title.fontSize = 12;
+        title.fontWeight = 800;
+        title.marginBottom = 0;
+        
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "value";
+        pieSeries.dataFields.category = "category";
+        pieSeries.slices.template.propertyFields.fill = "color";
+        pieSeries.slices.template.propertyFields.isActive = "pulled";
+        pieSeries.slices.template.strokeWidth = 0;
+        pieSeries.paddingBottom = 10;
+        pieSeries.colors.step = 2;
+        
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.fontSize = 12;
+        pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
+        pieSeries.labels.template.radius = am4core.percent(-40);
+        //pieSeries.labels.template.relativeRotation = 90;
+        pieSeries.labels.template.fill = am4core.color("white");
+        pieSeries.legendSettings.valueText = "{valueY.close}";
+        pieSeries.labels.template.adapter.add("text", function(text, target) {
+            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
+                return "";
+            }
+            return text;
+        });
+        
+        setLegendSize(chart);
+    };
+
+    $.each(gModelYears, function(i, v){
+        var _my = v.name;
+        var _res = _data.filter(function (item) {
+        	return item.model_year == _my;
+        });
+
+        _createChart(_res, _my);
+    });
+}
+
+function displayColumnChart(container){
+    if(gData.length > 0){
+        var _data = [];
+        var _objKey = getDistinctKey(gData);
+        var _value = _objKey.value;
+        var _category = _objKey.category;
+        var _location = _objKey.location;
+        var _categoryObj = gData.groupBy([_category]);
+        var _locationObj = gData.groupBy([_location]);
+        var _hasLocation = (_location ? true: false);
+
+        if(_hasLocation){
+            $.each(gRegionNames, function(i, r) { 
+                $.each(gModelYears, function(x, my) {
+                    var _regionName = r.name;
+                    var _modelYear = my.name;
+                    var _result = r.items.filter(function (item) {
+                    	return item.MODEL_YEAR == _modelYear;
+                    });
                     
-    //                 if(_value && _value !== ""){
-    //                     _count = _res.reduce(function (accumulator, currentValue) {
-    //                         return accumulator + currentValue[_value];
-    //                     }, 0);    
-    //                 }else{
-    //                     for(; _count < _res.length; ){
-    //                         _count++;
-    //                     }
-    //                 }
+                    $.each(_locationObj, function(y, l) {
+                        var _specLocation = l.name;
+                        var _json = {
+                            REGION_NAME : _regionName,
+                            MODEL_YEAR : +_modelYear,
+                            category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
+                        };
+                        
+                        $.each(_categoryObj, function(z, s) {
+                            var _count = 0;
+                            var _name = s.name;
+                            var _nameNew = _name.replace(" ","_");
+                            var _result2 = _result.filter(function (item) {
+                            	return item[_location] == _specLocation && item[_category] == _name;
+                            });
     
-    //                 _obj[_cNameNew] = _count;
-    //             });
-    //             _data.push(_obj);
-    //         });
-    //     });
+                            if(_value && _value !== ""){
+                                 _count = _result2.reduce(function (accumulator, currentValue) {
+                                    return accumulator + currentValue[_value];
+                                }, 0)
+                            }else{
+                                for(; _count < _result2.length; ){
+                                    _count++;
+                                }
+                            }
+                           
+                            _json[_nameNew] = _count;
+                        });
+                        
+                        _data.push(_json);
+                    }); 
+                });
+            });
+        }
+        else{
+             $.each(gRegionNames, function(i,r) { 
+                $.each(gModelYears, function(x, my) { 
+                    var _my = my.name;
+                    var _region = r.name;
+                    var _obj = {};
+                    _obj.year = +_my;
+                    _obj.region = _region;
+                    _obj.category = _my +"("+ _region +")";
+                    
+                    $.each(_categoryObj, function(y, w) { 
+                        var _count = 0;
+                        var _cName = w.name;
+                        var _cNameNew = _cName.replace(" ","_");
+                        var _res = r.items.filter(function (item) {
+                        	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                        });
+                        
+                        if(_value && _value !== ""){
+                             _count = _res.reduce(function (accumulator, currentValue) {
+                                return accumulator + currentValue[_value];
+                            }, 0);    
+                        }else{
+                            for(; _count < _res.length; ){
+                                _count++;
+                            }
+                        }
         
-    //     // Display Chart
-    //     am4core.useTheme(am4themes_animated);
+                        _obj[_cNameNew] = _count;
+                    });
+                    _data.push(_obj);
+                });
+            });
+        }
         
-    //     var chart = am4core.create(container, am4charts.XYChart);
-    //     chart.data = _data;
-    //     chart.colors.step = 2;
-    //     chart.maskBullets = false;
+        // Display Chart
+        am4core.useTheme(am4themes_animated);
         
-    //     // Create axes
-    //     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    //     categoryAxis.dataFields.category = "category";
-    //     categoryAxis.numberFormatter.numberFormat = "#";
-    //     //categoryAxis.title.text = "Wire 0.50 and Below";
-    //     categoryAxis.renderer.grid.template.location = 0;
-    //     categoryAxis.renderer.minGridDistance = 20;
-    //     categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-    //         return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
-    //     });
-        
-    //     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    //     //valueAxis.title.text = "Count";
-    //     valueAxis.min = 0;
-    //     valueAxis.max = 100;
-    //     valueAxis.strictMinMax = true;
-    //     valueAxis.calculateTotals = true;
-    //     valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-    //       return text + "%";
-    //     });
-        
-    //     // Create series
-    //     var _createSeries = function(field, name) {
-    //         var series = chart.series.push(new am4charts.ColumnSeries());
-    //         series.dataFields.valueY = field;
-    //         series.dataFields.valueYShow = "totalPercent";
-    //         series.dataFields.categoryX = "category";
-    //         series.name = name;
-    //         series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-    //     };
-         
-    //     var _createLabel = function(category, endCategory, label) {
-    //         var range = categoryAxis.axisRanges.create();
-    //         range.category = category;
-    //         range.endCategory = endCategory;
-    //         range.label.dataItem.text = label;
-    //         range.label.dy = 18;
-    //         range.label.fontWeight = "bold";
-    //         range.axisFill.fill = am4core.color("#396478");
-    //         range.axisFill.fillOpacity = 0.1;
-    //         range.locations.category = 0.1;
-    //         range.locations.endCategory = 0.9;
-    //     };
+        var chart = am4core.create(container, am4charts.XYChart);
+        chart.data = _data;
+        chart.colors.step = 2;
+        chart.padding(15, 15, 10, 15);
     
-    //     $.each(_dynamicObj, function(x, w) { 
-    //         var _cName = w.name;
-    //         var _cNameNew = _cName.replace(".","_");
+        if(_hasLocation){
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "category";
+            categoryAxis.renderer.minGridDistance = 20;
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.interactionsEnabled = false;
+            categoryAxis.renderer.labels.template.fontSize = 10;
+            categoryAxis.renderer.labels.template.valign = "top";
+            categoryAxis.renderer.labels.template.location = 0;
+            categoryAxis.renderer.labels.template.rotation = (_hasLocation ? 270: 0);
+            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+                return (!isUD(text) ? text.replace(/\(.*/, "") : text);
+            });
+        
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            //valueAxis.title.text = "Count";
+            valueAxis.min = 0;
+            //valueAxis.max = 100;
+            valueAxis.strictMinMax = true;
+            valueAxis.calculateTotals = true;
+            valueAxis.renderer.minGridDistance = 10;
+            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+              return text + "%";
+            });
+        
+            // Create series
+            var _createSeries = function(field, name) {
+              var series = chart.series.push(new am4charts.ColumnSeries());
+              series.dataFields.valueY = field;
+              //series.dataFields.categoryXShow = "totalPercent";
+              series.dataFields.categoryX = "category";
+              series.name = name;
+              series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+              series.tooltip.fontSize = 8;
+              series.tooltip.paddingTop = 1;
+              series.tooltip.paddingBottom= 1;
+              series.tooltip.paddingBottom= 1;
+              series.tooltip.dy = -10;
+              series.tooltip.align = "top";
+              series.stacked = (_hasLocation ? true: false);
+              series.columns.template.width = am4core.percent(95);
+    
+            }
             
-    //         _createSeries(_cNameNew, _cName);
-    //     });  
-        
-    //     $.each(gRegionNames, function(i, r) { 
-    //         var _region = "("+ r.name +")";
+            var _createLabel = function(category, endCategory, label, opacity, dy) {
+                var range = categoryAxis.axisRanges.create();
+                range.category = category;
+                range.endCategory = endCategory;
+                range.label.dataItem.text = label;
+                range.label.dy = dy;
+                //range.label.fontSize = 10;
+                range.label.fontWeight = "bold";
+                range.label.valign = "bottom";
+                range.label.location = 0.5;
+                range.label.rotation = 0;
+                range.axisFill.fill = am4core.color("#396478");
+                range.axisFill.fillOpacity = opacity;
+                range.locations.category = 0.1;
+                range.locations.endCategory = 0.9;
+            };
+        }
+        else{
+            // Create axes
+            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "category";
+            categoryAxis.numberFormatter.numberFormat = "#";
+            //categoryAxis.title.text = "Wire 0.50 and Below";
+            categoryAxis.renderer.grid.template.location = 0;
+            categoryAxis.renderer.minGridDistance = 20;
+            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+                return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+            });
             
-    //         _createLabel(gMYFrom + _region, gMYTo + _region, r.name);
-    //     });
+            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            //valueAxis.title.text = "Count";
+            valueAxis.min = 0;
+            valueAxis.max = 100;
+            valueAxis.strictMinMax = true;
+            valueAxis.calculateTotals = true;
+            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+              return text + "%";
+            });
+            
+            // Create series
+            var _createSeries = function(field, name) {
+                var series = chart.series.push(new am4charts.ColumnSeries());
+                series.dataFields.valueY = field;
+                series.dataFields.valueYShow = "totalPercent";
+                series.dataFields.categoryX = "category";
+                series.name = name;
+                series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+                series.tooltip.fontSize = 8;
+                series.tooltip.dy = -10;
+                //series.tooltip.align = "top";
+                
+                series.tooltip.valign  = "top";
+                series.tooltip.tooltipPosition = "fixed";
+                series.tooltip.background.filters.clear();
+                //series.tooltip.pointerOrientation  = true;
+                series.tooltip.fixedWidthGrid = true;
+                series.tooltip.layout = "none";
+                series.tooltip.pointerOrientation = "horizontal";
+                //series.tooltip.label.minWidth = 40;
+                //series.tooltip.label.minHeight = 40;
+                series.tooltip.label.textAlign = "middle";
+                series.tooltip.label.textValign = "middle";
+            };
+             
+            var _createLabel = function(category, endCategory, label) {
+                var range = categoryAxis.axisRanges.create();
+                range.category = category;
+                range.endCategory = endCategory;
+                range.label.dataItem.text = label;
+                range.label.dy = 18;
+                range.label.fontWeight = "bold";
+                range.axisFill.fill = am4core.color("#396478");
+                range.axisFill.fillOpacity = 0.1;
+                range.locations.category = 0.1;
+                range.locations.endCategory = 0.9;
+            };
+        }
         
-    //     //Add cursor
-    //     chart.cursor = new am4charts.XYCursor();
+        $.each(_categoryObj, function(i, v) { 
+            var _name = v.name;
+            var _nameNew = _name.replace(" ","_");
+    
+            _createSeries(_nameNew, _name);
+        }); 
         
-    //     setLegendSize(chart);
-    //     setWireTrend(_data);
-    // }
+        if(_hasLocation){
+           var _specName = getFirstAndLastItem(_locationObj , "name");
+            
+            $.each(gModelYears, function(i, v) { 
+                var _my = v.name;
+                
+                $.each(gRegionNames, function(i, r) { 
+                    var _reg = r.name;
+                    var _first = _specName.first + "("+ _my +"-"+ _reg +")";
+                    var _last = _specName.last + "("+ _my +"-"+ _reg +")";
+                    
+                    _createLabel(_first, _last, _my, 0, 10);
+                });
+            });
+            
+            $.each(gRegionNames, function(i, r) { 
+                var _reg = r.name;
+                var _first = _specName.first + "("+ gMYFrom +"-"+ _reg +")";
+                var _last = _specName.last + "("+ gMYTo +"-"+ _reg +")";
+                
+                _createLabel(_first, _last, _reg, 0.1, 20);
+            }); 
+        }
+        else{
+            $.each(gRegionNames, function(i, r) { 
+                var _region = "("+ r.name +")";
+                
+                _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
+            });
+        }
+        
+        //Add cursor
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.fullWidthLineX = false;
+        chart.cursor.lineX.strokeWidth = 0;
+        chart.cursor.lineX.fill = am4core.color("#000");
+        chart.cursor.lineX.fillOpacity = 0.1;
+        chart.cursor.behavior = "panX";
+        chart.cursor.lineY.disabled = true;
+        
+        setLegendSize(chart);
+        //setWireTrend(_data);
+    }
 }
 
 // Network Topology
@@ -3982,484 +4496,10 @@ function displayColumnNetworkTopology(container, callback){
         chart.cursor.lineY.disabled = true;
         
         setLegendSize(chart);
-        setWireTrend(_data);
+        //setWireTrend(_data);
     }
-    // if(gData.length > 0){
-    //     var _data = [];
-    //     var _dynamicKey = getDistinctKey(gData);
-    //     var _value = _dynamicKey.value;
-    //     var _category = _dynamicKey.category;
-    //     var _dynamicObj = gData.groupBy([_category]);
-        
-    //     $.each(gRegionNames, function(i, r) { 
-    //         $.each(gModelYears, function(x, my) { 
-    //             var _my = my.name;
-    //             var _region = r.name;
-    //             var _obj = {};
-    //             _obj.year = +_my;
-    //             _obj.region = _region;
-    //             _obj.category = _my +"("+ _region +")";
-                
-    //             $.each(_dynamicObj, function(y, w) { 
-    //                 var _count = 0;
-    //                 var _cName = w.name;
-    //                 var _cNameNew = _cName.replace(".","_");
-    //                 var _res = r.items.filter(function (item) {
-    //                 	return item[_category] == _cName && item.MODEL_YEAR == _my;
-    //                 });
-                    
-    //                 if(_value && _value !== ""){
-    //                     _count = _res.reduce(function (accumulator, currentValue) {
-    //                         return accumulator + currentValue[_value];
-    //                     }, 0);    
-    //                 }else{
-    //                     for(; _count < _res.length; ){
-    //                         _count++;
-    //                     }
-    //                 }
-    
-    //                 _obj[_cNameNew] = _count;
-    //             });
-    //             _data.push(_obj);
-    //         });
-    //     });
-        
-    //     // Display Chart
-    //     am4core.useTheme(am4themes_animated);
-        
-    //     var chart = am4core.create(container, am4charts.XYChart);
-    //     chart.data = _data;
-    //     chart.colors.step = 2;
-    //     chart.maskBullets = false;
-        
-    //     // Create axes
-    //     var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    //     categoryAxis.dataFields.category = "category";
-    //     categoryAxis.numberFormatter.numberFormat = "#";
-    //     //categoryAxis.title.text = "Wire 0.50 and Below";
-    //     categoryAxis.renderer.grid.template.location = 0;
-    //     categoryAxis.renderer.minGridDistance = 20;
-    //     categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-    //         return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
-    //     });
-        
-    //     var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    //     //valueAxis.title.text = "Count";
-    //     valueAxis.min = 0;
-    //     valueAxis.max = 100;
-    //     valueAxis.strictMinMax = true;
-    //     valueAxis.calculateTotals = true;
-    //     valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-    //       return text + "%";
-    //     });
-        
-    //     // Create series
-    //     var _createSeries = function(field, name) {
-    //         var series = chart.series.push(new am4charts.ColumnSeries());
-    //         series.dataFields.valueY = field;
-    //         series.dataFields.valueYShow = "totalPercent";
-    //         series.dataFields.categoryX = "category";
-    //         series.name = name;
-    //         series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-    //     };
-         
-    //     var _createLabel = function(category, endCategory, label) {
-    //         var range = categoryAxis.axisRanges.create();
-    //         range.category = category;
-    //         range.endCategory = endCategory;
-    //         range.label.dataItem.text = label;
-    //         range.label.dy = 18;
-    //         range.label.fontWeight = "bold";
-    //         range.axisFill.fill = am4core.color("#396478");
-    //         range.axisFill.fillOpacity = 0.1;
-    //         range.locations.category = 0.1;
-    //         range.locations.endCategory = 0.9;
-    //     };
-    
-    //     $.each(_dynamicObj, function(x, w) { 
-    //         var _cName = w.name;
-    //         var _cNameNew = _cName.replace(".","_");
-            
-    //         _createSeries(_cNameNew, _cName);
-    //     });  
-        
-    //     $.each(gRegionNames, function(i, r) { 
-    //         var _region = "("+ r.name +")";
-            
-    //         _createLabel(gMYFrom + _region, gMYTo + _region, r.name);
-    //     });
-        
-    //     //Add cursor
-    //     chart.cursor = new am4charts.XYCursor();
-        
-    //     setLegendSize(chart);
-    //     setWireTrend(_data);
-    // }
 }
 
 // ******************************** END CHART ********************************//
 
-// Grounding Distribution
-function displayPieChart(container){
-    var _data = [];
-    var _dynamicKey = getDistinctKey(gData);
-    var _value = _dynamicKey.value;
-    var _category = _dynamicKey.category;
-    var _dynamicObj = gData.groupBy([_category]);
-    
-    $.each(gModelYears, function(x, my) { 
-        var _my = my.name;
-        
-        $.each(_dynamicObj, function(y, w) { 
-            var _count = 0;
-            var _cName = w.name;
-            var _res = w.items.filter(function (item) {
-            	return item[_category] == _cName && item.MODEL_YEAR == _my;
-            });
-
-            if(_value && _value !== ""){
-                 _count = _res.reduce(function (accumulator, currentValue) {
-                    return accumulator + currentValue[_value];
-                }, 0);    
-            }else{
-                for(; _count < _res.length; ){
-                    _count++;
-                }
-            }  
-            
-            _data.push({
-                model_year: +_my,
-                category: _cName,
-                value: _count
-            });
-        });
-        
-    });
-
-    var container = am4core.create(container, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
-    
-    var _createChart = function(data, year){
-        var chart = container.createChild(am4charts.PieChart);
-        chart.data = data;
-        chart.paddingTop= 15;
-        chart.paddingBottom = 15;
-        
-        var title = chart.titles.create();
-        title.text =  "MY" + year;
-        //title.fontSize = 12;
-        title.fontWeight = 800;
-        title.marginBottom = 0;
-        
-        // Add and configure Series
-        var pieSeries = chart.series.push(new am4charts.PieSeries());
-        pieSeries.dataFields.value = "value";
-        pieSeries.dataFields.category = "category";
-        pieSeries.slices.template.propertyFields.fill = "color";
-        pieSeries.slices.template.propertyFields.isActive = "pulled";
-        pieSeries.slices.template.strokeWidth = 0;
-        pieSeries.paddingBottom = 10;
-        pieSeries.colors.step = 2;
-        
-        pieSeries.ticks.template.disabled = true;
-        pieSeries.alignLabels = false;
-        pieSeries.labels.template.fontSize = 12;
-        pieSeries.labels.template.text = "{value.percent.formatNumber('#.00')}%";
-        pieSeries.labels.template.radius = am4core.percent(-40);
-        //pieSeries.labels.template.relativeRotation = 90;
-        pieSeries.labels.template.fill = am4core.color("white");
-        pieSeries.legendSettings.valueText = "{valueY.close}";
-        pieSeries.labels.template.adapter.add("text", function(text, target) {
-            if (target.dataItem && (target.dataItem.values.value.percent < 10)) {
-                return "";
-            }
-            return text;
-        });
-        
-        setLegendSize(chart);
-    };
-
-    $.each(gModelYears, function(i, v){
-        var _my = v.name;
-        var _res = _data.filter(function (item) {
-        	return item.model_year == _my;
-        });
-
-        _createChart(_res, _my);
-    });
-}
-
-function displayColumnChart(container){
-    if(gData.length > 0){
-        var _data = [];
-        var _objKey = getDistinctKey(gData);
-        var _value = _objKey.value;
-        var _category = _objKey.category;
-        var _location = _objKey.location;
-        var _categoryObj = gData.groupBy([_category]);
-        var _locationObj = gData.groupBy([_location]);
-        var _hasLocation = (_location ? true: false);
-
-        if(_hasLocation){
-            $.each(gRegionNames, function(i, r) { 
-                $.each(gModelYears, function(x, my) {
-                    var _regionName = r.name;
-                    var _modelYear = my.name;
-                    var _result = r.items.filter(function (item) {
-                    	return item.MODEL_YEAR == _modelYear;
-                    });
-                    
-                    $.each(_locationObj, function(y, l) {
-                        var _specLocation = l.name;
-                        var _json = {
-                            REGION_NAME : _regionName,
-                            MODEL_YEAR : +_modelYear,
-                            category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
-                        };
-                        
-                        $.each(_categoryObj, function(z, s) {
-                            var _count = 0;
-                            var _name = s.name;
-                            var _nameNew = _name.replace(" ","_");
-                            var _result2 = _result.filter(function (item) {
-                            	return item[_location] == _specLocation && item[_category] == _name;
-                            });
-    
-                            if(_value && _value !== ""){
-                                 _count = _result2.reduce(function (accumulator, currentValue) {
-                                    return accumulator + currentValue[_value];
-                                }, 0)
-                            }else{
-                                for(; _count < _result2.length; ){
-                                    _count++;
-                                }
-                            }
-                           
-                            _json[_nameNew] = _count;
-                        });
-                        
-                        _data.push(_json);
-                    }); 
-                });
-            });
-        }
-        else{
-             $.each(gRegionNames, function(i,r) { 
-                $.each(gModelYears, function(x, my) { 
-                    var _my = my.name;
-                    var _region = r.name;
-                    var _obj = {};
-                    _obj.year = +_my;
-                    _obj.region = _region;
-                    _obj.category = _my +"("+ _region +")";
-                    
-                    $.each(_categoryObj, function(y, w) { 
-                        var _count = 0;
-                        var _cName = w.name;
-                        var _cNameNew = _cName.replace(" ","_");
-                        var _res = r.items.filter(function (item) {
-                        	return item[_category] == _cName && item.MODEL_YEAR == _my;
-                        });
-                        
-                        if(_value && _value !== ""){
-                             _count = _res.reduce(function (accumulator, currentValue) {
-                                return accumulator + currentValue[_value];
-                            }, 0);    
-                        }else{
-                            for(; _count < _res.length; ){
-                                _count++;
-                            }
-                        }
-        
-                        _obj[_cNameNew] = _count;
-                    });
-                    _data.push(_obj);
-                });
-            });
-        }
-        
-        // Display Chart
-        am4core.useTheme(am4themes_animated);
-        
-        var chart = am4core.create(container, am4charts.XYChart);
-        chart.data = _data;
-        chart.colors.step = 2;
-        chart.padding(15, 15, 10, 15);
-    
-        if(_hasLocation){
-            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-            categoryAxis.dataFields.category = "category";
-            categoryAxis.renderer.minGridDistance = 20;
-            categoryAxis.renderer.grid.template.location = 0;
-            categoryAxis.interactionsEnabled = false;
-            categoryAxis.renderer.labels.template.fontSize = 10;
-            categoryAxis.renderer.labels.template.valign = "top";
-            categoryAxis.renderer.labels.template.location = 0;
-            categoryAxis.renderer.labels.template.rotation = (_hasLocation ? 270: 0);
-            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-                return (!isUD(text) ? text.replace(/\(.*/, "") : text);
-            });
-        
-            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-            //valueAxis.title.text = "Count";
-            valueAxis.min = 0;
-            //valueAxis.max = 100;
-            valueAxis.strictMinMax = true;
-            valueAxis.calculateTotals = true;
-            valueAxis.renderer.minGridDistance = 10;
-            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-              return text + "%";
-            });
-        
-            // Create series
-            var _createSeries = function(field, name) {
-              var series = chart.series.push(new am4charts.ColumnSeries());
-              series.dataFields.valueY = field;
-              //series.dataFields.categoryXShow = "totalPercent";
-              series.dataFields.categoryX = "category";
-              series.name = name;
-              series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-              series.tooltip.fontSize = 8;
-              series.tooltip.paddingTop = 1;
-              series.tooltip.paddingBottom= 1;
-              series.tooltip.paddingBottom= 1;
-              series.tooltip.dy = -10;
-              series.tooltip.align = "top";
-              series.stacked = (_hasLocation ? true: false);
-              series.columns.template.width = am4core.percent(95);
-    
-            }
-            
-            var _createLabel = function(category, endCategory, label, opacity, dy) {
-                var range = categoryAxis.axisRanges.create();
-                range.category = category;
-                range.endCategory = endCategory;
-                range.label.dataItem.text = label;
-                range.label.dy = dy;
-                //range.label.fontSize = 10;
-                range.label.fontWeight = "bold";
-                range.label.valign = "bottom";
-                range.label.location = 0.5;
-                range.label.rotation = 0;
-                range.axisFill.fill = am4core.color("#396478");
-                range.axisFill.fillOpacity = opacity;
-                range.locations.category = 0.1;
-                range.locations.endCategory = 0.9;
-            };
-        }
-        else{
-            // Create axes
-            var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-            categoryAxis.dataFields.category = "category";
-            categoryAxis.numberFormatter.numberFormat = "#";
-            //categoryAxis.title.text = "Wire 0.50 and Below";
-            categoryAxis.renderer.grid.template.location = 0;
-            categoryAxis.renderer.minGridDistance = 20;
-            categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-                return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
-            });
-            
-            var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-            //valueAxis.title.text = "Count";
-            valueAxis.min = 0;
-            valueAxis.max = 100;
-            valueAxis.strictMinMax = true;
-            valueAxis.calculateTotals = true;
-            valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-              return text + "%";
-            });
-            
-            // Create series
-            var _createSeries = function(field, name) {
-                var series = chart.series.push(new am4charts.ColumnSeries());
-                series.dataFields.valueY = field;
-                series.dataFields.valueYShow = "totalPercent";
-                series.dataFields.categoryX = "category";
-                series.name = name;
-                series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-                series.tooltip.fontSize = 8;
-                series.tooltip.dy = -10;
-                //series.tooltip.align = "top";
-                
-                series.tooltip.valign  = "top";
-                series.tooltip.tooltipPosition = "fixed";
-                series.tooltip.background.filters.clear();
-                //series.tooltip.pointerOrientation  = true;
-                series.tooltip.fixedWidthGrid = true;
-                series.tooltip.layout = "none";
-                series.tooltip.pointerOrientation = "horizontal";
-                //series.tooltip.label.minWidth = 40;
-                //series.tooltip.label.minHeight = 40;
-                series.tooltip.label.textAlign = "middle";
-                series.tooltip.label.textValign = "middle";
-            };
-             
-            var _createLabel = function(category, endCategory, label) {
-                var range = categoryAxis.axisRanges.create();
-                range.category = category;
-                range.endCategory = endCategory;
-                range.label.dataItem.text = label;
-                range.label.dy = 18;
-                range.label.fontWeight = "bold";
-                range.axisFill.fill = am4core.color("#396478");
-                range.axisFill.fillOpacity = 0.1;
-                range.locations.category = 0.1;
-                range.locations.endCategory = 0.9;
-            };
-        }
-        
-        $.each(_categoryObj, function(i, v) { 
-            var _name = v.name;
-            var _nameNew = _name.replace(" ","_");
-    
-            _createSeries(_nameNew, _name);
-        }); 
-        
-        if(_hasLocation){
-           var _specName = getFirstAndLastItem(_locationObj , "name");
-            
-            $.each(gModelYears, function(i, v) { 
-                var _my = v.name;
-                
-                $.each(gRegionNames, function(i, r) { 
-                    var _reg = r.name;
-                    var _first = _specName.first + "("+ _my +"-"+ _reg +")";
-                    var _last = _specName.last + "("+ _my +"-"+ _reg +")";
-                    
-                    _createLabel(_first, _last, _my, 0, 10);
-                });
-            });
-            
-            $.each(gRegionNames, function(i, r) { 
-                var _reg = r.name;
-                var _first = _specName.first + "("+ gMYFrom +"-"+ _reg +")";
-                var _last = _specName.last + "("+ gMYTo +"-"+ _reg +")";
-                
-                _createLabel(_first, _last, _reg, 0.1, 20);
-            }); 
-        }
-        else{
-            $.each(gRegionNames, function(i, r) { 
-                var _region = "("+ r.name +")";
-                
-                _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
-            });
-        }
-        
-        //Add cursor
-        chart.cursor = new am4charts.XYCursor();
-        chart.cursor.fullWidthLineX = false;
-        chart.cursor.lineX.strokeWidth = 0;
-        chart.cursor.lineX.fill = am4core.color("#000");
-        chart.cursor.lineX.fillOpacity = 0.1;
-        chart.cursor.behavior = "panX";
-        chart.cursor.lineY.disabled = true;
-        
-        setLegendSize(chart);
-        setWireTrend(_data);
-    }
-}
-
-  
+   

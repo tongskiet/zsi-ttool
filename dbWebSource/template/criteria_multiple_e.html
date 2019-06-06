@@ -2,10 +2,6 @@
 .pageTitle {
     display: none;
 }
-.nav-item.active{
-    font-weight: bold;
-}
-
 /* Section CSS */
 .section-card, 
 .section-card > .card-header{
@@ -48,8 +44,7 @@
     color: #fff;
     margin: 0;
     position: relative;
-    /*left: 16px;*/
-    /*top: 13px;*/
+    top: 13px;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -ms-transition: all 0.3s ease;
@@ -59,33 +54,17 @@
 .btn-arrow:hover {
     background: rgba(0, 0, 0, 0.9);
 }
-#btnGoTop {
-    bottom: 80px;
-}
-#btnNext{
-    display: block;
-    bottom: 25px;
-}
-#btnGoTop i{
-    top: 13px;
-}
-#btnNext i{
-    bottom: -13px;
-}
-#btnGoTop:hover i {
+
+.btn-arrow:hover i {
     color: #fff;
     top: 5px;
-}
-#btnNext:hover i {
-    color: #fff;
-    bottom: -20px;
 }
 </style>
 <div class="zContainer">
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link text-dark active" id="nav-elec-tab"  href="#nav-elec" >Electrical Key Drivers</a>
-        <a class="nav-item nav-link text-dark" id="nav-mech-tab"  href="criteria_multiple_m"> Mechanical Key Drivers</a>
+        <a class="nav-item nav-link text-dark active font-weight-bold" id="nav-elec-tab" href="javascript:void(0);" >Electrical Key Drivers</a>
+        <a class="nav-item nav-link text-dark" id="nav-mech-tab" href="criteria_multiple_m"> Mechanical Key Drivers</a>
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -98,26 +77,24 @@
     
     <!-- Return to Top -->
     <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
-     <!-- Return to Top -->
-    <span class="btn-arrow" id="btnNext" title="Show Next Criteria"><i class="fas fa-angle-down fa-2x"></i></span>
 </div>
 <ul id="localTemplates">
     <li name="section">
-        <div class="section {{class}}" id="{{id}}">
+        <div class="section {{class}}" id="{{id}}" menu_id="{{menu_id}}">
             <div class="section-header bd-callout" id="{{header_id}}">
-                <h3 class="m-0 text-uppercase title">{{title}}</h3> 
+                <h3 class="m-0 text-uppercase menu-name">{{title}}</h3> 
             </div>
             <div class="section-body row" id="{{body_id}}"></div>
         </div>
     </li>
     <li name="section_card">
         <div class="col-md-6 col-lg-4" id="{{id}}">
-            <div class="section-card card shadow-sm rounded-0 mb-3">
+            <div class="section-card card shadow-sm rounded-0 mb-3" cid="{{criteria_id}}" mid="{{menu_id}}">
                 <div class="card-header rounded-0 px-2 py-1 border-bottom-0" style="{{{header_style}}}">
                     <div class="d-flex">
                         <div class="align-self-center pr-2"><i class="fas fa-play mr-1"></i></div>
                         <div class="align-self-center text-dark">
-                            <a href="{{link}}" class="stretched-link text-decoration-none">{{title}}</a>
+                            <a href="{{link}}" class="stretched-link text-decoration-none criteria-name">{{title}}</a>
                         </div>
                     </div>
                 </div>
@@ -129,7 +106,6 @@
                                 <i class="fas fa-spinner fa-3x fa-pulse"></i>
                             </div>
                         </div>
-                        <!--<img src="/images/electricalKeyDrivers/vehicle_architecture/v_a_chart1.png" class="w-100 h-100" alt="...">-->
                     </div>
                 </div>
             </div>

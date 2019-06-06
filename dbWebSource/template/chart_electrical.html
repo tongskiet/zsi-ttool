@@ -23,15 +23,15 @@
 </style>
 
 <header>
-    <div class="px-2 py-1 m-0 h4 bg-light">
+    <div class="px-2 py-1 m-0 h4">
         <a href="electricalkeydrivers" class="text-dark text-decoration-none" title="Back"><i class="fas fa-arrow-alt-circle-left"></i></a>
         <span class="font-weight-bold text-uppercase" id="menu_name"></span> |  
         <span id="criteria_name"></span> 
     </div>
-    <div class="d-flex flex-wrap px-2 bg-dark">
+    <div class="d-flex flex-wrap px-2" style="background-color:#e7e6e6">
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="from" class="col-form-label-sm text-white py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
-            <select class="custom-select form-control form-control-sm" id="from">
+            <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
+            <select class="custom-select form-control form-control-sm" id="date_from">
                 <option selected></option>
                 <option value="2015">2015</option>
                 <option value="2016" selected>2016</option>
@@ -40,9 +40,9 @@
                 <option value="2019">2019</option>
             </select>
         </div>
-        <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm text-white py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
-            <select class="custom-select form-control form-control-sm" id="to">
+        <div class="form-inline pr-1 pr-sm-0">
+            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
+            <select class="custom-select form-control form-control-sm" id="date_to">
                 <option selected></option>
                 <option value="2015">2015</option>
                 <option value="2016">2016</option>
@@ -52,8 +52,8 @@
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="from" class="col-form-label-sm text-white py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
-            <select class="custom-select form-control form-control-sm" id="to">
+            <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
+            <select class="custom-select form-control form-control-sm" id="sum_up">
                 <option selected></option>
                 <option value="1">1 Yr</option>
                 <option value="2">2 Yrs.</option>
@@ -61,8 +61,8 @@
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm text-white py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
-            <select class="custom-select form-control form-control-sm" id="to">
+            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
+            <select class="custom-select form-control form-control-sm" id="category">
                 <option selected></option>
                 <option value="Per Model Year" selected>Per Model Year</option>
                 <option value="Per Region">Per Region</option>
@@ -71,15 +71,18 @@
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm text-white py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
-            <select class="custom-select form-control form-control-sm" id="to">
+            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
+            <select class="custom-select form-control form-control-sm" id="graph_type">
                 <option selected></option>
                 <option value="Pie Chart" selected>Pie Chart</option>
                 <option value="Bar Chart">Bar Chart</option>
             </select>
         </div>
+        <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
+           <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnGo"><i class="fas fa-filter"></i> GO</a>
+        </div>
         <div class="form-inline pr-1 pr-sm-0">
-           <a class="btn btn-dark col-form-label-sm" href="#" role="button"><i class="fas fa-download"></i> DOWNLOAD</a>
+           <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnDownload"><i class="fas fa-download"></i> DOWNLOAD</a>
         </div>
     </div>
 </header>

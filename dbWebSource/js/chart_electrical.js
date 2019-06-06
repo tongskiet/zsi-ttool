@@ -13,10 +13,12 @@ var  svn                = zsi.setValIfNull
     ,gMYFrom            = ""
     ,gMYTo              = ""
     ,gData              = []
-    ,gPrmRegion         = ""
+    ,gPrmCategory       = ""
     ,gPrmNoYears        = ""
     ,gPrmChartType      = ""
-    ,gPrmIncludeCYear   = "N";
+    ,gPrmIncludeCYear   = "N"
+    ,gMaxYear           = new Date().getFullYear()
+    ,gMinYear           = gMaxYear - 2;
     
 zsi.ready(function(){
     var _mainHeight = $("main").height() - 60;
@@ -127,17 +129,17 @@ function setChartSettings(){
     return _result;
 }
 
-function getData(url, criteriaName, callback){
+function getData(url, callback){
     var _param = "";
     var _url = url;
 
     // Set additional parameters
-    if(gPrmIncludeCYear==="Y"){
-        _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-    }
-    else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-        _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-    }
+    // if(gPrmIncludeCYear==="Y"){
+    //     _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+    // }
+    // else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
+    //     _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
+    // }
 
     $.get(execURL + _url //+ param
         , function(data){
@@ -145,7 +147,7 @@ function getData(url, criteriaName, callback){
             
             var _region = "REGION_NAME";
             var _my = "MODEL_YEAR";
-            if(isContain(criteriaName, "Overall")){
+            if(isContain(gCName, "Overall")){
                 _region = "region";
                 _my = "model_year";
             }
@@ -160,7 +162,7 @@ function getData(url, criteriaName, callback){
 function displayChart(){
     var _res = setChartSettings();
 
-    getData(_res.url, gCName, function(){
+    getData(_res.url, function(){
         setMYRange();
  
         var _fnName = new Function("container", _res.chart.default);
@@ -436,7 +438,7 @@ function displayCommonPieChart(container){
         
         var title = chart.titles.create();
         title.text =  "MY" + year;
-        //title.fontSize = 10;
+        title.fontSize = 10;
         title.fontWeight = 800;
         title.marginBottom = 0;
         
@@ -4248,3 +4250,4 @@ function displayColumnNetworkTopology(container, callback){
 }
 
 // ******************************** END CHART ********************************//
+  

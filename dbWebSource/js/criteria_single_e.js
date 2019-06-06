@@ -23,7 +23,7 @@
     
     initScrollToTop();
     displayCriteria(function(){
-        displayChartCriteria();
+        //displayChartCriteria();
     });
 });
 
@@ -53,7 +53,7 @@ function getSubMenu(callback){
 function displayCriteria(callback){
     var _tw = new zsi.easyJsTemplateWriter();
     var _$container = $("#criteria_content");
-    var _mainHeight = $("main").height() - 150;
+    var _mainHeight = $("main").height() - 200;
     var _cardHeight = _mainHeight / 2;
     
     if(gMenuId !== ""){
@@ -73,6 +73,8 @@ function displayCriteria(callback){
                         , chart_id  : "chart_"+ _cId
                         , link      : _cLink
                         , body_style : "height:" +_cardHeight + "px"
+                        , img_src   : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id
+                        , img2_src  : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
                     }).html();
                 }
             });
@@ -4281,4 +4283,4 @@ function displayColumnNetworkTopology(container, callback){
 
 // ******************************** END CHART ********************************//
 
-  
+    
