@@ -1,10 +1,9 @@
-var  svn                = zsi.setValIfNull
+       var  svn              = zsi.setValIfNull
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
-    ,gCId               = zsi.getUrlParamValue("id")
-    ,gCName             = zsi.getUrlParamValue("name")
-    ,gMenu              = zsi.getUrlParamValue("menu")
+    ,gMenuId            
+    ,gMenuName          = ""
     ,gCriteriaRows      = []
     ,gMYRange           = ""
     ,gHarnessName       = ""
@@ -16,120 +15,373 @@ var  svn                = zsi.setValIfNull
     ,gPrmRegion         = ""
     ,gPrmNoYears        = ""
     ,gPrmChartType      = ""
-    ,gPrmIncludeCYear   = "N";
+    ,gPrmIncludeCYear   = "N"
+    ,gPrmCategory       = ""
+    ,gPrmSumUp          = ""
+    ,gPrmGraphType      = ""
+    ,gArrMY             = []
+    ,gMaxMY             = new Date().getFullYear()
+    ,gMinMY             = gMaxMY - 2;
     
 zsi.ready(function(){
-    var _mainHeight = $("main").height() - 60;
-    var _chartHeight = _mainHeight / 2;
-    
-    $("#chart_div").css("height", _chartHeight);
-    
-    setPageTitle();
-    displayChart();
+    for(var i=0; i<3; i++){
+        gArrMY.push(gMaxMY--);
+    }
+    console.log(gArrMY)
+    getMainMenu(function(mainRows){
+        var _count = mainRows.length;
+        var _ctr = 0;
+        $.each(mainRows, function(i, v){
+            getSubMenu(v.menu_id, function(subRows){
+                _ctr++;
+                v.items = subRows;
+                
+                if(_ctr === _count) {
+                    gCriteriaRows = mainRows;
+                    displayMenus(mainRows);
+                    //$('#menuElectrical .collapsable').collapse();
+                }
+            });
+        });
+    });
+    //displayMenus();
 });
 
-function setPageTitle(){
-    gMenu = removeSpecialChar(gMenu).toUpperCase();
-    gCName = removeSpecialChar(gCName);
-    
-    $("#menu_name").text(gMenu);
-    $("#criteria_name").text(gCName);
-} 
-
-function removeSpecialChar(string){
-    var _newStr = $.trim(unescape(string).replace(/_/g,"&").replace(/[^\x20-\x7E]/g, "-").replace(/---/g,"-"));
-    return _newStr;
-}
-
-function setChartSettings(){
-    var _url = "";
-    var _result = {};
-    var _chart = {default:"", pie:"", column:"", line: ""};
-    var _staticMY = new Date().getFullYear() - 2;
-
-    if(isContain(gMenu, "WIRES & CABLES")){
-            
-    }
-    else if(isContain(gMenu, "INLINE CONNECTOR")){
-        
-    }
-    else if(isContain(gMenu, "GROUND EYELET") || isContain(gMenu, "SPLICE") || isContain(gMenu, "BATTERY FUSE TERMINAL")){
-        _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ gCId;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieGroundEyelet(container)";
-        _chart.column = "displayColumnGroundEyelet(container)";
-    }
-    else if(isContain(gMenu, "COVERINGS")){
-        
-        _url = "dynamic_coverings_sel @byMY='Y',@byRegion='Y',@criteria_id="+ gCId;
-        _chart.default = "displayChartCovering(container)";
-        _chart.line = "displayChartCovering(container)";
-    }
-    else if(isContain(gMenu, "RETAINERS")){
-        
-        _url = "dynamic_retainers_sel @byMY='Y',@byRegion='Y',@criteria_id="+ gCId;
-        _chart.default = "displayChartRetainer(container)";
-        _chart.line = "displayChartRetainer(container)";
-    }
-    else if(isContain(gMenu, "GROMMETS")){
-        
-        _url = "dynamic_grommets_sel @byMY='Y',@byRegion='Y',@criteria_id="+ gCId;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieGrommets(container)";
-        _chart.column = "displayColumnGrommets(container)";
-    }
-    else if(isContain(gMenu, "TROUGH/SHIELD/BRACKET")){
-        
-        _url = "dynamic_stc_sel @byMY='Y',@byRegion='Y',@criteria_id="+ gCId;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieSTC(container)";
-        _chart.column = "displayColumnSTC(container)";
-    }
-
-    _result.url = _url;
-    _result.chart = _chart;
-   
-    return _result;
-}
-
-function getData(url, criteriaName, callback){
-    var _param = "";
-    var _url = url;
-
-    // Set additional parameters
-    if(gPrmIncludeCYear==="Y"){
-        _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-    }
-    else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-        _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-    }
-
-    $.get(execURL + _url //+ param
-        , function(data){
-            gData = data.rows;
-            
-            var _region = "REGION_NAME";
-            var _my = "MODEL_YEAR";
-            if(isContain(criteriaName, "Overall")){
-                _region = "region";
-                _my = "model_year";
-            }
-            
-            gRegionNames = sortBy(gData.groupBy([_region]), "name");
-            gModelYears = sortBy(gData.groupBy([_my]), "name");
-
-            callback();
+function toggleCollapse(e){
+    $(e).toggleClass("collapsed");
+    $(e).closest(".section-card").find(".collapse").slideToggle(function(){
+        $(this).toggleClass("show");
     });
 }
 
-function displayChart(){
-    var _res = setChartSettings();
-    if( _res.url!=="" ){
-        getData(_res.url, gCName, function(){
+function filterGraphData(e){
+    var _$form = $(e).closest(".form");
+    gMYFrom = _$form.find("#date_from").val();
+    gMYTo = _$form.find("#date_to").val();
+    gPrmSumUp = _$form.find("#sum_up").val();
+    gPrmCategory = _$form.find("#category").val();
+    gPrmGraphType = _$form.find("#graph_type").val();
+    
+    var _cId = _$form.find("#criteria_id").val();
+    var _cName = _$form.find("#criteria_name").val();
+    var _menuId = _$form.find("#menu_id").val();
+    var _menuName = _$form.find("#menu_name").val();
+    var _chartId = "chart_"+ _menuId +"_"+ _cId;
+    
+    console.log("gMYFrom",gMYFrom);
+    console.log("gMYTo",gMYTo);
+    console.log("gPrmSumUp",gPrmSumUp);
+    console.log("gPrmCategory",gPrmCategory);
+    console.log("gPrmGraphType",gPrmGraphType);
+    
+    var _res = setChartSettings({
+            criteriaId: _cId,
+            criteriaName: _cName,
+            menuName: _menuName
+        });
+
+    if(_res.url!==""){
+        getDataByCriteriaId(_res.url, _cName, function(){
             setMYRange();
-     
+            
             var _fnName = new Function("container", _res.chart.default);
-                _fnName("chart_div");
+                _fnName(_chartId);
+        });
+    }
+}
+
+function downloadGraphData(e){
+    
+}
+
+function getMainMenu(callback){
+    $.get(procURL + "trend_menus_sel @menu_type='M'", function(data){
+        callback(data.rows);
+    });
+}
+
+function getSubMenu(id, callback){
+    $.get(procURL + "criterias_sel @trend_menu_id="+ id, function(data){
+        callback(data.rows);
+    });
+}
+
+function displayMenus(rows){
+    var _data = rows;
+    var _cardHeight = $("main").height() - 115;
+    //var _cardHeight = _mainHeight;
+    
+    var _createChart = function(o, toggle, callback){
+        if(!isUD(o)){
+            var _tw = new zsi.easyJsTemplateWriter();
+            var _menuId = o.menu_id;
+            var _menuName = o.menu_name;
+            var _menuItems = o.items; 
+            var _count = _menuItems.length;
+            var _subBodyId = "section_body_"+ _menuId;
+            var _ctr = 0;
+            var _time = 500;
+            var _mainH = _tw.section({
+                title : _menuName,
+                body_id : _subBodyId,
+            }).html();
+            
+            $("#menuMechanical").append(_mainH);
+            
+            $.each(_menuItems, function(i, v){
+                if(v.pcriteria_id !== ""){
+                    var _cId = v.criteria_id;
+                    var _cName = v.criteria_title;
+                    var _cLink = "chart_mechanical?menu="+ _menuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cName.replace(/&/g, '_');
+                    var _chartId = "chart_"+ _menuId +"_"+ _cId;
+                    var _collapseId = "collapse_"+ _menuId +"_"+ _cId;
+                    var _subH = _tw.section_card({
+                          title         : _cName
+                        , chart_id      : _chartId
+                        , menu_id       : _menuId
+                        , menu_name     : _menuName
+                        , criteria_id   : _cId
+                        , criteria_name : _cName
+                        , collapse_id    : _collapseId
+                        , collapse_class : (toggle? (i===1 ? "show":"") : "")
+                        , aria_expanded  : (toggle? (i===1 ? true:false) : false)
+                        , aria_collapsed : (toggle? (i===1 ? "collapsed":"") : "")
+                        , body_style     : "height:" +_cardHeight + "px"
+                    }).html();
+                    
+                    $("#"+ _subBodyId).append(_subH);
+                    
+                    setTimeout( function(){ 
+                        var _res = setChartSettings({
+                                criteriaId: _cId,
+                                criteriaName: _cName,
+                                menuName: _menuName
+                            });
+        
+                        getDataByCriteriaId(_res.url, _cName, function(){
+                            setMYRange();
+                            
+                            var _fnName = new Function("container", _res.chart.default);
+                                _fnName(_chartId);
+                        });
+                        
+                    },  _time);
+                        _time += 500;
+                
+                    //callback();
+                }
+            });
+        }
+    };
+    
+    _createChart(_data.shift(), true);
+    
+    $("main").scroll(function() {
+        var _scrollTop = $(this).scrollTop();
+        var _scrollHeight = $(this)[0].scrollHeight;
+    	var _scrollPosition = $(this).height() + _scrollTop;
+
+    	if ((_scrollHeight - _scrollPosition) / _scrollHeight === 0) { //Scroll reach bottom page
+	        _createChart(_data.shift(), false);
+    	}
+    	
+    	if (_scrollTop >= 50) {    
+            $('#btnGoTop').fadeIn(200);
+        } else {
+            $('#btnGoTop').fadeOut(200); 
+        }
+    });
+    
+    $('#btnGoTop').click(function(){ 
+        $('main').animate({
+            scrollTop: 0
+        });
+    });
+    
+    // getMainMenu(function(rows){
+    //     var _count = rows.length;
+    //     var _mainH = "";
+    //     var _ctr = 0;
+        
+    //     $(rows).each(function(i, v){
+    //         var _mId = v.menu_id;
+    //         var _mName = $.trim(v.menu_name);
+             
+    //         _mainH += _tw.section({
+    //             title : _mName,
+    //             id : "section_" + _mId,
+    //             class : (i === 0 ? "active":""),
+    //             menu_id: _mId,
+    //             header_id : "section_header_" + _mId,
+    //             body_id : "section_body_"+ _mId
+    //         }).html();
+
+    //         _$menuElec.html(_mainH);
+            
+    //         setSubMenu(_mId, _mName, function(){
+    //             _ctr++;
+    //             if(_ctr === _count){
+    //                 gMenuId = rows[0].menu_id;  
+    //                 initScrollToSection();
+    //                 setChartPerSection();
+    //             }
+    //         });
+    //     });
+    // });
+}    
+
+function setSubMenu(_mId, _mName, callback){
+    var _tw = new zsi.easyJsTemplateWriter(); 
+    var _mainHeight = $("main").height() - 200;
+    var _cardHeight = _mainHeight / 2;    
+    var _subH = "";
+   
+    getSubMenu(_mId, function(rows){
+        $(rows).each(function(i, v){
+            if(v.pcriteria_id !== ""){
+                var _cId = v.criteria_id;
+                var _cTitle = $.trim(v.criteria_title);
+                var _cLink = "chart_electrical?menu="+ _mName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_');
+                 console.log(_mId);
+                _subH += _tw.section_card({
+                      title         : _cTitle
+                    , menu_id       : _mId
+                    , menu_name     : _mName
+                    , chart_id      : "chart_"+ _mId +"_"+ _cId
+                    , criteria_id   : _cId
+                    , criteria_name : _cTitle
+                    , link          : _cLink
+                    , body_style    : "height:" +_cardHeight + "px"
+                }).html();
+            }
+        });
+        $("#section_body_"+ _mId).html(_subH);
+        callback();
+    });
+}
+
+function setChartPerSection(){
+    var _time = 500;
+    var _$section = $("#section_" + gMenuId);
+    var _$sectionCard = _$section.find(".section-card");
+    var _menuName = _$section.find(".menu-name").text();
+    var _sCount = _$sectionCard.length;
+    var _ctr = 0;
+  
+    if(!_$section.hasClass("shown")){
+        _$section.addClass("shown");
+        _$sectionCard.each(function(){
+            var _cId = $(this).attr("cid");
+            var _cName = $(this).find(".criteria-name").text();
+            var _chartId = $(this).find(".section-card-body").attr("id");  
+        
+            setTimeout( function(){ 
+                var _res = setChartSettings({
+                        criteriaId: _cId,
+                        criteriaName: _cName,
+                        menuName: _menuName
+                    });
+    
+                if(_res.url !== ""){
+                    getDataByCriteriaId(_res.url, _cName, function(){
+                        setMYRange();
+                        
+                        var _fnName = new Function("container", _res.chart.default);
+                            _fnName(_chartId);
+                    });
+                }
+            }, _time);
+            
+            _time += 500;
+        });
+    }
+}
+
+function setChartSettings(o){
+    if(!$.isEmptyObject(o)){
+        var _cId = o.criteriaId;
+        var _cName = $.trim(o.criteriaName);
+        var _menuName = $.trim(o.menuName).toUpperCase();
+        var _url = "";
+        var _result = {};
+        var _chart = {default:"", pie:"", column:"", line: ""};
+        var _staticMY = new Date().getFullYear() - 2;
+        
+        if(isContain(_menuName, "WIRES & CABLES")){
+            
+        }
+        else if(isContain(_menuName, "INLINE CONNECTOR")){
+            
+        }
+        else if(isContain(_menuName, "GROUND EYELET") || isContain(_menuName, "SPLICE") || isContain(_menuName, "BATTERY FUSE TERMINAL")){
+            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            _chart.pie = "displayPieGroundEyelet(container)";
+            _chart.column = "displayColumnGroundEyelet(container)";
+        }
+        else if(isContain(_menuName, "COVERINGS")){
+            
+            _url = "dynamic_coverings_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayChartCovering(container)";
+            _chart.line = "displayChartCovering(container)";
+        }
+        else if(isContain(_menuName, "RETAINERS")){
+            
+            _url = "dynamic_retainers_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayChartRetainer(container)";
+            _chart.line = "displayChartRetainer(container)";
+        }
+        else if(isContain(_menuName, "GROMMETS")){
+            
+            _url = "dynamic_grommets_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            _chart.pie = "displayPieGrommets(container)";
+            _chart.column = "displayColumnGrommets(container)";
+        }
+        else if(isContain(_menuName, "TROUGH/SHIELD/BRACKET")){
+            
+            _url = "dynamic_stc_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _chart.default = "displayCommonPieChart(container)";
+            _chart.pie = "displayPieSTC(container)";
+            _chart.column = "displayColumnSTC(container)";
+        }
+
+        _result.url = _url;
+        _result.chart = _chart;
+       
+        return _result;
+    }
+}
+
+function getDataByCriteriaId(url, criteriaName, callback){
+    if(url !== ""){
+        var _param = "";
+        var _url = url;
+    
+        // Set additional parameters
+        if(gPrmIncludeCYear==="Y"){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+        }
+        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
+        }
+
+        $.get(execURL + _url //+ param
+            , function(data){
+                gData = data.rows;
+                
+                if(isContain(criteriaName, "Overall")){
+                    gRegionNames = gData.groupBy(["region"]);
+                    gModelYears = gData.groupBy(["model_year"]);
+                }else{
+                    gRegionNames = gData.groupBy(["REGION_NAME"]);
+                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
+                }
+                
+                gRegionNames = sortBy(gRegionNames, "name");
+                gModelYears = sortBy(gModelYears, "name");
+    
+                callback();
         });
     }
 }
@@ -298,39 +550,6 @@ function isContain(string, contains){
     return _res;
 } 
 
-function getDataByCriteriaId(url, criteriaName, callback){
-    if(_url !== ""){
-        var _param = "";
-        var _url = url;
-    
-        // Set additional parameters
-        if(gPrmIncludeCYear==="Y"){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-        }
-        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-        }
-
-        $.get(execURL + _url //+ param
-            , function(data){
-                gData = data.rows;
-                
-                if(isContain(criteriaName, "Overall")){
-                    gRegionNames = gData.groupBy(["region"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }else{
-                    gRegionNames = gData.groupBy(["REGION_NAME"]);
-                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                }
-                
-                gRegionNames = sortBy(gRegionNames, "name");
-                gModelYears = sortBy(gModelYears, "name");
-    
-                callback();
-        });
-    }
-}
-
 function setWireTrend(data, pContainer){
     if(data.length > 0){
         var _trend = "";
@@ -349,7 +568,6 @@ function setWireTrend(data, pContainer){
 }
 
 //------------------------------- COMMON CHARTS ------------------------------//
-
 function displayCommonPieChart(container){
     var _data = [];
     var _dynamicKey = getDistinctKey(gData);
@@ -403,7 +621,7 @@ function displayCommonPieChart(container){
         
         var title = chart.titles.create();
         title.text =  "MY" + year;
-        //title.fontSize = 10;
+        title.fontSize = 10;
         title.fontWeight = 800;
         title.marginBottom = 0;
         
@@ -823,6 +1041,8 @@ function displayCustomLineChart(container){
     // Add cursor
     chart.cursor = new am4charts.XYCursor();
 }
+
+//************************************ CHARTS ********************************//
 
 // Retainer
 function displayChartRetainer(container){
@@ -2477,5 +2697,3 @@ function displayColumnSTC(container){
     }
 }
 
-// ******************************** END CHART ********************************//
- 

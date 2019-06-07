@@ -2,6 +2,13 @@
 .pageTitle {
     display: none;
 }
+.emTitle{
+    color: red;
+    font-size: larger;
+}
+.emTitle a{
+    color: #343A40;
+}
 /* Section CSS */
 .section-card, 
 .section-card > .card-header{
@@ -61,19 +68,9 @@
 }
 </style>
 <div class="zContainer">
-    <nav>
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link text-dark active font-weight-bold" id="nav-elec-tab" href="javascript:void(0);" >Electrical Key Drivers</a>
-        <a class="nav-item nav-link text-dark" id="nav-mech-tab" href="criteria_multiple_m"> Mechanical Key Drivers</a>
-      </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-elec" role="tabpanel" aria-labelledby="nav-elec-tab">
-            <div class="d-flex align-items-stretch">
-                <div id="menuElectrical"></div>
-            </div> 
-        </div>
-    </div>
+    <div class="emTitle py-2"><span class="font-weight-bold">Electrical Key Drivers</span><a href="criteria_multiple_m" class="text-decoration-none"> | Mechanical Key Drivers</a> </div>
+    
+    <div id="menuElectrical"></div>
     
     <!-- Return to Top -->
     <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>

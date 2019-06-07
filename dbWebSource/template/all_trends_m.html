@@ -1,0 +1,172 @@
+<style>
+.pageTitle {
+    display: none;
+}
+/* Scrool To Top CSS */
+.btn-arrow {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.7);
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    text-align: center;
+    -webkit-border-radius: 35px;
+    -moz-border-radius: 35px;
+    border-radius: 35px;
+    display: none;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+.btn-arrow i{
+    color: #fff;
+    margin: 0;
+    position: relative;
+    top: 13px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+.btn-arrow:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.btn-arrow:hover i {
+    color: #fff;
+    top: 5px;
+}
+.collapsed .fas:before {
+    content: "\f00d";
+}
+</style>
+<div class="zContainer">
+    <div id="menuMechanical"></div>
+    
+    <!-- Return to Top -->
+    <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
+</div>
+<ul id="localTemplates">
+    <li name="section">
+        <div class="section {{class}}" id="{{id}}" menu_id="{{menu_id}}">
+            <div class="section-header bd-callout" id="{{header_id}}">
+                <h3 class="m-0 text-uppercase menu-name">{{title}}</h3> 
+            </div>
+            <div class="section-body row" id="{{body_id}}"></div>
+        </div>
+    </li>
+    <li name="section_card">
+        <div class="col-md-12" id="{{id}}">
+            <div class="section-card card shadow-sm rounded-0" cid="{{criteria_id}}" mid="{{menu_id}}">
+                <div class="card-header bg-dark rounded-0 p-1 border-bottom-0" style="{{{header_style}}}">
+                    <div class="d-flex">
+                        <div class="align-self-center pl-1 pr-2"><i class="fas fa-play text-danger font-weight-bold mr-1"></i></div>
+                        <div class="flex-grow-1 align-self-center text-white font-weight-bold criteria-name">{{title}}</div>
+                        <div class="align-self-center text-dark">
+                            <a href="javascript:void(0);" onClick="toggleCollapse(this);" class="{{aria_collapsed}} text-white font-weight-bold text-decoration-none px-2 py-1">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse {{collapse_class}}" id="{{collapse_id}}">
+                    <div class="card-body p-0" style="{{{body_style}}}">
+                        <div class="d-flex flex-wrap form" style="background-color:#e7e6e6">
+                            <input type="hidden" name="menu_id" id="menu_id" value="{{menu_id}}">
+                            <input type="hidden" name="menu_name" id="menu_name" value="{{menu_name}}">
+                            <input type="hidden" name="criteria_id" id="criteria_id" value="{{criteria_id}}">
+                            <input type="hidden" name="criteria_name" id="criteria_name" value="{{criteria_name}}">
+                            <div class="form-inline pr-1 pr-sm-0">
+                                <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
+                                <select class="custom-select form-control form-control-sm" id="date_from">
+                                    <option value=""></option>
+                                    <option value="2015">2015</option>
+                                    <option value="2016" selected>2016</option>
+                                    <option value="2017">2017</option>
+                                    <option value="2018">2018</option>
+                                    <option value="2019">2019</option>
+                                </select>
+                            </div>
+                            <div class="form-inline pr-1 pr-sm-0">
+                                <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
+                                <select class="custom-select form-control form-control-sm" id="date_to">
+                                    <option value=""></option>
+                                    <option value="2015">2015</option>
+                                    <option value="2016">2016</option>
+                                    <option value="2017">2017</option>
+                                    <option value="2018" selected>2018</option>
+                                    <option value="2019">2019</option>
+                                </select>
+                            </div>
+                            <div class="form-inline pr-1 pr-sm-0">
+                                <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
+                                <select class="custom-select form-control form-control-sm" id="sum_up">
+                                    <option value=""></option>
+                                    <option value="years" selected>YRS</option>
+                                    <option value="region">REGION</option>
+                                </select>
+                            </div>
+                            <div class="form-inline pr-1 pr-sm-0">
+                                <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
+                                <select class="custom-select form-control form-control-sm" id="category">
+                                    <option value=""></option>
+                                    <option value="Per Model Year" selected>Per Model Year</option>
+                                    <option value="Per Region">Per Region</option>
+                                    <option value="Per Vehicle Type">Per Vehicle Type</option>
+                                    <option value="Per OEM">Per OEM</option>
+                                </select>
+                            </div>
+                            <div class="form-inline pr-1 pr-sm-0">
+                                <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
+                                <select class="custom-select form-control form-control-sm" id="graph_type">
+                                    <option value=""></option>
+                                    <option value="Pie Chart" selected>Pie Chart</option>
+                                    <option value="Bar Chart">Bar Chart</option>
+                                </select>
+                            </div>
+                            <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
+                               <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnGo" onClick="filterGraphData(this);"><i class="fas fa-filter"></i> GO</a>
+                            </div>
+                            <div class="form-inline pr-1 pr-sm-0">
+                               <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnDownload"  onClick="downloadGraphData(this);"><i class="fas fa-download"></i> DOWNLOAD</a>
+                            </div>
+                        </div>
+                        <div class="chart-div h-75" id="{{chart_id}}"></div>
+                        <div class="legend-div" id="{{legend_id}}"></div>
+                        <div class="zContainer  h-25">
+                            <div class="row">
+                                <div class="col-sm-12 bg-danger text-white px-2 py-1">Result</div>
+                                <div class="col-sm-6 mb-3">
+                                    <div class="font-weight-bold text-uppercase">TREND :</div> 
+                                    <div class="px-3" id="trends"></div> 
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <div class="font-weight-bold text-uppercase">OPPORTUNITIES/EVOLUTION :</div> 
+                                    <div class="px-3" id="opportunities"></div> 
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="position-relative section-card-body" id="{{chart_id}}" >-->
+                        <!--    <div class="d-flex align-items-center justify-content-center h-100">-->
+                        <!--        <div class="spinner-border" role="status">-->
+                        <!--            <span class="sr-only">Loading...</span>-->
+                        <!--            <i class="fas fa-spinner fa-3x fa-pulse"></i>-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+<script src="../amcharts4/core.js"></script>
+<script src="../amcharts4/charts.js"></script>
+<script src="../amcharts4/themes/animated.js"></script>

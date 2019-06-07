@@ -2,10 +2,13 @@
 .pageTitle {
     display: none;
 }
-.nav-item.active{
-    font-weight: bold;
+.emTitle{
+    color: red;
+    font-size: larger;
 }
-
+.emTitle a{
+    color: #343A40;
+}
 /* Section CSS */
 .section-card, 
 .section-card > .card-header{
@@ -48,8 +51,7 @@
     color: #fff;
     margin: 0;
     position: relative;
-    /*left: 16px;*/
-    /*top: 13px;*/
+    top: 13px;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -ms-transition: all 0.3s ease;
@@ -59,47 +61,19 @@
 .btn-arrow:hover {
     background: rgba(0, 0, 0, 0.9);
 }
-#btnGoTop {
-    bottom: 80px;
-}
-#btnNext{
-    display: block;
-    bottom: 25px;
-}
-#btnGoTop i{
-    top: 13px;
-}
-#btnNext i{
-    bottom: -13px;
-}
-#btnGoTop:hover i {
+
+.btn-arrow:hover i {
     color: #fff;
     top: 5px;
 }
-#btnNext:hover i {
-    color: #fff;
-    bottom: -20px;
-}
 </style>
 <div class="zContainer">
-    <nav>
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link text-dark" id="nav-elec-tab"  href="criteria_multiple_e" >Electrical Key Drivers</a>
-        <a class="nav-item nav-link text-dark active" id="nav-mech-tab"  href="#nav-elec"> Mechanical Key Drivers</a>
-      </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-elec" role="tabpanel" aria-labelledby="nav-elec-tab">
-            <div class="d-flex align-items-stretch">
-                <div id="menuMechanical"></div>
-            </div> 
-        </div>
-    </div>
+    <div class="emTitle py-2"><a href="criteria_multiple_e" class="text-decoration-none">Electrical Key Drivers | </a> <span class="font-weight-bold"> Mechanical Key Drivers</span></div>
     
+    <div  id="menuMechanical"></div>
+
     <!-- Return to Top -->
     <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
-     <!-- Return to Top -->
-    <span class="btn-arrow" id="btnNext" title="Show Next Criteria"><i class="fas fa-angle-down fa-2x"></i></span>
 </div>
 <ul id="localTemplates">
     <li name="section">
