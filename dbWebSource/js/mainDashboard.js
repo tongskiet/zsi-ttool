@@ -140,9 +140,10 @@ function displayMapChart(){
         pieSeries.data = _data;
         
         var label = pieSeries.createChild(am4core.Label);
-        label.text = "USAGE OF EQUAL AND BELOW 0.5";
+        label.text = "[#212529 font-style: italic]Overall wire usage below and above 0.5 CSA[/]"; //"USAGE OF EQUAL AND BELOW 0.5"
         label.fontSize = 18;
         label.fontWeight = 600;
+        label.fontStyle =
         label.align = "center";
         label.isMeasured = false;
         label.x = am4core.percent(60);
@@ -323,4 +324,4 @@ function displayMapChart(){
     
 //     }); // end am4core.ready()
 // }
-   
+    

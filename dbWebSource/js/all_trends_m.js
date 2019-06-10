@@ -1,4 +1,4 @@
-       var  svn              = zsi.setValIfNull
+      var  svn              = zsi.setValIfNull
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
@@ -12,6 +12,8 @@
     ,gMYFrom            = ""
     ,gMYTo              = ""
     ,gData              = []
+    ,gPrmMYFrom         = ""
+    ,gPrmMYTo           = ""
     ,gPrmRegion         = ""
     ,gPrmNoYears        = ""
     ,gPrmChartType      = ""
@@ -19,15 +21,14 @@
     ,gPrmCategory       = ""
     ,gPrmSumUp          = ""
     ,gPrmGraphType      = ""
-    ,gArrMY             = []
-    ,gMaxMY             = new Date().getFullYear()
-    ,gMinMY             = gMaxMY - 2;
+    ,gDefMYs            = []
+    ,gDefMYFrom         = ""
+    ,gDefMYTo           = ""
+    ,gDefSumUp          = ""
+    ,gDefCategory       = ""
+    ,gDefGraphType      = "";
     
 zsi.ready(function(){
-    for(var i=0; i<3; i++){
-        gArrMY.push(gMaxMY--);
-    }
-    console.log(gArrMY)
     getMainMenu(function(mainRows){
         var _count = mainRows.length;
         var _ctr = 0;
@@ -39,25 +40,48 @@ zsi.ready(function(){
                 if(_ctr === _count) {
                     gCriteriaRows = mainRows;
                     displayMenus(mainRows);
-                    //$('#menuElectrical .collapsable').collapse();
                 }
             });
         });
     });
+    
     //displayMenus();
 });
 
+function setDefaultParams(collapseId){
+    gMYTo = new Date().getFullYear();
+    gMYFrom = gMYTo - 2;
+    gPrmSumUp = "year";
+    gPrmCategory = "Model Year";
+    gPrmGraphType = "Pie";
+    
+    var _$section = $("#" + collapseId);
+    _$section.find("#my_from").val(gMYFrom);
+    _$section.find("#my_to").val(gMYTo);
+
+    for( var i = 0; i < 3; i++ ){
+        gDefMYs.push(gDefMYFrom--);
+    }
+}
+
 function toggleCollapse(e){
-    $(e).toggleClass("collapsed");
-    $(e).closest(".section-card").find(".collapse").slideToggle(function(){
+    var _$this = $(e);
+    var _$main = $('main');
+    var _$sectionCard = _$this.closest(".section-card");
+    _$this.toggleClass("collapsed");
+    _$sectionCard.find(".collapse").slideToggle(function(){
         $(this).toggleClass("show");
+    
+        $('main').animate({
+            scrollTop: _$main.scrollTop() + _$sectionCard.offset().top - 72
+        });
     });
 }
 
 function filterGraphData(e){
     var _$form = $(e).closest(".form");
-    gMYFrom = _$form.find("#date_from").val();
-    gMYTo = _$form.find("#date_to").val();
+    gMYFrom = _$form.find("#my_from").val();
+    gMYTo = _$form.find("#my_to").val();
     gPrmSumUp = _$form.find("#sum_up").val();
     gPrmCategory = _$form.find("#category").val();
     gPrmGraphType = _$form.find("#graph_type").val();
@@ -66,28 +90,25 @@ function filterGraphData(e){
     var _cName = _$form.find("#criteria_name").val();
     var _menuId = _$form.find("#menu_id").val();
     var _menuName = _$form.find("#menu_name").val();
-    var _chartId = "chart_"+ _menuId +"_"+ _cId;
     
-    console.log("gMYFrom",gMYFrom);
-    console.log("gMYTo",gMYTo);
-    console.log("gPrmSumUp",gPrmSumUp);
-    console.log("gPrmCategory",gPrmCategory);
-    console.log("gPrmGraphType",gPrmGraphType);
+    // console.log("gMYFrom",gMYFrom);
+    // console.log("gMYTo",gMYTo);
+    // console.log("gPrmSumUp",gPrmSumUp);
+    // console.log("gPrmCategory",gPrmCategory);
+    // console.log("gPrmGraphType",gPrmGraphType);
     
-    var _res = setChartSettings({
-            criteriaId: _cId,
-            criteriaName: _cName,
-            menuName: _menuName
-        });
-
-    if(_res.url!==""){
-        getDataByCriteriaId(_res.url, _cName, function(){
-            setMYRange();
-            
-            var _fnName = new Function("container", _res.chart.default);
-                _fnName(_chartId);
-        });
-    }
+    displayCharts(_menuId, _menuName, _cId, _cName, function(res){
+        
+        var _gType = res.chart.default;
+        if(gPrmGraphType==="Pie"){
+            _gType = res.chart.default;
+        }else if(gPrmGraphType==="Bar"){
+            _gType = res.chart.bar;
+        }
+        
+        var _fnName = new Function("container", _gType);
+        _fnName(_chartId);
+    });
 }
 
 function downloadGraphData(e){
@@ -108,10 +129,10 @@ function getSubMenu(id, callback){
 
 function displayMenus(rows){
     var _data = rows;
-    var _cardHeight = $("main").height() - 115;
+    var _cardHeight = $("main").height();
     //var _cardHeight = _mainHeight;
     
-    var _createChart = function(o, toggle, callback){
+    var _createChart = function(o, toggle){
         if(!isUD(o)){
             var _tw = new zsi.easyJsTemplateWriter();
             var _menuId = o.menu_id;
@@ -132,9 +153,10 @@ function displayMenus(rows){
                 if(v.pcriteria_id !== ""){
                     var _cId = v.criteria_id;
                     var _cName = v.criteria_title;
-                    var _cLink = "chart_mechanical?menu="+ _menuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cName.replace(/&/g, '_');
+                    var _cLink = "chart_electrical?menu="+ _menuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cName.replace(/&/g, '_');
                     var _chartId = "chart_"+ _menuId +"_"+ _cId;
                     var _collapseId = "collapse_"+ _menuId +"_"+ _cId;
+                    var _legendId = "legend_"+ _menuId +"_"+ _cId;
                     var _subH = _tw.section_card({
                           title         : _cName
                         , chart_id      : _chartId
@@ -146,29 +168,21 @@ function displayMenus(rows){
                         , collapse_class : (toggle? (i===1 ? "show":"") : "")
                         , aria_expanded  : (toggle? (i===1 ? true:false) : false)
                         , aria_collapsed : (toggle? (i===1 ? "collapsed":"") : "")
-                        , body_style     : "height:" +_cardHeight + "px"
+                        , body_style     : "height:" + (i==1? _cardHeight-112: _cardHeight-60) + "px"
+                        , legend_id    : _legendId
                     }).html();
                     
                     $("#"+ _subBodyId).append(_subH);
                     
-                    setTimeout( function(){ 
-                        var _res = setChartSettings({
-                                criteriaId: _cId,
-                                criteriaName: _cName,
-                                menuName: _menuName
-                            });
-        
-                        getDataByCriteriaId(_res.url, _cName, function(){
-                            setMYRange();
-                            
-                            var _fnName = new Function("container", _res.chart.default);
-                                _fnName(_chartId);
+                    setTimeout( function(){
+                        setDefaultParams(_collapseId);
+                        displayCharts(_menuId, _menuName, _cId, _cName, function(res){
+                            var _fnName = new Function("container", res.chart.default);
+                            _fnName(_chartId);
                         });
                         
                     },  _time);
                         _time += 500;
-                
-                    //callback();
                 }
             });
         }
@@ -182,7 +196,7 @@ function displayMenus(rows){
     	var _scrollPosition = $(this).height() + _scrollTop;
 
     	if ((_scrollHeight - _scrollPosition) / _scrollHeight === 0) { //Scroll reach bottom page
-	        _createChart(_data.shift(), false);
+	        _createChart(_data.shift(), true);
     	}
     	
     	if (_scrollTop >= 50) {    
@@ -197,102 +211,59 @@ function displayMenus(rows){
             scrollTop: 0
         });
     });
-    
-    // getMainMenu(function(rows){
-    //     var _count = rows.length;
-    //     var _mainH = "";
-    //     var _ctr = 0;
-        
-    //     $(rows).each(function(i, v){
-    //         var _mId = v.menu_id;
-    //         var _mName = $.trim(v.menu_name);
-             
-    //         _mainH += _tw.section({
-    //             title : _mName,
-    //             id : "section_" + _mId,
-    //             class : (i === 0 ? "active":""),
-    //             menu_id: _mId,
-    //             header_id : "section_header_" + _mId,
-    //             body_id : "section_body_"+ _mId
-    //         }).html();
+}  
 
-    //         _$menuElec.html(_mainH);
-            
-    //         setSubMenu(_mId, _mName, function(){
-    //             _ctr++;
-    //             if(_ctr === _count){
-    //                 gMenuId = rows[0].menu_id;  
-    //                 initScrollToSection();
-    //                 setChartPerSection();
-    //             }
-    //         });
-    //     });
-    // });
-}    
-
-function setSubMenu(_mId, _mName, callback){
-    var _tw = new zsi.easyJsTemplateWriter(); 
-    var _mainHeight = $("main").height() - 200;
-    var _cardHeight = _mainHeight / 2;    
-    var _subH = "";
-   
-    getSubMenu(_mId, function(rows){
-        $(rows).each(function(i, v){
-            if(v.pcriteria_id !== ""){
-                var _cId = v.criteria_id;
-                var _cTitle = $.trim(v.criteria_title);
-                var _cLink = "chart_electrical?menu="+ _mName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_');
-                 console.log(_mId);
-                _subH += _tw.section_card({
-                      title         : _cTitle
-                    , menu_id       : _mId
-                    , menu_name     : _mName
-                    , chart_id      : "chart_"+ _mId +"_"+ _cId
-                    , criteria_id   : _cId
-                    , criteria_name : _cTitle
-                    , link          : _cLink
-                    , body_style    : "height:" +_cardHeight + "px"
-                }).html();
-            }
+function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
+    var _param = "";
+    var _chartId = "chart_"+ menuId +"_"+ criteriaId;
+    var _res = setChartSettings({
+            criteriaId: criteriaId,
+            criteriaName: criteriaName,
+            menuName: menuName
         });
-        $("#section_body_"+ _mId).html(_subH);
-        callback();
-    });
-}
-
-function setChartPerSection(){
-    var _time = 500;
-    var _$section = $("#section_" + gMenuId);
-    var _$sectionCard = _$section.find(".section-card");
-    var _menuName = _$section.find(".menu-name").text();
-    var _sCount = _$sectionCard.length;
-    var _ctr = 0;
-  
-    if(!_$section.hasClass("shown")){
-        _$section.addClass("shown");
-        _$sectionCard.each(function(){
-            var _cId = $(this).attr("cid");
-            var _cName = $(this).find(".criteria-name").text();
-            var _chartId = $(this).find(".section-card-body").attr("id");  
-        
-            setTimeout( function(){ 
-                var _res = setChartSettings({
-                        criteriaId: _cId,
-                        criteriaName: _cName,
-                        menuName: _menuName
-                    });
     
-                if(_res.url !== ""){
-                    getDataByCriteriaId(_res.url, _cName, function(){
-                        setMYRange();
-                        
-                        var _fnName = new Function("container", _res.chart.default);
-                            _fnName(_chartId);
-                    });
+    if( _res.url !== ""){
+        // Set additional parameters
+        if(gPrmIncludeCYear==="Y"){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
+        }
+        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
+            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
+        }
+
+        $.get(execURL + _res.url //+ param
+            , function(data){
+                gData = data.rows;
+                
+                if(isContain(_res.url, "dynamic_wires_usage_summary")){
+                    gRegionNames = gData.groupBy(["region"]);
+                    gModelYears = gData.groupBy(["model_year"]);
                 }
-            }, _time);
-            
-            _time += 500;
+                else if(isContain(_res.url, "dynamic_cts_usage_summary")){
+                    gRegionNames = gData.groupBy(["region_name"]);
+                    gModelYears = gData.groupBy(["model_year"]);
+                }
+                else{
+                    gRegionNames = gData.groupBy(["REGION_NAME"]);
+                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
+                }
+                
+                gRegionNames = sortBy(gRegionNames, "name");
+                gModelYears = sortBy(gModelYears, "name");
+                
+                // console.log(gModelYears);
+                // $.each(gDefMYs.sort(), function(i, v){
+                //     //if(isUD(gModelYears[i].name)){
+                //         // gModelYears.push({
+                //         //     name : v,
+                //         //     items: []
+                //         // });
+                //     //}
+                // });
+                
+                
+    
+                callback(_res);
         });
     }
 }
@@ -308,13 +279,19 @@ function setChartSettings(o){
         var _staticMY = new Date().getFullYear() - 2;
         
         if(isContain(_menuName, "WIRES & CABLES")){
-            
+             _url = "dynamic_cts_usage_summary @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _chart.default = "displayCommonPieChart(container)";
+            //_chart.pie = "displayPieGroundEyelet(container)";
+            //_chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "INLINE CONNECTOR")){
-            
+            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _chart.default = "displayCommonPieChart(container)";
+            //_chart.pie = "displayPieGroundEyelet(container)";
+            //_chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "GROUND EYELET") || isContain(_menuName, "SPLICE") || isContain(_menuName, "BATTERY FUSE TERMINAL")){
-            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieGroundEyelet(container)";
             _chart.column = "displayColumnGroundEyelet(container)";
@@ -326,7 +303,7 @@ function setChartSettings(o){
             _chart.line = "displayChartCovering(container)";
         }
         else if(isContain(_menuName, "RETAINERS")){
-            
+            //_url = "dynamic_summary_sel @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@table_view_name='dbo.retainers_v'";
             _url = "dynamic_retainers_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
             _chart.default = "displayChartRetainer(container)";
             _chart.line = "displayChartRetainer(container)";
@@ -353,50 +330,24 @@ function setChartSettings(o){
     }
 }
 
-function getDataByCriteriaId(url, criteriaName, callback){
-    if(url !== ""){
-        var _param = "";
-        var _url = url;
-    
-        // Set additional parameters
-        if(gPrmIncludeCYear==="Y"){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-        }
-        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-        }
-
-        $.get(execURL + _url //+ param
-            , function(data){
-                gData = data.rows;
-                
-                if(isContain(criteriaName, "Overall")){
-                    gRegionNames = gData.groupBy(["region"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }else{
-                    gRegionNames = gData.groupBy(["REGION_NAME"]);
-                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                }
-                
-                gRegionNames = sortBy(gRegionNames, "name");
-                gModelYears = sortBy(gModelYears, "name");
-    
-                callback();
-        });
-    }
-}
-
 //******************************* CHART FUNCTION *****************************//
 
-function setLegendSize(chart){
+function setLegendSize(chart, container){
     chart.legend = new am4charts.Legend();
     chart.legend.labels.template.fontSize = 10;
     chart.legend.valueLabels.template.fontSize = 10;
-    chart.legend.itemContainers.template.dy = 10;
-    chart.legend.itemContainers.template.paddingTop = 1;
-    chart.legend.itemContainers.template.paddingBottom = 1;
-    chart.legend.labels.template.truncate = false;
-    chart.legend.labels.template.wrap = true;
+    chart.legend.itemContainers.template.clickable = false;
+    chart.legend.itemContainers.template.focusable = false;
+    chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.default;
+
+    var _menuId = container.split("_")[1];
+    var _cId = container.split("_")[2];
+    var _legendDiv = "legend_" + _menuId +"_"+ _cId;
+
+    var legendContainer = am4core.create(_legendDiv, am4core.Container);
+    legendContainer.width = am4core.percent(100);
+    legendContainer.height = am4core.percent(100);
+    chart.legend.parent = legendContainer;
         
     var markerTemplate = chart.legend.markers.template;
     markerTemplate.width = 10;
@@ -608,13 +559,13 @@ function displayCommonPieChart(container){
     am4core.useTheme(am4themes_animated);
     am4core.options.commercialLicense = true;
     
-    var container = am4core.create(container, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
+    var _container = am4core.create(container, am4core.Container);
+    _container.width = am4core.percent(100);
+    _container.height = am4core.percent(100);
+    _container.layout = "horizontal";
     
     var _createChart = function(data, year){
-        var chart = container.createChild(am4charts.PieChart);
+        var chart = _container.createChild(am4charts.PieChart);
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
@@ -650,7 +601,7 @@ function displayCommonPieChart(container){
             return text;
         });
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
     };
 
     $.each(gModelYears, function(i, v){
@@ -928,7 +879,7 @@ function displayCommonColumnChart(container){
     chart.cursor.behavior = "panX";
     chart.cursor.lineY.disabled = true;
     
-    setLegendSize(chart);
+    setLegendSize(chart, container);
     //setWireTrend(_data);
 }
 
@@ -968,7 +919,9 @@ function displayCustomLineChart(container){
         return v;
     });
     
-    am4core.useTheme(am4themes_animated);   
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;  
       
     var chart = am4core.create(container, am4charts.XYChart);
     chart.data = _newData;
@@ -1133,8 +1086,9 @@ function displayChartRetainer(container){
         });
     }
     
-    // Display Chart
+    // CHART SETTINGS
     am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
     
     var chart = am4core.create(container, am4charts.XYChart);
     chart.data = _data;
@@ -1310,7 +1264,7 @@ function displayChartRetainer(container){
     chart.cursor.behavior = "panX";
     chart.cursor.lineY.disabled = true;
     
-    setLegendSize(chart);
+    setLegendSize(chart, container);
 }
 
 // Covering
@@ -1403,8 +1357,9 @@ function displayChartCovering(container){
             });
         }
         
-        // Display Chart
+        // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
         
         var chart = am4core.create(container, am4charts.XYChart);
         chart.data = _data;
@@ -1580,7 +1535,7 @@ function displayChartCovering(container){
         chart.cursor.behavior = "panX";
         chart.cursor.lineY.disabled = true;
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
         //setWireTrend(_data);
     }
 }
@@ -1623,13 +1578,17 @@ function displayPieGroundEyelet(container){
         
     });
 
-    var container = am4core.create(container, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
-    console.log("_data", _data);
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
+    
+    var _container = am4core.create(container, am4core.Container);
+    _container.width = am4core.percent(100);
+    _container.height = am4core.percent(100);
+    _container.layout = "horizontal";
+  
     var _createChart = function(data, year){
-        var chart = container.createChild(am4charts.PieChart);
+        var chart = _container.createChild(am4charts.PieChart);
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
@@ -1665,7 +1624,7 @@ function displayPieGroundEyelet(container){
             return text;
         });
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
     };
 
     $.each(gModelYears, function(i, v){
@@ -1767,8 +1726,9 @@ function displayColumnGroundEyelet(container){
             });
         }
         
-        // Display Chart
+        // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
         
         var chart = am4core.create(container, am4charts.XYChart);
         chart.data = _data;
@@ -1944,7 +1904,7 @@ function displayColumnGroundEyelet(container){
         chart.cursor.behavior = "panX";
         chart.cursor.lineY.disabled = true;
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
         //setWireTrend(_data);
     }
 }
@@ -1987,13 +1947,17 @@ function displayPieGrommets(container){
         
     });
 
-    var container = am4core.create(container, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
+    
+    var _container = am4core.create(container, am4core.Container);
+    _container.width = am4core.percent(100);
+    _container.height = am4core.percent(100);
+    _container.layout = "horizontal";
     
     var _createChart = function(data, year){
-        var chart = container.createChild(am4charts.PieChart);
+        var chart = _container.createChild(am4charts.PieChart);
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
@@ -2029,7 +1993,7 @@ function displayPieGrommets(container){
             return text;
         });
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
     };
 
     $.each(gModelYears, function(i, v){
@@ -2131,8 +2095,9 @@ function displayColumnGrommets(container){
             });
         }
         
-        // Display Chart
+        // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
         
         var chart = am4core.create(container, am4charts.XYChart);
         chart.data = _data;
@@ -2308,7 +2273,7 @@ function displayColumnGrommets(container){
         chart.cursor.behavior = "panX";
         chart.cursor.lineY.disabled = true;
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
         //setWireTrend(_data);
     }
 }
@@ -2351,14 +2316,18 @@ function displayPieSTC(container){
         });
         
     });
+    
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
 
-    var container = am4core.create(container, am4core.Container);
-    container.width = am4core.percent(100);
-    container.height = am4core.percent(100);
-    container.layout = "horizontal";
+    var _container = am4core.create(container, am4core.Container);
+    _container.width = am4core.percent(100);
+    _container.height = am4core.percent(100);
+    _container.layout = "horizontal";
     
     var _createChart = function(data, year){
-        var chart = container.createChild(am4charts.PieChart);
+        var chart = _container.createChild(am4charts.PieChart);
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
@@ -2398,7 +2367,7 @@ function displayPieSTC(container){
         _chartArr.push(chart);
         
         if (year !== gMYFrom && year !== gMYTo) {
-            setLegendSize(chart, function(legend){
+            setLegendSize(chart, container, function(legend){
                 legend.itemContainers.template.events.on("up", (ev) => {
                     var category = ev.target.dataItem.name;
 
@@ -2515,8 +2484,9 @@ function displayColumnSTC(container){
             });
         }
         
-        // Display Chart
+        // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
         
         var chart = am4core.create(container, am4charts.XYChart);
         chart.data = _data;
@@ -2692,8 +2662,9 @@ function displayColumnSTC(container){
         chart.cursor.behavior = "panX";
         chart.cursor.lineY.disabled = true;
         
-        setLegendSize(chart);
+        setLegendSize(chart, container);
         //setWireTrend(_data);
     }
 }
 
+    

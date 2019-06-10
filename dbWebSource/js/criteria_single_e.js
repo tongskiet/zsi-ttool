@@ -53,7 +53,7 @@ function getSubMenu(callback){
 function displayCriteria(callback){
     var _tw = new zsi.easyJsTemplateWriter();
     var _$container = $("#criteria_content");
-    var _mainHeight = $("main").height() - 200;
+    var _mainHeight = $("main").height() - 145;
     var _cardHeight = _mainHeight / 2;
     
     if(gMenuId !== ""){
@@ -4283,4 +4283,4 @@ function displayColumnNetworkTopology(container, callback){
 
 // ******************************** END CHART ********************************//
 
-    
+     

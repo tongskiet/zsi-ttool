@@ -974,12 +974,18 @@ function displayCriteriaColumns(criteriaId,specsId){
     		        return bs({name:"level_no"    , type:"select" , value: svn(d,"level_no")}); 
     		     }
     		 }
+		    ,{ text: "Is Legend?"         , name:"is_legend"          , type:"yesno", defaultValue:"Y"  , width:110 , style:"text-align-last:center;" }
             ,{ text: "Legend Label"    , width:180                 , style:"text-align-last:center;" 
     		     ,onRender: function(d){
     		        return bs({name:"legend_label"    , type:"input" , value: svn(d,"legend_label")}); 
     		     }
     		 }
     		 ,{ text: "Grayed Out?"         , name:"grayed_out"          , type:"yesno", defaultValue:"Y"  , width:110 , style:"text-align-last:center;" }
+    		 ,{ text: "Color Code"    , width:90                 , style:"text-align-last:center;" 
+    		     ,onRender: function(d){
+    		        return bs({name:"color_code"    , type:"select" , value: svn(d,"color_code")}); 
+    		     }
+    		 }
 	    ]
 	    ,onComplete : function(){
 	        var  _this = this
@@ -1121,6 +1127,12 @@ function displayCriteriaColumns(criteriaId,specsId){
                   ,{text : "2" , value : "2"}
                 ]
             });
+            
+            _this.find("select[name='color_code']").dataBind({
+                    url :execURL + " color_references_sel"
+                    ,text:"color_code"
+                    ,value:"color_id"
+              });
 	    }
     });    
 }  
@@ -1162,7 +1174,7 @@ function displayCriteriaColumnValues(colName,criteriaColId,specsId){
 	    //,height         : 400
         ,blankRowsLimit :5
         ,dataRows       :[
-    		 { text:   "Attribute Value"    , width:300  , style:"text-align:left;"   
+    		 { text:   "Attribute Value"    , width:250  , style:"text-align:left;"   
     		    ,onRender : function(d){
                      return bs({name:"criteria_column_value_id"  ,type:"hidden",value: svn(d,"criteria_column_value_id")})
                         +   bs({name:"criteria_column_id"  ,type:"hidden",value: criteriaColId })
@@ -1170,7 +1182,12 @@ function displayCriteriaColumnValues(colName,criteriaColId,specsId){
                         +   bs({name:"attribute_value"    , type:"select" , value: svn(d,"attribute_value")}); 
                 }             
     		 }	 
-
+            ,{ text: "Legend Label"    , width:250                 , style:"text-align-last:center;" 
+    		     ,onRender: function(d){
+    		        return bs({name:"legend_label"    , type:"input" , value: svn(d,"legend_label")}); 
+    		     }
+    		 }
+    		 ,{ text: "Grayed Out?"         , name:"grayed_out"          , type:"yesno", defaultValue:"Y"  , width:110 , style:"text-align-last:center;" }
 	    ]
 	    ,onComplete : function(){
                 this.data("colName", colName);
@@ -8189,4 +8206,4 @@ function displayColumnSTC(container, callback){
     // }
 }
 
-                                                             
+                                                              
