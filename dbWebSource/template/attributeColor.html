@@ -1,0 +1,33 @@
+<style>.col-2 {
+    -ms-flex: 0 0 9.66667%;
+    flex: 0 0 9.66667% !important;
+}
+</style>
+<div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+    <div class="row">
+       
+            <label class=" col-2 control-label" style="width:80px !important;"> Column Name: </label>
+            
+            <div class="col-3">
+                <select name="table_columns" id="table_columns" class="form-control input-sm"> </select>
+            </div>
+         
+            <div class="col-1">
+                <button type="button"  class="btn btn-primary" id="btnGo">
+                    <i class="fas fa-filter"></i> Go
+                </button>
+            </div>
+            
+       
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div id="grid" class="zGrid"></div>    
+        </div>
+        <div class="col-12 pt-1"> 
+            <button type="button" class="btn btn-primary " id="btnSave">
+                <i class="far fa-save"></i> Save
+            </button>
+        </div>
+    </div>
+</div>

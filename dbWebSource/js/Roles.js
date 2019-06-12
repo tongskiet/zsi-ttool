@@ -146,9 +146,9 @@ function displayRecords(){
     		,{ text:"Users"         , width:81  , style:"text-align:center;" 
     		    ,onRender : function(d){ return "<a href='javascript:manageItemUser(" + svn(d,"role_id") + ",\"" + svn(d,"role_name")  + "\");'><span class='badge'>" + svn(d,"countUsers") + "</span></a>"; }
     		}	 	 
-	        ,{text  : "Dashboards"   , width : 100 , style:"text-align:center;" 
-                ,onRender : function(d){ return "<a href='javascript:manageItemDashboard(" + svn(d,"role_id") + ",\"" +  svn(d,"role_name")  + "\");'><span class='badge'>" + svn(d,"countRoleDashboards") + "</span></a>"; }
-            }
+	       // ,{text  : "Dashboards"   , width : 100 , style:"text-align:center;" 
+        //         ,onRender : function(d){ return "<a href='javascript:manageItemDashboard(" + svn(d,"role_id") + ",\"" +  svn(d,"role_name")  + "\");'><span class='badge'>" + svn(d,"countRoleDashboards") + "</span></a>"; }
+        //     }
         ]
         ,onComplete: function(){
             $("#cbFilter1").setCheckEvent("#grid input[name='cb']");
@@ -299,4 +299,4 @@ $("#btnDelete").click(function(){
 });      
 
     
-                                                                                                   
+                                                                                                    

@@ -778,13 +778,17 @@ function displayCriteria(menuId,specsId){
 	    ,height         : $(document).height() - 250
         ,blankRowsLimit : 10
         ,dataRows       :[
-    		 { text: "Seq. No."   , width:65 , style:"text-align:left;" 
+             { text: "Status"   , width:130 , style:"text-align:left;" 
     		     ,onRender : function(d){return bs({name:"criteria_id"          ,type:"hidden"  ,value: svn(d,"criteria_id")})
     		                                +   bs({name:"is_edited",type:"hidden" })
-    		                                +   bs({name:"seq_no" ,value: svn(d,"seq_no")}) ;
+    		                                +   bs({name:"status_code" , type:"select",value: svn(d,"status_code")}) ;
     		         	     }
     		 }
-    		,{ text:"Trend Menu"    , width:150    , style:"text-align:center;"    
+    		 ,{ text: "Seq. No."   , width:65 , style:"text-align:left;" 
+    		     ,onRender : function(d){return bs({name:"seq_no" ,value: svn(d,"seq_no")}) ;
+    		         	     }
+    		 }
+    		,{ text:"Trend Menu"    , width:170    , style:"text-align:center;"    
 		            ,onRender   :   function(d){ 
 		                    var _trendMenuSelect = bs({name:"trend_menu_id"   ,type:"select"  ,value: menuId})
 		                    var _trendMenuHide   = bs({name:"trend_menu_id"   ,type:"hidden"  ,value: menuId})
@@ -796,8 +800,8 @@ function displayCriteria(menuId,specsId){
     		       var _link = "<a href='javascript:void(0);' class='btn btn-sm position-absolute p-1' onclick='showModalChart(\""+ svn(d,"criteria_id") +"\",\"" +  svn(d,"criteria_title")  + "\");'  ><i class='fas fa-chart-bar'></i> </a>";
     		        if(d){
     		            return (d.pcriteria_id!=="" ? _link : "")
-    		                + '<input class="form-control text-left pl-4" type="text" name="criteria_title" id="criteria_title" value="'+ d.criteria_title +'" style="'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';
-    		        } else return '<input class="form-control text-left" type="text" name="criteria_title" id="criteria_title">';   
+    		                + '<input class="form-control text-left pl-4" type="text" name="criteria_title" id="criteria_title" maxlength="105" value="'+ d.criteria_title +'" style="'+ (!d.pcriteria_id ? 'font-weight:bold;' : '') +'">';
+    		        } else return '<input class="form-control text-left" type="text" name="criteria_title" id="criteria_title" maxlength="105">';   
     		    }
     		}	 	 
     		
@@ -874,7 +878,14 @@ function displayCriteria(menuId,specsId){
                         , value         : "criteria_id"
                 });
             });
+            
+              $("select[name='status_code']").dataBind({
+                    url :execURL + " statuses_sel @user_id=" + userId
+                    ,text:"status_desc"
+                    ,value:"status_code"
+              });
 	    }
+	    
     });
 }
 
@@ -8206,4 +8217,4 @@ function displayColumnSTC(container, callback){
     // }
 }
 
-                                                              
+                                                                

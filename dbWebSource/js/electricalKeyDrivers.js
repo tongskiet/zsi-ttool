@@ -20,11 +20,11 @@ function displayMenus(){
                   title         : _menuName
                 , link          : "criteria_single_e?id="+ v.menu_id +"&name="+ _menuName.replace(/&/g, '_')
                 , body_style    : "height:" +_cardHeight + "px"
-                , img_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id
-                , img2_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image4_id 
-                , graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
+                , img3_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id
+                , img4_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image4_id 
+                //, graph_src     : "/images/chart.png" //"/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id 
             }).html();
         });
          _$menu.append(_h);
     });
-}          
+}           

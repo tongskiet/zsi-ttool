@@ -1,34 +1,26 @@
-      var  svn              = zsi.setValIfNull
+var  svn              = zsi.setValIfNull
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
     ,gMenuId            
     ,gMenuName          = ""
     ,gCriteriaRows      = []
-    ,gMYRange           = ""
-    ,gHarnessName       = ""
     ,gRegionNames       = []
     ,gModelYears        = []
+    ,gMYArr             = []
     ,gMYFrom            = ""
     ,gMYTo              = ""
     ,gData              = []
-    ,gPrmMYFrom         = ""
-    ,gPrmMYTo           = ""
-    ,gPrmRegion         = ""
-    ,gPrmNoYears        = ""
     ,gPrmChartType      = ""
-    ,gPrmIncludeCYear   = "N"
     ,gPrmCategory       = ""
     ,gPrmSumUp          = ""
-    ,gPrmGraphType      = ""
-    ,gDefMYs            = []
-    ,gDefMYFrom         = ""
-    ,gDefMYTo           = ""
-    ,gDefSumUp          = ""
-    ,gDefCategory       = ""
-    ,gDefGraphType      = "";
+    ,gPrmGraphType      = "";
     
 zsi.ready(function(){
+    // CHART SETTINGS
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
+    
     getMainMenu(function(mainRows){
         var _count = mainRows.length;
         var _ctr = 0;
@@ -44,8 +36,6 @@ zsi.ready(function(){
             });
         });
     });
-    
-    //displayMenus();
 });
 
 function setDefaultParams(collapseId){
@@ -58,21 +48,20 @@ function setDefaultParams(collapseId){
     var _$section = $("#" + collapseId);
     _$section.find("#my_from").val(gMYFrom);
     _$section.find("#my_to").val(gMYTo);
-
-    for( var i = 0; i < 3; i++ ){
-        gDefMYs.push(gDefMYFrom--);
-    }
 }
 
 function toggleCollapse(e){
     var _$this = $(e);
     var _$main = $('main');
+    var _cardHeight = _$main.height();
     var _$sectionCard = _$this.closest(".section-card");
+        _$sectionCard.find(".card-body").height(_cardHeight-62);
+        
     _$this.toggleClass("collapsed");
     _$sectionCard.find(".collapse").slideToggle(function(){
         $(this).toggleClass("show");
     
-        $('main').animate({
+        _$main.animate({
             scrollTop: _$main.scrollTop() + _$sectionCard.offset().top - 72
         });
     });
@@ -97,17 +86,8 @@ function filterGraphData(e){
     // console.log("gPrmCategory",gPrmCategory);
     // console.log("gPrmGraphType",gPrmGraphType);
     
-    displayCharts(_menuId, _menuName, _cId, _cName, function(res){
+    displayCharts(_menuId, _menuName, _cId, _cName, function(){
         
-        var _gType = res.chart.default;
-        if(gPrmGraphType==="Pie"){
-            _gType = res.chart.default;
-        }else if(gPrmGraphType==="Bar"){
-            _gType = res.chart.bar;
-        }
-        
-        var _fnName = new Function("container", _gType);
-        _fnName(_chartId);
     });
 }
 
@@ -138,10 +118,10 @@ function displayMenus(rows){
             var _menuId = o.menu_id;
             var _menuName = o.menu_name;
             var _menuItems = o.items; 
-            var _count = _menuItems.length;
+            var _count = _menuItems.length - 1;
             var _subBodyId = "section_body_"+ _menuId;
             var _ctr = 0;
-            var _time = 500;
+            var _time = 350;
             var _mainH = _tw.section({
                 title : _menuName,
                 body_id : _subBodyId,
@@ -153,7 +133,6 @@ function displayMenus(rows){
                 if(v.pcriteria_id !== ""){
                     var _cId = v.criteria_id;
                     var _cName = v.criteria_title;
-                    var _cLink = "chart_electrical?menu="+ _menuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cName.replace(/&/g, '_');
                     var _chartId = "chart_"+ _menuId +"_"+ _cId;
                     var _collapseId = "collapse_"+ _menuId +"_"+ _cId;
                     var _legendId = "legend_"+ _menuId +"_"+ _cId;
@@ -168,7 +147,7 @@ function displayMenus(rows){
                         , collapse_class : (toggle? (i===1 ? "show":"") : "")
                         , aria_expanded  : (toggle? (i===1 ? true:false) : false)
                         , aria_collapsed : (toggle? (i===1 ? "collapsed":"") : "")
-                        , body_style     : "height:" + (i==1? _cardHeight-112: _cardHeight-60) + "px"
+                        , body_style     : "height:" + (toggle? _cardHeight-133: _cardHeight-62) + "px"
                         , legend_id    : _legendId
                     }).html();
                     
@@ -176,13 +155,12 @@ function displayMenus(rows){
                     
                     setTimeout( function(){
                         setDefaultParams(_collapseId);
-                        displayCharts(_menuId, _menuName, _cId, _cName, function(res){
-                            var _fnName = new Function("container", res.chart.default);
-                            _fnName(_chartId);
+                        displayCharts(_menuId, _menuName, _cId, _cName, function(){
+                            
                         });
-                        
+                    
                     },  _time);
-                        _time += 500;
+                        _time += 350;  
                 }
             });
         }
@@ -196,7 +174,7 @@ function displayMenus(rows){
     	var _scrollPosition = $(this).height() + _scrollTop;
 
     	if ((_scrollHeight - _scrollPosition) / _scrollHeight === 0) { //Scroll reach bottom page
-	        _createChart(_data.shift(), true);
+	        _createChart(_data.shift(), false);
     	}
     	
     	if (_scrollTop >= 50) {    
@@ -214,7 +192,6 @@ function displayMenus(rows){
 }  
 
 function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
-    var _param = "";
     var _chartId = "chart_"+ menuId +"_"+ criteriaId;
     var _res = setChartSettings({
             criteriaId: criteriaId,
@@ -223,47 +200,32 @@ function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
         });
     
     if( _res.url !== ""){
-        // Set additional parameters
-        if(gPrmIncludeCYear==="Y"){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='Y'";
-        }
-        else if(gPrmIncludeCYear==="N" && gPrmNoYears!==""){
-            _param += ",@no_years='"+ gPrmNoYears +"',@include_cyear='N'";
-        }
-
-        $.get(execURL + _res.url //+ param
+        $.get(execURL + _res.url
             , function(data){
                 gData = data.rows;
+
+                var _dynamicKey = getDistinctKey(gData);
+                var _region = _dynamicKey.region;
+                var _modelYear = _dynamicKey.model_year;
                 
-                if(isContain(_res.url, "dynamic_wires_usage_summary")){
-                    gRegionNames = gData.groupBy(["region"]);
-                    gModelYears = gData.groupBy(["model_year"]);
+                gRegionNames = sortBy(gData.groupBy([_region]), "name");
+                gModelYears = sortBy(gData.groupBy([_modelYear]), "name");
+
+                var i = 0;
+                for (var _my = gMYFrom; _my <= gMYTo; _my++) {
+                    if(isUD(gModelYears[i])){
+                        gModelYears.push({
+                            name : _my.toString(),
+                            items: []
+                        });
+                    }
+                    i++;
                 }
-                else if(isContain(_res.url, "dynamic_cts_usage_summary")){
-                    gRegionNames = gData.groupBy(["region_name"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }
-                else{
-                    gRegionNames = gData.groupBy(["REGION_NAME"]);
-                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                }
                 
-                gRegionNames = sortBy(gRegionNames, "name");
-                gModelYears = sortBy(gModelYears, "name");
-                
-                // console.log(gModelYears);
-                // $.each(gDefMYs.sort(), function(i, v){
-                //     //if(isUD(gModelYears[i].name)){
-                //         // gModelYears.push({
-                //         //     name : v,
-                //         //     items: []
-                //         // });
-                //     //}
-                // });
-                
-                
+                var _fnName = new Function("container", _res.chart.default);
+                    _fnName(_chartId);
     
-                callback(_res);
+                callback();
         });
     }
 }
@@ -276,48 +238,57 @@ function setChartSettings(o){
         var _url = "";
         var _result = {};
         var _chart = {default:"", pie:"", column:"", line: ""};
-        var _staticMY = new Date().getFullYear() - 2;
+        var _param = "";
+            _param += ",@byMy='Y'";
+            
+        if(gPrmCategory==="Region"){
+            _param += ",@byRegion='Y'";
+        }else if(gPrmCategory==="Vehicle Type"){
+            _param += ",@byVehicle_type='Y'";
+        }else if(gPrmCategory==="OEM"){
+            _param += ",@byOEM='Y'";
+        }
         
         if(isContain(_menuName, "WIRES & CABLES")){
-             _url = "dynamic_cts_usage_summary @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+             _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
-            //_chart.pie = "displayPieGroundEyelet(container)";
+            //_chart.pie = "displayCommonPieChart(container)";
             //_chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "INLINE CONNECTOR")){
-            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
-            //_chart.pie = "displayPieGroundEyelet(container)";
+            //_chart.pie = "displayCommonPieChart(container)";
             //_chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "GROUND EYELET") || isContain(_menuName, "SPLICE") || isContain(_menuName, "BATTERY FUSE TERMINAL")){
-            _url = "dynamic_cts_usage_summary @byMY='Y',@byRegion='Y',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieGroundEyelet(container)";
             _chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "COVERINGS")){
             
-            _url = "dynamic_coverings_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _url = "dynamic_coverings_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayChartCovering(container)";
             _chart.line = "displayChartCovering(container)";
         }
         else if(isContain(_menuName, "RETAINERS")){
             //_url = "dynamic_summary_sel @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@table_view_name='dbo.retainers_v'";
-            _url = "dynamic_retainers_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _url = "dynamic_retainers_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayChartRetainer(container)";
             _chart.line = "displayChartRetainer(container)";
         }
         else if(isContain(_menuName, "GROMMETS")){
             
-            _url = "dynamic_grommets_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _url = "dynamic_grommets_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieGrommets(container)";
             _chart.column = "displayColumnGrommets(container)";
         }
         else if(isContain(_menuName, "TROUGH/SHIELD/BRACKET")){
             
-            _url = "dynamic_stc_sel @byMY='Y',@byRegion='Y',@criteria_id="+ _cId;
+            _url = "dynamic_stc_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieSTC(container)";
             _chart.column = "displayColumnSTC(container)";
@@ -415,14 +386,7 @@ function setMYRange(){
         
         gMYFrom = _from;
         gMYTo = _to;
-        
-        if(gModelYears.length > 1){
-            gMYRange = "MY" + _from + " - MY" + _to;
-        }else{
-            gMYRange = "MY" + _from;
-        }
     }
-    $("#chart_range").html(gMYRange);
 }
 
 function sortBy(obj, key){
@@ -465,23 +429,29 @@ function getDistinctKey(data){
     var _category = "";
     var _location = "";
     var _specification = "";
+    var _model_year = "";
+    var _region = "";
 
     if(data.length > 0){
         $.each(Object.keys(data[0]), function(i, key){
             var _key = key.toUpperCase();
-            if(_key !== "REGION" && _key !== "MODEL_YEAR"){
-                if(isContain(_key, "LOCATION") || _key === "SL"){
-                    _location = key;
-                }
-                else if(isContain(_key, "SPECIFIC")){
-                   _specification = key;
-                }
-                else if(isContain(_key, "COUNT") || isContain(_key, "SUM")){
-                    _value = key;
-                }
-                else{
-                    _category = key;
-                } 
+            if(isContain(_key, "REGION")){
+                _region = key;
+            }
+            else if(isContain(_key, "MODEL_YEAR") || isContain(_key, "YEAR")){
+                _model_year = key;
+            }
+            else if(isContain(_key, "LOCATION") || _key === "SL"){
+                _location = key;
+            }
+            else if(isContain(_key, "SPECIFIC")){
+               _specification = key;
+            }
+            else if(isContain(_key, "COUNT") || isContain(_key, "SUM")){
+                _value = key;
+            }
+            else{
+                _category = key;
             }
         });
     }
@@ -489,6 +459,8 @@ function getDistinctKey(data){
     _keys.category = _category;
     _keys.location = _location;
     _keys.specification = _specification;
+    _keys.model_year = _model_year;
+    _keys.region = _region;
     
     return _keys; 
 }
@@ -521,38 +493,41 @@ function setWireTrend(data, pContainer){
 //------------------------------- COMMON CHARTS ------------------------------//
 function displayCommonPieChart(container){
     var _data = [];
-    var _dynamicKey = getDistinctKey(gData);
-    var _value = _dynamicKey.value;
-    var _category = _dynamicKey.category;
+    var _objKey = getDistinctKey(gData);
+    var _value = _objKey.value;
+    var _category = _objKey.category;
+    var _region = _objKey.region;
+    var _modelYear = _objKey.model_year;
     var _dynamicObj = gData.groupBy([_category]);
-    
+
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
-        
+
         $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            var _res = w.items.filter(function (item) {
-            	return item[_category] == _cName && item.MODEL_YEAR == _my;
-            });
-
-            if(_value && _value !== ""){
-                 _count = _res.reduce(function (accumulator, currentValue) {
-                    return accumulator + currentValue[_value];
-                }, 0);    
-            }else{
-                for(; _count < _res.length; ){
-                    _count++;
-                }
-            }  
-            
-            _data.push({
-                model_year: +_my,
-                category: _cName,
-                value: _count
-            });
+            if(_cName!==""){
+                var _res = w.items.filter(function (item) {
+                	return item[_category] == _cName && item[_modelYear] == _my;
+                });
+    
+                if(_value && _value !== ""){
+                     _count = _res.reduce(function (accumulator, currentValue) {
+                        return accumulator + currentValue[_value];
+                    }, 0);    
+                }else{
+                    for(; _count < _res.length; ){
+                        _count++;
+                    }
+                }  
+                
+                _data.push({
+                    model_year: +_my,
+                    category: _cName,
+                    value: _count
+                });
+            }
         });
-        
     });
 
     // CHART SETTINGS
@@ -564,17 +539,28 @@ function displayCommonPieChart(container){
     _container.height = am4core.percent(100);
     _container.layout = "horizontal";
     
-    var _createChart = function(data, year){
+    var _createChart = function(data, year, isLegend){
         var chart = _container.createChild(am4charts.PieChart);
+        /* Dummy innitial data data */
+        // chart.data = [{
+        //   "country": "Dummy",
+        //   "disabled": true,
+        //   "value": 1000,
+        //   "color": am4core.color("#dadada"),
+        //   "opacity": 0.3,
+        //   "strokeDasharray": "4,4",
+        //   "tooltip": ""
+        // }];
+        
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
-        
-        var title = chart.titles.create();
-        title.text =  "MY" + year;
-        title.fontSize = 10;
-        title.fontWeight = 800;
-        title.marginBottom = 0;
+
+        // var title = chart.titles.create();
+        // title.text =  "MY" + year;
+        // title.fontSize = 10;
+        // title.fontWeight = 800;
+        // title.marginBottom = 0;
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
@@ -586,6 +572,18 @@ function displayCommonPieChart(container){
         pieSeries.paddingBottom = 10;
         pieSeries.colors.step = 2;
         
+        pieSeries.dataFields.hiddenInLegend = "disabled";
+
+       /* Set tup slice appearance */
+        var slice = pieSeries.slices.template;
+        slice.propertyFields.fill = "color";
+        slice.propertyFields.fillOpacity = "opacity";
+        slice.propertyFields.stroke = "color";
+        slice.propertyFields.strokeDasharray = "strokeDasharray";
+        slice.propertyFields.tooltipText = "tooltip";
+        
+        pieSeries.labels.template.propertyFields.disabled = "disabled";
+        pieSeries.ticks.template.propertyFields.disabled = "disabled";
         pieSeries.ticks.template.disabled = true;
         pieSeries.alignLabels = false;
         pieSeries.labels.template.fontSize = 10;
@@ -601,16 +599,23 @@ function displayCommonPieChart(container){
             return text;
         });
         
-        setLegendSize(chart, container);
+        var label = chart.createChild(am4core.Label);
+        label.text = "[#212529]MY" + year +"[/]";
+        label.fontSize = 15;
+        label.align = "center";
+        
+        if(isLegend){
+            setLegendSize(chart, container);
+        }
     };
 
     $.each(gModelYears, function(i, v){
         var _my = v.name;
         var _res = _data.filter(function (item) {
-        	return item.model_year == _my;
+        	return item[_modelYear] == _my;
         });
 
-        _createChart(_res, _my);
+        _createChart(_res, _my, (i === 0 ? true : false));
     });
 }
 
@@ -620,6 +625,8 @@ function displayCommonColumnChart(container){
     var _value = _objKey.value;
     var _category = _objKey.category;
     var _location = _objKey.location;
+    var _region = _objKey.region;
+    var _model_year = _objKey.model_year;
     var _categoryObj = gData.groupBy([_category]);
     var _locationObj = gData.groupBy([_location]);
     var _hasLocation = (_location ? true: false);
@@ -630,7 +637,7 @@ function displayCommonColumnChart(container){
                 var _regionName = r.name;
                 var _modelYear = my.name;
                 var _result = r.items.filter(function (item) {
-                	return item.MODEL_YEAR == _modelYear;
+                	return item[_model_year] == _modelYear;
                 });
                 
                 $.each(_locationObj, function(y, l) {
@@ -682,7 +689,7 @@ function displayCommonColumnChart(container){
                     var _cName = w.name;
                     var _cNameNew = _cName.replace(" ","_");
                     var _res = r.items.filter(function (item) {
-                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item[_model_year] == _my;
                     });
                     
                     if(_value && _value !== ""){
@@ -702,6 +709,7 @@ function displayCommonColumnChart(container){
         });
     }
     
+    // CHART SETTINGS
     am4core.useTheme(am4themes_animated);
     am4core.options.commercialLicense = true;
 
@@ -888,7 +896,7 @@ function displayCommonLineChart(container){
 }
 
 function displayCustomLineChart(container){
-     var lowerLimit = 0;
+    var lowerLimit = 0;
     var upperLimit = 0;
     var _wireTypes = gData.groupBy(["wire_type"]);
     var _newData = $.each(_wireTypes, function(i, v){
@@ -921,7 +929,7 @@ function displayCustomLineChart(container){
     
     // CHART SETTINGS
     am4core.useTheme(am4themes_animated);
-    am4core.options.commercialLicense = true;  
+    am4core.options.commercialLicense = true; 
       
     var chart = am4core.create(container, am4charts.XYChart);
     chart.data = _newData;
@@ -1004,6 +1012,8 @@ function displayChartRetainer(container){
     var _value = _objKey.value;
     var _category = _objKey.category;
     var _location = _objKey.location;
+    var _region = _objKey.region;
+    var _model_year = _objKey.model_year;
     var _categoryObj = gData.groupBy([_category]);
     var _locationObj = gData.groupBy([_location]);
     var _hasLocation = (_location ? true: false);
@@ -1014,7 +1024,7 @@ function displayChartRetainer(container){
                 var _regionName = r.name;
                 var _modelYear = my.name;
                 var _result = r.items.filter(function (item) {
-                	return item.MODEL_YEAR == _modelYear;
+                	return item[_model_year] == _modelYear;
                 });
                 
                 $.each(_locationObj, function(y, l) {
@@ -1066,7 +1076,7 @@ function displayChartRetainer(container){
                     var _cName = w.name;
                     var _cNameNew = _cName.replace(" ","_");
                     var _res = r.items.filter(function (item) {
-                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item[_model_year] == _my;
                     });
                     
                     if(_value && _value !== ""){
@@ -1275,6 +1285,8 @@ function displayChartCovering(container){
         var _value = _objKey.value;
         var _category = _objKey.category;
         var _location = _objKey.location;
+        var _region = _objKey.region;
+        var _model_year = _objKey.model_year;
         var _categoryObj = gData.groupBy([_category]);
         var _locationObj = gData.groupBy([_location]);
         var _hasLocation = (_location ? true: false);
@@ -1285,7 +1297,7 @@ function displayChartCovering(container){
                     var _regionName = r.name;
                     var _modelYear = my.name;
                     var _result = r.items.filter(function (item) {
-                    	return item.MODEL_YEAR == _modelYear;
+                    	return item[_model_year] == _modelYear;
                     });
                     
                     $.each(_locationObj, function(y, l) {
@@ -1337,7 +1349,7 @@ function displayChartCovering(container){
                         var _cName = w.name;
                         var _cNameNew = _cName.replace(" ","_");
                         var _res = r.items.filter(function (item) {
-                        	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                        	return item[_category] == _cName && item[_model_year] == _my;
                         });
                         
                         if(_value && _value !== ""){
@@ -2667,4 +2679,4 @@ function displayColumnSTC(container){
     }
 }
 
-    
+     
