@@ -53,7 +53,7 @@ function getSubMenu(callback){
 function displayCriteria(callback){
     var _tw = new zsi.easyJsTemplateWriter();
     var _$container = $("#criteria_content");
-    var _mainHeight = $("main").height() - 145;
+    var _mainHeight = $("main").height() - 180;
     var _cardHeight = _mainHeight / 2;
     
     if(gMenuId !== ""){
@@ -66,7 +66,7 @@ function displayCriteria(callback){
                 if(v.pcriteria_id !== ""){
                     var _cId = v.criteria_id;
                     var _cTitle = $.trim(v.criteria_title);
-                    var _cLink = "chart_electrical?menu="+ gMenuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_');
+                    var _cLink = "chart_electrical?menu="+ gMenuName.replace(/&/g, '_') +"&id="+ _cId +"&name="+ _cTitle.replace(/&/g, '_') + "&c=" + gMenuCount + "&mtype=" + gMenuType;
                     
                     _h += _tw.criteria_card({
                           title     : _cTitle
@@ -4283,4 +4283,4 @@ function displayColumnNetworkTopology(container, callback){
 
 // ******************************** END CHART ********************************//
 
-     
+       

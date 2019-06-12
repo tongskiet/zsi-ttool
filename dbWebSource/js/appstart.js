@@ -7,6 +7,9 @@ var  projectAccess = {}
     ,gMenu = "E" // Initialize Menu 
 ; 
 
+var  gMenuCount     = zsi.getUrlParamValue("c")
+    ,gMenuType      = zsi.getUrlParamValue("mtype")
+;
 
 
 //initialize Settings.
@@ -67,7 +70,8 @@ function toggleMenu(o){
 		
 function displayTrendToolMenus(){ //load Main Menu
     var     _getUrl = window.location.href,
-            _search = "page/zsiuserlogin";
+            _search = "page/zsiuserlogin"
+            _count  = 1;
 
     //if (readCookie("zsi_login")==="Y" ||  (_getUrl.search(_search)==0)){ //condition to removed errors in the menu when you are in the second login page.
     
@@ -89,9 +93,11 @@ function displayTrendToolMenus(){ //load Main Menu
                     , imageId2  : this.image1_id
                     , label     : this.menu_name.toUpperCase()
                     , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
-                    , onClick       : "displayTrendToolSubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+",\""+ $.trim(this.menu_name) +"\")"
+                    , onClick       : "displayTrendToolSubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+",\""+ $.trim(this.menu_name) +"\"," + _count + ")"
                 }).html();
+                _count++;
             });
+            _count=1;
             return _h;
         };
         _$menu.html("");
@@ -115,7 +121,6 @@ function displayTrendToolMenus(){ //load Main Menu
         });
    // }
 }
-
 // function displayTrendToolSubMenu(sel, menuType, menuId, specsId){ //Sub Menu base on Main Menu
 //     var _tw = new zsi.easyJsTemplateWriter(); 
 //     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
@@ -134,7 +139,7 @@ function displayTrendToolMenus(){ //load Main Menu
 //         }
 //     });
 // }
-function displayTrendToolSubMenu(sel, menuType, menuId, menuName){ //Sub Menu base on Main Menu
+function displayTrendToolSubMenu(sel, menuType, menuId, menuName, count){ //Sub Menu base on Main Menu
     var _tw = new zsi.easyJsTemplateWriter(); 
     $.get(execURL + "criterias_sel @trend_menu_id=" + menuId + ",@main_only='Y'", function(data){
         d = data.rows;
@@ -143,16 +148,66 @@ function displayTrendToolSubMenu(sel, menuType, menuId, menuName){ //Sub Menu ba
         }
         else{
             if(menuType==="E"){
-                window.location.href = "/page/criteria_single_e?id=" + menuId +"&name="+ menuName.replace(/&/g, '_');
+                window.location.href = "/page/criteria_single_e?id=" + menuId +"&name="+ menuName.replace(/&/g, '_') + "&c=" + count + "&mtype=E";
             }
             else if(menuType==="M"){
-                window.location.href = "/page/criteria_single_m?id=" + menuId +"&name="+ menuName.replace(/&/g, '_');
+                window.location.href = "/page/criteria_single_m?id=" + menuId +"&name="+ menuName.replace(/&/g, '_') + "&c=" + count + "&mtype=M";
             }
             
         }
 
     });
 }
+// function updateSelectedMainMenu(){
+//      _getUrl = window.location.href
+//     ,_search = "page/zsiuserlogin"
+//     ;
+    
+//     if(_getUrl.search("page/criteria_single_e")>=0){
+//         console.log("electrical" + gMenuCount);
+//         $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+//         $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+//         $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");    
+//     }
+//     if(_getUrl.search("page/criteria_single_m")>=0){
+//         console.log("mechanical" + gMenuCount);
+//         $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+//         $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+//         $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");        
+//     }
+// }
+$('.navbar-expand .navbar-nav .nav-item .dropdown-toggle').click(function(){
+//   _getUrl = window.location.href
+//     ,_search = "page/zsiuserlogin"
+//     ;
+    
+    // if(_getUrl.search("page/criteria_single_e")>=0){
+    //     console.log("electrical" + gMenuCount);
+    //     $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+    //     $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+    //     $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");    
+    // }
+    // if(_getUrl.search("page/criteria_single_m")>=0){
+    //     console.log("mechanical" + gMenuCount);
+    //     $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+    //     $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+    //     $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");        
+    // }
+    console.log(gMenuType);
+    if(gMenuType === "E"){
+        console.log("electrical" + gMenuCount + "-" + gMenuType);
+        $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+        $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+        $("#electricalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");    
+        
+    }
+    else if(gMenuType === "M"){
+        console.log("mechanical" + gMenuCount + "-" + gMenuType);
+        $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a").css("padding-top","23px");
+        $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") a .text .transparent-bg").css("background-color","rgba(00,00,00,0.5)");
+        $("#mechanicalMenu .menu-content .menu-item:nth-child(" + gMenuCount +") .imgFade").css("opacity","0");        
+    }
+});
 
 if(isMenuItemsSaved ==="N"){
     if(isLocalStorageSupport()) localStorage.clear();
@@ -416,4 +471,4 @@ function isTeamMemberOrAdmin(){
         return false;
         */
 } 
-                    
+                     
