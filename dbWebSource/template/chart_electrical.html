@@ -3,31 +3,30 @@
     display: none;
 }
 #chart_div{
-    min-height: 320px;
+    min-height: 350px;
 }
 #legend_div {
-  height: 150px;
+    min-height: 32px;
 }
-#legend-wrapper {
-  max-height: 120px;
-  overflow-x: none;
-  overflow-y: auto;
+.legend-wrapper {
+    max-height: 120px;
+    overflow-x: none;
+    overflow-y: auto;
 }
 </style>
 
 <header>
     <div class="px-2 py-1 m-0 h4">
-        <a href="electricalkeydrivers" class="text-dark text-decoration-none" title="Back"><i class="fas fa-arrow-alt-circle-left"></i></a>
+        <!--<a href="electricalkeydrivers" class="text-dark text-decoration-none" title="Back"><i class="fas fa-arrow-alt-circle-left"></i></a>-->
         <span class="font-weight-bold text-uppercase" id="menu_name"></span> |  
         <span id="criteria_name"></span> 
     </div>
-    <div class="d-flex flex-wrap px-2" style="background-color:#e7e6e6">
+    <div class="d-flex flex-wrap form p-1 p-sm-0" style="background-color:#e7e6e6">
         <div class="form-inline pr-1 pr-sm-0">
             <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
-            <select class="custom-select form-control form-control-sm" id="date_from">
-                <option selected></option>
+            <select class="custom-select form-control form-control-sm" id="my_from">
                 <option value="2015">2015</option>
-                <option value="2016" selected>2016</option>
+                <option value="2016">2016</option>
                 <option value="2017">2017</option>
                 <option value="2018">2018</option>
                 <option value="2019">2019</option>
@@ -35,47 +34,43 @@
         </div>
         <div class="form-inline pr-1 pr-sm-0">
             <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
-            <select class="custom-select form-control form-control-sm" id="date_to">
-                <option selected></option>
+            <select class="custom-select form-control form-control-sm" id="my_to">
                 <option value="2015">2015</option>
                 <option value="2016">2016</option>
                 <option value="2017">2017</option>
-                <option value="2018" selected>2018</option>
+                <option value="2018">2018</option>
                 <option value="2019">2019</option>
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
             <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
-            <select class="custom-select form-control form-control-sm" id="sum_up">
-                <option selected></option>
+            <select class="custom-select form-control form-control-sm" id="sum_by">
                 <option value="1">1 Yr</option>
-                <option value="2">2 Yrs.</option>
-                <option value="3" selected>3 Yrs.</option>
+                <option value="2">2 Yrs</option>
+                <option value="3" selected="selected">3 Yrs</option>
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
             <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
             <select class="custom-select form-control form-control-sm" id="category">
-                <option selected></option>
-                <option value="Per Model Year" selected>Per Model Year</option>
-                <option value="Per Region">Per Region</option>
-                <option value="Per Vehicle Type">Per Vehicle Type</option>
-                <option value="Per OEM">Per OEM</option>
+                <option value="Model Year" selected="selected">Per Model Year</option>
+                <option value="Region">Per Region</option>
+                <option value="Vehicle Type">Per Vehicle Type</option>
+                <option value="OEM">Per OEM</option>
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
             <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
             <select class="custom-select form-control form-control-sm" id="graph_type">
-                <option selected></option>
-                <option value="Pie Chart" selected>Pie Chart</option>
-                <option value="Bar Chart">Bar Chart</option>
+                <option value="Pie" selected="selected">Pie Chart</option>
+                <option value="Bar">Bar Chart</option>
             </select>
         </div>
         <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
-           <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnGo"><i class="fas fa-filter"></i> GO</a>
+           <a class="btn btn-default col-form-label-sm mx-sm-1" href="javascript:void(0);" role="button" id="btnGo" onClick="filterGraphData(this);"><i class="fas fa-filter"></i> GO</a>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-           <a class="btn btn-dark col-form-label-sm mx-sm-2" href="#" role="button" id="btnDownload"><i class="fas fa-download"></i> DOWNLOAD</a>
+           <a class="btn btn-default col-form-label-sm mx-sm-2" href="javascript:void(0);" role="button" id="btnDownload"  onClick="downloadGraphData(this);"><i class="fas fa-download"></i> DOWNLOAD</a>
         </div>
     </div>
 </header>

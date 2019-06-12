@@ -1,4 +1,4 @@
-      var  svn              = zsi.setValIfNull
+var  svn              = zsi.setValIfNull
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
     ,proc_url           = base_url + "common/executeproc/"
@@ -198,39 +198,32 @@ function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
             criteriaName: criteriaName,
             menuName: menuName
         });
-    var _param = "";
-        _param += ",@byMy='Y'";
-        
-    if(gPrmCategory==="Region"){
-        _param += ",@byRegion='Y'";
-    }else if(gPrmCategory==="Vehicle Type"){
-        _param += ",@byVehicle_type='Y'";
-    }else if(gPrmCategory==="OEM"){
-        _param += ",@byOEM='Y'";
-    }
-    
+
     if( _res.url !== ""){
-        $.get(execURL + _res.url + _param
+        $.get(execURL + _res.url
             , function(data){
                 gData = data.rows;
 
-                if(isContain(_res.url, "dynamic_wires_usage_summary")){
-                    gRegionNames = gData.groupBy(["region"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }
-                else if(isContain(_res.url, "dynamic_cts_usage_summary") || isContain(_res.url, "dynamic_summary_sel")){
-                    gRegionNames = gData.groupBy(["region_name"]);
-                    gModelYears = gData.groupBy(["model_year"]);
-                }
-                else{
-                    gRegionNames = gData.groupBy(["REGION_NAME"]);
-                    gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                }
+                var _dynamicKey = getDistinctKey(gData);
+                var _region = _dynamicKey.region;
+                var _modelYear = _dynamicKey.model_year;
+
+                // if(isContain(_res.url, "dynamic_wires_usage_summary")){
+                //     gRegionNames = gData.groupBy(["region"]);
+                //     gModelYears = gData.groupBy(["model_year"]);
+                // }
+                // else if(isContain(_res.url, "dynamic_cts_usage_summary") || isContain(_res.url, "dynamic_summary_sel")){
+                //     gRegionNames = gData.groupBy(["region_name"]);
+                //     gModelYears = gData.groupBy(["model_year"]);
+                // }
+                // else{
+                //     gRegionNames = gData.groupBy(["REGION_NAME"]);
+                //     gModelYears = gData.groupBy(["MODEL_YEAR"]);
+                // }
                 
-                gRegionNames = sortBy(gRegionNames, "name");
-                gModelYears = sortBy(gModelYears, "name");
+                gRegionNames = sortBy(gData.groupBy([_region]), "name");
+                gModelYears = sortBy(gData.groupBy([_modelYear]), "name");
                 
-                //console.log(gModelYears)
                 var i = 0;
                 for (var _my = gMYFrom; _my <= gMYTo; _my++) {
                     if(isUD(gModelYears[i])){
@@ -259,15 +252,25 @@ function setChartSettings(o){
         var _result = {};
         var _chart = {default:"", pie:"", column:"", line: ""};
         var _staticMY = new Date().getFullYear() - 2;
+        var _param = "";
+            _param += ",@byMy='Y'";
+            
+        if(gPrmCategory==="Region"){
+            _param += ",@byRegion='Y'";
+        }else if(gPrmCategory==="Vehicle Type"){
+            _param += ",@byVehicle_type='Y'";
+        }else if(gPrmCategory==="OEM"){
+            _param += ",@byOEM='Y'";
+        }
 
         if(isContain(_menuName, "VEHICLE ARCHITECTURE") || isContain(_menuName, "GROUNDING DISTRIBUTION")){
-            _url = "dynamic_summary_sel @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _url = "dynamic_summary_sel @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
             // _chart.pie = "displayCommonPieChart(container)";
             // _chart.column = "displayCommonColumnChart(container)";
         }
         else if(isContain(_menuName, "WIRES & CABLES")){
-            _url = "dynamic_wires_usage_summary @criteria_id="+ _cId;
+            _url = "dynamic_wires_usage_summary @criteria_id="+ _cId + _param;
             
             if(isContain(_cName, "Overall wire usage lower than 0.5 CSA")){
                 _chart.default = "displayPieOverallChart(container)";
@@ -316,19 +319,19 @@ function setChartSettings(o){
             }
         }
         else if(isContain(_menuName, "POWER DISTRIBUTION")){
-            _url = "dynamic_power_distributions_sel @criteria_id="+ _cId;
+            _url = "dynamic_power_distributions_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             // _chart.pie = "displayCommonPieChart(container)";
             // _chart.column = "displayCommonColumnChart(container)";
         }
         else if(isContain(_menuName, "SAFETY CRITICAL CIRCUITS")){ 
-            _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo;
+            _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
             // _chart.pie = "displayPieNetworkTopology(container)";
             // _chart.column = "displayCommonColumnChart(container)";
         }
         else if(isContain(_menuName, "NETWORK TOPOLOGY")){ 
-            _url = "dynamic_network_topology_sel @criteria_id="+ _cId;
+            _url = "dynamic_network_topology_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             // _chart.pie = "displayPieNetworkTopology(container)";
             // _chart.column = "displayCommonColumnChart(container)";
@@ -415,17 +418,6 @@ function setTrendResult(o, wire_guage, container){
         var _tw = new zsi.easyJsTemplateWriter();
         
         $("#d_sub_criteria_" + gSubCriteriaId).append( _tw.trendResult({ trend: result }).html() );
-    }
-}
-
-function setMYRange(){
-    if(gModelYears.length > 0){
-        var _res = getFirstAndLastItem(gModelYears, "name");
-        var _from = _res.first;
-        var _to = _res.last;
-        
-        gMYFrom = _from;
-        gMYTo = _to;
     }
 }
 
@@ -532,28 +524,24 @@ function setWireTrend(data, pContainer){
 
 //------------------------------- COMMON CHARTS ------------------------------//
 function displayCommonPieChart(container){
-    console.log("gData",gData);
     var _data = [];
-    var _dynamicKey = getDistinctKey(gData);
-    var _value = _dynamicKey.value;
-    var _category = _dynamicKey.category;
-    var _region = _dynamicKey.region;
-    var _modelYear = _dynamicKey.model_year;
+    var _objKey = getDistinctKey(gData);
+    var _value = _objKey.value;
+    var _category = _objKey.category;
+    var _region = _objKey.region;
+    var _modelYear = _objKey.model_year;
     var _dynamicObj = gData.groupBy([_category]);
-    console.log("_dynamicKey",_dynamicKey)
-    console.log("_dynamicObj",_dynamicObj)
+
     $.each(gModelYears, function(x, my) { 
         var _my = my.name;
-        console.log("_my",_my);
+
         $.each(_dynamicObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            
             var _res = w.items.filter(function (item) {
             	return item[_category] == _cName && item[_modelYear] == _my;
             });
-            //if()
-            console.log("_res",_res);
+
             if(_value && _value !== ""){
                  _count = _res.reduce(function (accumulator, currentValue) {
                     return accumulator + currentValue[_value];
@@ -570,9 +558,8 @@ function displayCommonPieChart(container){
                 value: _count
             });
         });
-        
     });
-    console.log("_data",_data);
+
     // CHART SETTINGS
     am4core.useTheme(am4themes_animated);
     am4core.options.commercialLicense = true;
@@ -582,17 +569,28 @@ function displayCommonPieChart(container){
     _container.height = am4core.percent(100);
     _container.layout = "horizontal";
     
-    var _createChart = function(data, year){
+    var _createChart = function(data, year, isLegend){
         var chart = _container.createChild(am4charts.PieChart);
+        /* Dummy innitial data data */
+        // chart.data = [{
+        //   "country": "Dummy",
+        //   "disabled": true,
+        //   "value": 1000,
+        //   "color": am4core.color("#dadada"),
+        //   "opacity": 0.3,
+        //   "strokeDasharray": "4,4",
+        //   "tooltip": ""
+        // }];
+        
         chart.data = data;
         chart.paddingTop= 15;
         chart.paddingBottom = 15;
-        
-        var title = chart.titles.create();
-        title.text =  "MY" + year;
-        title.fontSize = 10;
-        title.fontWeight = 800;
-        title.marginBottom = 0;
+
+        // var title = chart.titles.create();
+        // title.text =  "MY" + year;
+        // title.fontSize = 10;
+        // title.fontWeight = 800;
+        // title.marginBottom = 0;
         
         // Add and configure Series
         var pieSeries = chart.series.push(new am4charts.PieSeries());
@@ -604,6 +602,18 @@ function displayCommonPieChart(container){
         pieSeries.paddingBottom = 10;
         pieSeries.colors.step = 2;
         
+        pieSeries.dataFields.hiddenInLegend = "disabled";
+
+       /* Set tup slice appearance */
+        var slice = pieSeries.slices.template;
+        slice.propertyFields.fill = "color";
+        slice.propertyFields.fillOpacity = "opacity";
+        slice.propertyFields.stroke = "color";
+        slice.propertyFields.strokeDasharray = "strokeDasharray";
+        slice.propertyFields.tooltipText = "tooltip";
+        
+        pieSeries.labels.template.propertyFields.disabled = "disabled";
+        pieSeries.ticks.template.propertyFields.disabled = "disabled";
         pieSeries.ticks.template.disabled = true;
         pieSeries.alignLabels = false;
         pieSeries.labels.template.fontSize = 10;
@@ -619,7 +629,14 @@ function displayCommonPieChart(container){
             return text;
         });
         
-        setLegendSize(chart, container);
+        var label = chart.createChild(am4core.Label);
+        label.text = "[#212529]MY" + year +"[/]";
+        label.fontSize = 15;
+        label.align = "center";
+        
+        if(isLegend){
+            setLegendSize(chart, container);
+        }
     };
 
     $.each(gModelYears, function(i, v){
@@ -628,7 +645,7 @@ function displayCommonPieChart(container){
         	return item[_modelYear] == _my;
         });
 
-        _createChart(_res, _my);
+        _createChart(_res, _my, (i === 0 ? true : false));
     });
 }
 
@@ -638,6 +655,8 @@ function displayCommonColumnChart(container){
     var _value = _objKey.value;
     var _category = _objKey.category;
     var _location = _objKey.location;
+    var _region = _objKey.region;
+    var _model_year = _objKey.model_year;
     var _categoryObj = gData.groupBy([_category]);
     var _locationObj = gData.groupBy([_location]);
     var _hasLocation = (_location ? true: false);
@@ -648,7 +667,7 @@ function displayCommonColumnChart(container){
                 var _regionName = r.name;
                 var _modelYear = my.name;
                 var _result = r.items.filter(function (item) {
-                	return item.MODEL_YEAR == _modelYear;
+                	return item[_model_year] == _modelYear;
                 });
                 
                 $.each(_locationObj, function(y, l) {
@@ -700,7 +719,7 @@ function displayCommonColumnChart(container){
                     var _cName = w.name;
                     var _cNameNew = _cName.replace(" ","_");
                     var _res = r.items.filter(function (item) {
-                    	return item[_category] == _cName && item.MODEL_YEAR == _my;
+                    	return item[_category] == _cName && item[_model_year] == _my;
                     });
                     
                     if(_value && _value !== ""){
@@ -907,7 +926,7 @@ function displayCommonLineChart(container){
 }
 
 function displayCustomLineChart(container){
-     var lowerLimit = 0;
+    var lowerLimit = 0;
     var upperLimit = 0;
     var _wireTypes = gData.groupBy(["wire_type"]);
     var _newData = $.each(_wireTypes, function(i, v){
@@ -1018,9 +1037,11 @@ function displayCustomLineChart(container){
 //--------------------------------- PIE CHART --------------------------------//
 function displayPieOverallChart(container){
     var _data = [];
-    var _dynamicKey = getDistinctKey(gData);
-    var _value = _dynamicKey.value;
-    var _category = _dynamicKey.category;
+    var _objKey = getDistinctKey(gData);
+    var _value = _objKey.value;
+    var _category = _objKey.category;
+    var _region = _objKey.region;
+    var _model_year = _objKey.model_year;
     var _dynamicObj = gData.groupBy([_category]);
         _dynamicObj = sortBy(_dynamicObj, "name");
     
@@ -1031,7 +1052,7 @@ function displayPieOverallChart(container){
             var _count = 0;
             var _cName = w.name;
             var _res = w.items.filter(function (item) {
-            	return item[_category] == _cName && item.model_year == _my;
+            	return item[_category] == _cName && item[_model_year] == _my;
             });
 
             if(_value && _value !== ""){
@@ -1168,7 +1189,7 @@ function displayPieOverallChart(container){
     $.each(gModelYears, function(i, v){
         var _my = v.name;
         var _res = _data.filter(function (item) {
-        	return item.model_year == _my;
+        	return item[_model_year] == _my;
         });
 
         _pieSeries = _createChart(_res, _my, (i === 0 ? true : false));
@@ -4416,4 +4437,4 @@ function displayWireTechWeight(container, callback){
 
 // ******************************** END CHART ********************************//
 
-             
+                  

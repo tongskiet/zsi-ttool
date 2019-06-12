@@ -139,16 +139,15 @@ function displayMapChart(){
         var pieSeries = chart.series.push(new am4maps.MapImageSeries());
         pieSeries.data = _data;
         
-        var label = pieSeries.createChild(am4core.Label);
-        label.text = "[#212529 font-style: italic]Overall wire usage below and above 0.5 CSA[/]"; //"USAGE OF EQUAL AND BELOW 0.5"
-        label.fontSize = 18;
-        label.fontWeight = 600;
-        label.fontStyle =
-        label.align = "center";
-        label.isMeasured = false;
-        label.x = am4core.percent(60);
-        label.horizontalCenter = "middle";
-        label.y = 30;
+        var title = pieSeries.createChild(am4core.Label);
+        title.text = "[#212529 font-style: italic]Overall Wire Usage[/]"; //"USAGE OF EQUAL AND BELOW 0.5"
+        title.fontSize = 18;
+        title.fontWeight = 600;
+        title.align = "center";
+        title.isMeasured = false;
+        title.x = am4core.percent(60);
+        title.y = 30;
+        title.horizontalCenter = "middle";
         
         var pieTemplate = pieSeries.mapImages.template;
         pieTemplate.propertyFields.latitude = "latitude";
@@ -163,13 +162,22 @@ function displayMapChart(){
             return [];
           }
         });
+        
         pieChartTemplate.propertyFields.width = "width";
         pieChartTemplate.propertyFields.height = "height";
         pieChartTemplate.horizontalCenter = "middle";
         pieChartTemplate.verticalCenter = "middle";
         
-        var pieTitle = pieChartTemplate.titles.create();
-        pieTitle.text = "{name}";
+        //Animate
+        pieChartTemplate.hiddenState.properties.radius = am4core.percent(0);
+        pieChartTemplate.hiddenState.properties.endAngle = -90;
+        
+        var label = pieChartTemplate.createChild(am4core.Label);
+        label.text = "{name}";
+        label.align = "center";
+        
+        // var pieTitle = pieChartTemplate.titles.create();
+        // pieTitle.text = "{name}";
         
         var pieSeriesTemplate = pieChartTemplate.series.push(new am4charts.PieSeries);
         pieSeriesTemplate.dataFields.category = "category";
@@ -177,6 +185,17 @@ function displayMapChart(){
         pieSeriesTemplate.labels.template.disabled = true;
         pieSeriesTemplate.ticks.template.disabled = true;
         pieSeriesTemplate.labels.template.text = "{value.percent.formatNumber('#.00')}%";
+        
+        
+        //One pulled slice
+        pieSeriesTemplate.slices.template.events.on("hit", function(ev) {
+            var series = ev.target.dataItem.component;
+            series.slices.each(function(item) {
+                if (item.isActive && item != ev.target) {
+                    item.isActive = false;
+                }
+            });
+        });
         
         // Modify chart's colors
         pieSeriesTemplate.colors.list = [
@@ -324,4 +343,4 @@ function displayMapChart(){
     
 //     }); // end am4core.ready()
 // }
-    
+      
