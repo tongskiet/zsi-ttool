@@ -1,6 +1,11 @@
 <script src="/scripts/linq.min.js"></script>
 <style type="text/css" media="all">
-
+    .clear-both{
+        clear:both;
+    }
+    .zHeaders .title .text {
+    width: 100%;
+    }
     .zGrid .zHeaders .item {
         border-right: none;
     }
@@ -45,10 +50,15 @@
     /* ---------CHART STYLE--------- */
     #chart_container {
         min-height: 350px;
+        height: 100%;
+        max-height: 100%;
+    }
+    .chart-holder {
+        min-height: 450px;
     }
     .chart-div {
       width: 100%;
-      max-height: 350px;
+      max-height: 550px;
       height: 100vh;
       border: 1px solid #333;
     }
@@ -59,26 +69,29 @@
     .card-header {
         background-color: rgba(0,0,0,.03);
     }
+    .zGrid {
+        background-color: #fff;
+    }
 </style>
 
-
-<div class="zPanel row">
-    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-        <div id="grid" class="zGrid"></div>    
-        <div id="gridMech" class="zGrid"></div>    
-    </div>
-    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 criteria">
-        <div class="row">
-            <div class="col-12">
-                <div id="gridCriteria" class="zGrid"></div>    
-            </div>
-            <div class="col-12 pt-1"> 
-                <button type="button" class="btn btn-primary " id="btnSave">
-                    <i class="far fa-save"></i> Save
-                </button>
+<div class="zContainer">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+            <div id="grid" class="zGrid"></div>    
+            <div id="gridMech" class="zGrid"></div>    
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 criteria">
+            <div class="row">
+                <div class="col-12">
+                    <div id="gridCriteria" class="zGrid"></div>    
+                </div>
+                <div class="col-12 pt-1"> 
+                    <button type="button" class="btn btn-primary " id="btnSave">
+                        <i class="far fa-save"></i> Save
+                    </button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 
@@ -109,11 +122,23 @@
             <button type="button" id="btnSave" onclick="{{onClickSave}}" class="btn btn-primary mr-auto"><i class="far fa-save"></i> Save</button>
         </div>
     </li>
+    <li name="modalBodyRD">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+                <div class="row">
+                    <div id="{{gridRD}}" class="zGrid"> </div>
+                </div>
+                <button type="button" onclick="{{onClickSaveRD}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                
+            </div>
+        </div>
+    </li>
     
     <li name="modalBodyWGR">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
                 <div id="{{gridWGR}}" class="zGrid"> </div>
+                <div class="clear-both"></div>
                 <button type="button" id="btnSave1" onclick="{{onClickSaveWGR}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
             </div>
         </div>
@@ -174,7 +199,7 @@
         <div class="card border-dark mb-1 {{class}}" style="{{style}}">
           <div class="card-header {{header}} p-2">{{title}}</div>
           <div class="card-body p-2">
-            <div id="{{id}}" class="row h-100"></div>
+            <div id="{{id}}" class="chart-holder h-100"></div>
           </div>
         </div>
     </li>
@@ -196,14 +221,4 @@
 </ul>
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>
-<script src="../amcharts4/maps.js"></script>
-<script src="../amcharts4/themes/dark.js"></script>    
-<script src="../amcharts4/themes/animated.js"></script>   
-<script src="../amcharts4/geodata/worldLow.js"></script>    
-<script src="../amcharts4/geodata/continentsLow.js"></script>  
-<script src="../amcharts4/geodata/region/world/asiaLow.js"></script>    
-<script src="../amcharts4/geodata/region/world/europeLow.js"></script>    
-<script src="../amcharts4/geodata/region/world/northAmericaLow.js"></script>    
-
-
-
+<script src="../amcharts4/themes/animated.js"></script>

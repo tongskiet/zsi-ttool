@@ -2300,19 +2300,19 @@ function displayPieSTC(container){
         
         if (year !== gMYFrom && year !== gMYTo) {
             setLegendSize(chart, function(legend){
-                legend.itemContainers.template.events.on("up", (ev) => {
-                    var category = ev.target.dataItem.name;
+                // legend.itemContainers.template.events.on("up", (ev) => {
+                //     var category = ev.target.dataItem.name;
 
-                    $.each(_chartArr, function(i, v){
-                        var _chart = v;
-                        _chart.data.forEach(function(item){
-                            if(item.category === category){
-                                item.hidden = !ev.target.isActive;
-                            }
-                        });
-                        _chart.invalidateData();
-                    });
-                });
+                //     $.each(_chartArr, function(i, v){
+                //         var _chart = v;
+                //         _chart.data.forEach(function(item){
+                //             if(item.category === category){
+                //                 item.hidden = !ev.target.isActive;
+                //             }
+                //         });
+                //         _chart.invalidateData();
+                //     });
+                // });
             });
         }
     };
@@ -2599,4 +2599,4 @@ function displayColumnSTC(container){
 }
 
 // ******************************** END CHART ********************************//
-   
+    
