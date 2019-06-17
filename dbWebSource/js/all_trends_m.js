@@ -42,9 +42,9 @@ zsi.ready(function(){
 function setDefaultParams(collapseId){
     gMYTo = new Date().getFullYear();
     gMYFrom = gMYTo - 2;
-    gPrmSumUp = "year";
+    gPrmSumUp = "";
     gPrmCategory = "Model Year";
-    gPrmGraphType = "Pie";
+    gPrmGraphType = "pie";
     
     var _$section = $("#" + collapseId);
     _$section.find("#my_from").val(gMYFrom);
@@ -80,12 +80,6 @@ function filterGraphData(e){
     var _cName = _$form.find("#criteria_name").val();
     var _menuId = _$form.find("#menu_id").val();
     var _menuName = _$form.find("#menu_name").val();
-    
-    // console.log("gMYFrom",gMYFrom);
-    // console.log("gMYTo",gMYTo);
-    // console.log("gPrmSumUp",gPrmSumUp);
-    // console.log("gPrmCategory",gPrmCategory);
-    // console.log("gPrmGraphType",gPrmGraphType);
     
     displayCharts(_menuId, _menuName, _cId, _cName, function(){
         
@@ -134,9 +128,12 @@ function displayMenus(rows){
                 if(v.pcriteria_id !== ""){
                     var _cId = v.criteria_id;
                     var _cName = v.criteria_title;
-                    var _chartId = "chart_"+ _menuId +"_"+ _cId;
-                    var _collapseId = "collapse_"+ _menuId +"_"+ _cId;
-                    var _legendId = "legend_"+ _menuId +"_"+ _cId;
+                    var _cIds = _menuId +"_"+ _cId;
+                    var _chartId = "chart_"+ _cIds;
+                    var _collapseId = "collapse_"+ _cIds;
+                    var _legendId = "legend_"+ _cIds;
+                    var _trendId = "trend_"+ _cIds;
+                    var _opppId = "opp_"+ _cIds;
                     var _subH = _tw.section_card({
                           title         : _cName
                         , chart_id      : _chartId
@@ -251,7 +248,7 @@ function setChartSettings(o){
         }
         
         if(isContain(_menuName, "WIRES & CABLES")){
-             _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            _url = "dynamic_cts_usage_summary @criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
             _chart.default = "displayCommonPieChart(container)";
             //_chart.pie = "displayCommonPieChart(container)";
             //_chart.column = "displayColumnGroundEyelet(container)";
@@ -269,27 +266,27 @@ function setChartSettings(o){
             _chart.column = "displayColumnGroundEyelet(container)";
         }
         else if(isContain(_menuName, "COVERINGS")){
-            
-            _url = "dynamic_coverings_sel @criteria_id="+ _cId + _param;
+            _url = "dynamic_summary_sel @table_view_name='dbo.coverings_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            //_url = "dynamic_coverings_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayChartCovering(container)";
             _chart.line = "displayChartCovering(container)";
         }
         else if(isContain(_menuName, "RETAINERS")){
-            //_url = "dynamic_summary_sel @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@table_view_name='dbo.retainers_v'";
-            _url = "dynamic_retainers_sel @criteria_id="+ _cId + _param;
+            _url = "dynamic_summary_sel @table_view_name='dbo.retainers_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            //_url = "dynamic_retainers_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayChartRetainer(container)";
             _chart.line = "displayChartRetainer(container)";
         }
         else if(isContain(_menuName, "GROMMETS")){
-            
-            _url = "dynamic_grommets_sel @criteria_id="+ _cId + _param;
+            _url = "dynamic_summary_sel @table_view_name='dbo.grommets_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            //_url = "dynamic_grommets_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieGrommets(container)";
             _chart.column = "displayColumnGrommets(container)";
         }
         else if(isContain(_menuName, "TROUGH/SHIELD/BRACKET")){
-            
-            _url = "dynamic_stc_sel @criteria_id="+ _cId + _param;
+            _url = "dynamic_summary_sel @table_view_name='dbo.stc_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            //_url = "dynamic_stc_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             _chart.pie = "displayPieSTC(container)";
             _chart.column = "displayColumnSTC(container)";
@@ -506,6 +503,8 @@ function isContain(string, contains){
     return _res;
 } 
 
+//------------------------------ SET CHART DATA ------------------------------//
+
 function setPieChartData(callback){
     var _data = [];
     var _key = getDistinctKey(gData);
@@ -584,6 +583,62 @@ function setPieChartData(callback){
     });
     
     callback({data: _data, selectedKey: _selectedKey, selectedCategory: _selectedCategory});
+}
+
+function setColumnChartData(callback){
+    var _data = [];
+    var _key = getDistinctKey(gData);
+    var _value = _key.value;
+    var _category = _key.category;
+    var _region = _key.region;
+    var _modelYear = _key.model_year;
+    var _oem = _key.oem;
+    var _vehicleType = _key.vehicle_type;
+    var _categoryObj = gData.groupBy([_category]);
+    
+    var _selectedKey = _modelYear; //Default key selected
+    var _selectedCategory = gModelYears; //Default category selected
+
+    if(gPrmCategory==="Region"){
+        _selectedKey = _region;
+        _selectedCategory = gRegionNames;
+    }else if(gPrmCategory==="Vehicle Type"){
+        _selectedKey = _vehicleType;
+        _selectedCategory = gModelYears;
+    }else if(gPrmCategory==="OEM"){
+        _selectedKey = _oem;
+        _selectedCategory = gModelYears;
+    }
+
+    $.each(_selectedCategory, function(i, v) { 
+        var _name = v.name;
+        var _obj = {};
+            _obj.category = _name;
+        
+        $.each(_categoryObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _cNameNew = _cName.replace(" ","_");
+            var _res = v.items.filter(function (item) {
+            	return item[_category] == _cName && item[_selectedKey] == _name;
+            });
+            
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }
+
+            _obj[_cNameNew] = _count;
+        });
+        _data.push(_obj);
+    });
+    
+    callback({data: _data, selectedKey: _selectedKey, _categoryObj: _categoryObj});
 }
 
 //------------------------------- COMMON CHARTS ------------------------------//
@@ -698,6 +753,90 @@ function displayCommonPieChart(container){
 }
 
 function displayCommonColumnChart(container){
+    setColumnChartData(function(o){
+        var _data = o.data;
+        var _key = o.selectedKey;
+        var _category = o._categoryObj;
+       
+        console.log(_category);
+        
+        // CHART SETTINGS
+        am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
+    
+        var chart = am4core.create(container, am4charts.XYChart);
+        chart.data = _data;
+        chart.colors.step = 2;
+        chart.padding(15, 15, 10, 15);
+        
+        // Create axes
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.numberFormatter.numberFormat = "#";
+        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+        });
+        
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        //valueAxis.title.text = "Count";
+        valueAxis.min = 0;
+        valueAxis.max = 100;
+        valueAxis.strictMinMax = true;
+        valueAxis.calculateTotals = true;
+        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+          return text + "%";
+        });
+        
+        // Create series
+        var _createSeries = function(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueY = field;
+            series.dataFields.valueYShow = "totalPercent";
+            series.dataFields.categoryX = "category";
+            series.name = name;
+            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+            series.tooltip.fontSize = 8;
+            series.tooltip.dy = -10;
+            //series.tooltip.align = "top";
+            
+            series.tooltip.valign  = "top";
+            series.tooltip.tooltipPosition = "fixed";
+            series.tooltip.background.filters.clear();
+            //series.tooltip.pointerOrientation  = true;
+            series.tooltip.fixedWidthGrid = true;
+            series.tooltip.layout = "none";
+            series.tooltip.pointerOrientation = "horizontal";
+            //series.tooltip.label.minWidth = 40;
+            //series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
+        };
+        
+        $.each(_category, function(i, v) { 
+            var _name = v.name;
+            var _nameNew = _name.replace(" ","_");
+    
+            _createSeries(_nameNew, _name);
+        });
+        
+        //Add cursor
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.fullWidthLineX = false;
+        chart.cursor.lineX.strokeWidth = 0;
+        chart.cursor.lineX.fill = am4core.color("#000");
+        chart.cursor.lineX.fillOpacity = 0.1;
+        chart.cursor.behavior = "panX";
+        chart.cursor.lineY.disabled = true;
+        
+        setLegendSize(chart);
+    });
+    //setWireTrend(_data);
+}
+
+function displayOverallColumnChart(container){
     var _data = [];
     var _objKey = getDistinctKey(gData);
     var _value = _objKey.value;
@@ -917,7 +1056,7 @@ function displayCommonColumnChart(container){
             range.locations.endCategory = 0.9;
         };
     }
-    
+    console.log(_categoryObj);
     $.each(_categoryObj, function(i, v) { 
         var _name = v.name;
         var _nameNew = _name.replace(" ","_");
@@ -965,7 +1104,7 @@ function displayCommonColumnChart(container){
     chart.cursor.behavior = "panX";
     chart.cursor.lineY.disabled = true;
     
-    setLegendSize(chart, container);
+    setLegendSize(chart);
     //setWireTrend(_data);
 }
 
@@ -2757,4 +2896,4 @@ function displayColumnSTC(container){
     }
 }
 
-      
+       

@@ -4,6 +4,7 @@ var  svn              = zsi.setValIfNull
     ,proc_url           = base_url + "common/executeproc/"
     ,gMenuId            
     ,gMenuName          = ""
+    ,gCriteriaId        = ""
     ,gCriteriaRows      = []
     ,gRegionNames       = []
     ,gModelYears        = []
@@ -42,9 +43,9 @@ zsi.ready(function(){
 function setDefaultParams(collapseId){
     gMYTo = new Date().getFullYear();
     gMYFrom = gMYTo - 2;
-    gPrmSumUp = "year";
+    gPrmSumUp = "";
     gPrmCategory = "Model Year";
-    gPrmGraphType = "Pie";
+    gPrmGraphType = "pie";
     
     var _$section = $("#" + collapseId);
     _$section.find("#my_from").val(gMYFrom);
@@ -80,12 +81,6 @@ function filterGraphData(e){
     var _cName = _$form.find("#criteria_name").val();
     var _menuId = _$form.find("#menu_id").val();
     var _menuName = _$form.find("#menu_name").val();
-    
-    // console.log("gMYFrom",gMYFrom);
-    // console.log("gMYTo",gMYTo);
-    // console.log("gPrmSumUp",gPrmSumUp);
-    // console.log("gPrmCategory",gPrmCategory);
-    // console.log("gPrmGraphType",gPrmGraphType);
     
     displayCharts(_menuId, _menuName, _cId, _cName, function(){
         
@@ -134,9 +129,12 @@ function displayMenus(rows){
                 if(v.pcriteria_id !== ""){
                     var _cId = v.criteria_id;
                     var _cName = v.criteria_title;
-                    var _chartId = "chart_"+ _menuId +"_"+ _cId;
-                    var _collapseId = "collapse_"+ _menuId +"_"+ _cId;
-                    var _legendId = "legend_"+ _menuId +"_"+ _cId;
+                    var _cIds = _menuId +"_"+ _cId;
+                    var _chartId = "chart_"+ _cIds;
+                    var _collapseId = "collapse_"+ _cIds;
+                    var _legendId = "legend_"+ _cIds;
+                    var _trendId = "trend_"+ _cIds;
+                    var _opppId = "opp_"+ _cIds;
                     var _subH = _tw.section_card({
                           title         : _cName
                         , chart_id      : _chartId
@@ -149,12 +147,15 @@ function displayMenus(rows){
                         , aria_expanded  : (toggle? (i===1 ? true:false) : false)
                         , aria_collapsed : (toggle? (i===1 ? "collapsed":"") : "")
                         , body_style     : "height:" + (toggle? _cardHeight-133: _cardHeight-62) + "px"
-                        , legend_id    : _legendId
+                        , legend_id     : _legendId
+                        , trend_id      : _trendId
+                        , opp_id        : _opppId
                     }).html();
                     
                     $("#"+ _subBodyId).append(_subH);
                     
                     setTimeout( function(){
+                        gCriteriaId = _cId;
                         setDefaultParams(_collapseId);
                         displayCharts(_menuId, _menuName, _cId, _cName, function(){
                             
@@ -208,19 +209,6 @@ function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
                 var _dynamicKey = getDistinctKey(gData);
                 var _region = _dynamicKey.region;
                 var _modelYear = _dynamicKey.model_year;
-
-                // if(isContain(_res.url, "dynamic_wires_usage_summary")){
-                //     gRegionNames = gData.groupBy(["region"]);
-                //     gModelYears = gData.groupBy(["model_year"]);
-                // }
-                // else if(isContain(_res.url, "dynamic_cts_usage_summary") || isContain(_res.url, "dynamic_summary_sel")){
-                //     gRegionNames = gData.groupBy(["region_name"]);
-                //     gModelYears = gData.groupBy(["model_year"]);
-                // }
-                // else{
-                //     gRegionNames = gData.groupBy(["REGION_NAME"]);
-                //     gModelYears = gData.groupBy(["MODEL_YEAR"]);
-                // }
                 
                 gRegionNames = sortBy(gData.groupBy([_region]), "name");
                 gModelYears = sortBy(gData.groupBy([_modelYear]), "name");
@@ -271,7 +259,8 @@ function setChartSettings(o){
             // _chart.column = "displayCommonColumnChart(container)";
         }
         else if(isContain(_menuName, "WIRES & CABLES")){
-            _url = "dynamic_wires_usage_summary @criteria_id="+ _cId + _param;
+            _url = "dynamic_summary_sel @table_view_name='dbo.wires_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+            //_url = "dynamic_wires_usage_summary @criteria_id="+ _cId + _param;
             
             if(isContain(_cName, "Overall wire usage lower than 0.5 CSA")){
                 _chart.default = "displayPieOverallChart(container)";
@@ -320,7 +309,8 @@ function setChartSettings(o){
             }
         }
         else if(isContain(_menuName, "POWER DISTRIBUTION")){
-            _url = "dynamic_power_distributions_sel @criteria_id="+ _cId + _param;
+           _url = "dynamic_summary_sel @table_view_name='dbo.power_distributions_v',@criteria_id="+ _cId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+           // _url = "dynamic_power_distributions_sel @criteria_id="+ _cId + _param;
             _chart.default = "displayCommonPieChart(container)";
             // _chart.pie = "displayCommonPieChart(container)";
             // _chart.column = "displayCommonColumnChart(container)";
@@ -434,7 +424,7 @@ function setTrendResult(o, wire_guage, container){
         
         var _tw = new zsi.easyJsTemplateWriter();
         
-        $("#d_sub_criteria_" + gSubCriteriaId).append( _tw.trendResult({ trend: result }).html() );
+        $("#trend_"+ gMenuId +"_" + gCriteriaId).append( _tw.trendResult({ trend: result }).html() );
     }
 }
 
@@ -549,6 +539,8 @@ function isContain(string, contains){
     return _res;
 } 
 
+//------------------------------ SET CHART DATA ------------------------------//
+
 function setPieChartData(callback){
     var _data = [];
     var _key = getDistinctKey(gData);
@@ -627,6 +619,62 @@ function setPieChartData(callback){
     });
     
     callback({data: _data, selectedKey: _selectedKey, selectedCategory: _selectedCategory});
+}
+
+function setColumnChartData(callback){
+    var _data = [];
+    var _key = getDistinctKey(gData);
+    var _value = _key.value;
+    var _category = _key.category;
+    var _region = _key.region;
+    var _modelYear = _key.model_year;
+    var _oem = _key.oem;
+    var _vehicleType = _key.vehicle_type;
+    var _categoryObj = gData.groupBy([_category]);
+    
+    var _selectedKey = _modelYear; //Default key selected
+    var _selectedCategory = gModelYears; //Default category selected
+
+    if(gPrmCategory==="Region"){
+        _selectedKey = _region;
+        _selectedCategory = gRegionNames;
+    }else if(gPrmCategory==="Vehicle Type"){
+        _selectedKey = _vehicleType;
+        _selectedCategory = gModelYears;
+    }else if(gPrmCategory==="OEM"){
+        _selectedKey = _oem;
+        _selectedCategory = gModelYears;
+    }
+
+    $.each(_selectedCategory, function(i, v) { 
+        var _name = v.name;
+        var _obj = {};
+            _obj.category = _name;
+        
+        $.each(_categoryObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _cNameNew = _cName.replace(" ","_");
+            var _res = v.items.filter(function (item) {
+            	return item[_category] == _cName && item[_selectedKey] == _name;
+            });
+            
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }
+
+            _obj[_cNameNew] = _count;
+        });
+        _data.push(_obj);
+    });
+    
+    callback({data: _data, selectedKey: _selectedKey, _categoryObj: _categoryObj});
 }
 
 //------------------------------- COMMON CHARTS ------------------------------//
@@ -741,6 +789,90 @@ function displayCommonPieChart(container){
 }
 
 function displayCommonColumnChart(container){
+    setColumnChartData(function(o){
+        var _data = o.data;
+        var _key = o.selectedKey;
+        var _category = o._categoryObj;
+       
+        console.log(_category);
+        
+        // CHART SETTINGS
+        am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
+    
+        var chart = am4core.create(container, am4charts.XYChart);
+        chart.data = _data;
+        chart.colors.step = 2;
+        chart.padding(15, 15, 10, 15);
+        
+        // Create axes
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.numberFormatter.numberFormat = "#";
+        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+        });
+        
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        //valueAxis.title.text = "Count";
+        valueAxis.min = 0;
+        valueAxis.max = 100;
+        valueAxis.strictMinMax = true;
+        valueAxis.calculateTotals = true;
+        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+          return text + "%";
+        });
+        
+        // Create series
+        var _createSeries = function(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueY = field;
+            series.dataFields.valueYShow = "totalPercent";
+            series.dataFields.categoryX = "category";
+            series.name = name;
+            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
+            series.tooltip.fontSize = 8;
+            series.tooltip.dy = -10;
+            //series.tooltip.align = "top";
+            
+            series.tooltip.valign  = "top";
+            series.tooltip.tooltipPosition = "fixed";
+            series.tooltip.background.filters.clear();
+            //series.tooltip.pointerOrientation  = true;
+            series.tooltip.fixedWidthGrid = true;
+            series.tooltip.layout = "none";
+            series.tooltip.pointerOrientation = "horizontal";
+            //series.tooltip.label.minWidth = 40;
+            //series.tooltip.label.minHeight = 40;
+            series.tooltip.label.textAlign = "middle";
+            series.tooltip.label.textValign = "middle";
+        };
+        
+        $.each(_category, function(i, v) { 
+            var _name = v.name;
+            var _nameNew = _name.replace(" ","_");
+    
+            _createSeries(_nameNew, _name);
+        });
+        
+        //Add cursor
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.fullWidthLineX = false;
+        chart.cursor.lineX.strokeWidth = 0;
+        chart.cursor.lineX.fill = am4core.color("#000");
+        chart.cursor.lineX.fillOpacity = 0.1;
+        chart.cursor.behavior = "panX";
+        chart.cursor.lineY.disabled = true;
+        
+        setLegendSize(chart);
+    });
+    //setWireTrend(_data);
+}
+
+function displayOverallColumnChart(container){
     var _data = [];
     var _objKey = getDistinctKey(gData);
     var _value = _objKey.value;
@@ -960,7 +1092,7 @@ function displayCommonColumnChart(container){
             range.locations.endCategory = 0.9;
         };
     }
-    
+    console.log(_categoryObj);
     $.each(_categoryObj, function(i, v) { 
         var _name = v.name;
         var _nameNew = _name.replace(" ","_");
@@ -1008,7 +1140,7 @@ function displayCommonColumnChart(container){
     chart.cursor.behavior = "panX";
     chart.cursor.lineY.disabled = true;
     
-    setLegendSize(chart, container);
+    setLegendSize(chart);
     //setWireTrend(_data);
 }
 
@@ -1230,6 +1362,21 @@ function displayPieOverallChart(container){
             }
             return chartData;
         };
+        
+        if(data.length > 0){
+                chart.data = data;
+            }else{
+                /* Dummy innitial data data */
+                chart.data = [{
+                  "country": "Dummy",
+                  "disabled": true,
+                  "value": 1000,
+                  "color": am4core.color("#dadada"),
+                  "opacity": 0.3,
+                  "strokeDasharray": "4,4",
+                  "tooltip": ""
+                }];   
+            }
         
         chart.data = generateChartData();
         
@@ -3429,7 +3576,7 @@ function displayWireTechWeight(container, callback){
     range2.label.verticalCenter = "bottom";
     
     // Add cursor
-    chart.cursor = new am4charts.XYCursor();
+    //chart.cursor = new am4charts.XYCursor();
     
     // Add legend
     //chart.legend = new am4charts.Legend();
@@ -4528,4 +4675,4 @@ function displayWireTechWeight(container, callback){
 
 // ******************************** END CHART ********************************//
 
-                    
+                     

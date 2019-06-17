@@ -84,13 +84,13 @@
 .animate .box-1{
     top: 40%;
     left: 25%;
-    animation: 1s ease-out 0s 1 slideBoxOne;
+    animation: 0.8s ease-out 0s 1 slideBoxOne;
 }
 .animate .box-2{
     width: 60%;
     top: 75%;
     left: 65%;
-    animation: 1s ease-out 0s 1 slideBoxTwo;
+    animation: 0.8s ease-out 0s 1 slideBoxTwo;
 }
 @keyframes slideBoxOne {
   0% {
@@ -102,6 +102,17 @@
     left: 25%;
   }
 }
+@keyframes slideBoxOne2 {
+  0% {
+    top: 40%;
+    left: 25%;
+  }
+  100% {
+    top: 70%;
+    left: 65%;
+    z-index: 1;
+  }
+}
 @keyframes slideBoxTwo {
   0% {
     top: 50%;
@@ -110,6 +121,16 @@
   100% {
     top: 75%;
     left: 65%;
+  }
+}
+@keyframes slideBoxTwo2 {
+  0% {
+    top: 75%;
+    left: 65%;
+  }
+  100% {
+    top: 40%;
+    left: 25%;
   }
 }
 .animate.preload .box{
@@ -123,6 +144,17 @@
   -ms-animation: none !important;
   -o-animation: none !important;
   animation: none !important;
+}
+.main-menu-card:hover .box-1{
+    top: 70%;
+    left: 65%;
+    z-index: 1;
+    animation: 0.6s ease-out 0s 1 slideBoxOne2;
+}
+.main-menu-card:hover .box-2{
+    top: 40%;
+    left: 25%;
+    animation: 0.6s ease-out 0s 1 slideBoxTwo2;
 }
 /*------------------END------------------------*/
 </style>

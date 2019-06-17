@@ -122,9 +122,9 @@
                         <div class="form-inline pr-1 pr-sm-0">
                             <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
                             <select class="custom-select form-control form-control-sm" id="sum_by">
-                                <option value="1">1 Yr</option>
+                                <option value="" selected="selected">&nbsp; Yrs</option>
                                 <option value="2">2 Yrs</option>
-                                <option value="3" selected="selected">3 Yrs</option>
+                                <option value="3" >3 Yrs</option>
                             </select>
                         </div>
                         <div class="form-inline pr-1 pr-sm-0">
@@ -139,8 +139,8 @@
                         <div class="form-inline pr-1 pr-sm-0">
                             <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
                             <select class="custom-select form-control form-control-sm" id="graph_type">
-                                <option value="Pie" selected="selected">Pie Chart</option>
-                                <option value="Bar">Bar Chart</option>
+                                <option value="pie" selected="selected">Pie Chart</option>
+                                <option value="bar">Bar Chart</option>
                             </select>
                         </div>
                         <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
@@ -160,11 +160,11 @@
                             <div class="col-sm-12 bg-danger text-white px-2 py-1">Result</div>
                             <div class="col-sm-6 mb-3">
                                 <div class="font-weight-bold text-uppercase">TREND :</div> 
-                                <div class="px-3" id="trends"></div> 
+                                <div class="px-3" id="{{trend_id}}"></div> 
                             </div>
                             <div class="col-sm-6 mb-3">
                                 <div class="font-weight-bold text-uppercase">OPPORTUNITIES/EVOLUTION :</div> 
-                                <div class="px-3" id="opportunities"></div> 
+                                <div class="px-3" id="{{opp_id}}"></div> 
                             </div>
                         </div>
                     </div>
