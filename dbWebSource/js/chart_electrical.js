@@ -12,6 +12,7 @@ var  svn                = zsi.setValIfNull
     ,gMYFrom            = ""
     ,gMYTo              = ""
     ,gData              = []
+    ,gLegendData        = []
     ,gPrmChartType      = ""
     ,gPrmCategory       = ""
     ,gPrmSumUp          = ""
@@ -42,15 +43,10 @@ function setDefaultParams(){
     gMYFrom = gMYTo - 2;
     gPrmSumUp = "year";
     gPrmCategory = "Model Year";
-    gPrmGraphType = "Pie";
+    gPrmGraphType = "pie";
     
     $("#my_from").val(gMYFrom);
     $("#my_to").val(gMYTo);
-}
-
-function removeSpecialChar(string){
-    var _newStr = $.trim(unescape(string).replace(/_/g,"&").replace(/[^\x20-\x7E]/g, "-").replace(/---/g,"-"));
-    return _newStr;
 }
 
 function filterGraphData(e){
@@ -63,100 +59,9 @@ function filterGraphData(e){
     displayChart();
 }
 
-function setChartSettings(){
-    var _url = "";
-    var _result = {};
-    var _chart = {default:"", pie:"", column:"", line: ""};
-    var _staticMY = new Date().getFullYear() - 2;
-    var _param = ",@byMy='Y'";
-        
-    if(gPrmCategory==="Region"){
-        _param = ",@byRegion='Y'";
-    }else if(gPrmCategory==="Vehicle Type"){
-        _param = ",@byVehicle_type='Y'";
-    }else if(gPrmCategory==="OEM"){
-        _param = ",@byOEM='Y'";
-    }
-
-    if(isContain(gMenu, "VEHICLE ARCHITECTURE") || isContain(gMenu, "GROUNDING DISTRIBUTION")){
-        _url = "dynamic_summary_sel @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        //_chart.pie = "displayCommonPieChart(container)";
-        _chart.column = "displayCommonColumnChart(container)";
-    }
-    else if(isContain(gMenu, "WIRES & CABLES")){
-        _url = "dynamic_wires_usage_summary @criteria_id="+ gCId + _param;
-        
-        if(isContain(gCName, "Overall wire usage lower than 0.5 CSA")){
-            _chart.default = "displayPieOverallChart(container)";
-            // _chart.pie = "displayPieSmallWires(container)";
-            // _chart.column = "displayColumnSmallWires(container)";
-        }
-        else if(isContain(gCName, "New Wire Sizes")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-        else if(isContain(gCName, "Smaller wire sizes in High Flexible areas")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-        else if(isContain(gCName, "Smaller wire sizes in Engine Compartment areas")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-        else if(isContain(gCName, "PVC wires in Engine Compartment")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-        else if(isContain(gCName, "New Conductor Technology with lesser dimensions")){
-            _url = "wire_tech_lower_upper_diameter @byMY="+ _staticMY +",@criteria_id="+ gCId;
-            _chart.default = "displayWireTechDiameter(container)";
-            // _chart.line = "displayWireTechDiameter(container)";
-        }
-        else if(isContain(gCName, "New Conductor Technology with lesser weight")){
-            _url = "wire_tech_lower_upper_weight @model_year="+ _staticMY +",@criteria_id="+ gCId;
-            _chart.default = "displayWireTechWeight(container)";
-            // _chart.line = "displayWireTechWeight(container)";
-        } 
-        else if(isContain(gCName, "2.5 wire gauge for cigar lighters and power outlet")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-        else if(isContain(gCName, "New Technology on wire Conductor")){
-            _chart.default = "displayCommonPieChart(container)";
-            // _chart.pie = "displayCommonPieChart(container)";
-            // _chart.column = "displayCommonColumnChart(container)";
-        }
-    }
-    else if(isContain(gMenu, "POWER DISTRIBUTION")){
-        _url = "dynamic_power_distributions_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        // _chart.pie = "displayCommonPieChart(container)";
-        // _chart.column = "displayCommonColumnChart(container)";
-    }
-    else if(isContain(gMenu, "SAFETY CRITICAL CIRCUITS")){ 
-        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        // _chart.pie = "displayPieNetworkTopology(container)";
-        // _chart.column = "displayCommonColumnChart(container)";
-    }
-    else if(isContain(gMenu, "NETWORK TOPOLOGY")){ 
-        _url = "dynamic_network_topology_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        // _chart.pie = "displayPieNetworkTopology(container)";
-        // _chart.column = "displayCommonColumnChart(container)";
-    }
-
-    _result.url = _url;
-    _result.chart = _chart;
-    _result.legend = getLegendData(gCId);
-   
-    return _result;
+function removeSpecialChar(string){
+    var _newStr = $.trim(unescape(string).replace(/_/g,"&").replace(/[^\x20-\x7E]/g, "-").replace(/---/g,"-"));
+    return _newStr;
 }
 
 function getData(url, callback){
@@ -170,9 +75,10 @@ function getData(url, callback){
             
             gRegionNames = sortBy(gData.groupBy([_region]), "name");
             gModelYears = sortBy(gData.groupBy([_modelYear]), "name");
-            
+
             var i = 0;
             for (var _my = gMYFrom; _my <= gMYTo; _my++) {
+                
                 if(isUD(gModelYears[i])){
                     gModelYears.push({
                         name : _my.toString(),
@@ -181,30 +87,132 @@ function getData(url, callback){
                 }
                 i++;
             }
-                
             callback();
     });
 }
 
-function getLegendData(criteria_id){
-    $.get(execURL + "dynamic_legend_color_sel @criteria_id=" + criteria_id
+function getLegendData(callback){
+    $.get(execURL + "dynamic_legend_color_sel @criteria_id=" + gCId
         , function(data){
             gLegendData = data.rows;
-                
-            return data.rows;
+            
+            callback();
     });
+}
+
+function setChartSettings(){
+    var _url = "";
+    var _result = {};
+    var _chart = {default:"", pie:"", column:"", line: ""};
+    var _staticMY = new Date().getFullYear() - 2;
+    var _param = ",@byMy='Y'";
+    var _isStack = false;
+    
+    _chart.default = "displayCommonPieChart(container)";
+    _chart.column = "displayCommonStackColumnChart(container)";
+        
+    if(gPrmCategory==="Region"){
+        _param = ",@byRegion='Y'";
+        _chart.column = "displayOverallColumnChart(container)";
+    }else if(gPrmCategory==="Vehicle Type"){
+        _param = ",@byVehicle_type='Y'";
+    }else if(gPrmCategory==="OEM"){
+        _param = ",@byOEM='Y'";
+    }
+   
+    _url = "dynamic_summary_sel @table_view_name='dbo.wires_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+    
+    if(isContain(gMenu, "VEHICLE ARCHITECTURE") || isContain(gMenu, "GROUNDING DISTRIBUTION")){
+        _url = "dynamic_summary_sel @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+    }
+    else if(isContain(gMenu, "WIRES & CABLES")){
+        //_url = "dynamic_summary_sel @table_view_name='dbo.wires_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        
+        if(isContain(gCName, "Overall wire usage lower than 0.5 CSA")){
+            _chart.default = "displayPieOverallChart(container)";
+            _isStack = true;
+            //_chart.column = "displayOverallColumnChart(container)";
+        }
+        // else if(isContain(gCName, "New Wire Sizes")){
+        //     //_chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //     //_chart.column = "displayCommonColumnChart(container)";
+        // }
+        // else if(isContain(gCName, "Smaller wire sizes in High Flexible areas")){
+        //     //_chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //     // _chart.column = "displayCommonColumnChart(container)";
+        // }
+        // else if(isContain(gCName, "Smaller wire sizes in Engine Compartment areas")){
+        //   // _chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //      //_chart.column = "displayCommonColumnChart(container)";
+        // }
+        // else if(isContain(gCName, "PVC wires in Engine Compartment")){
+        //     //_chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //     //_chart.column = "displayCommonColumnChart(container)";
+        // }
+        else if(isContain(gCName, "New Conductor Technology with lesser dimensions")){
+            _url = "wire_tech_lower_upper_diameter @byMY="+ _staticMY +",@criteria_id="+ gCId;
+            _chart.default = "displayWireTechDiameter(container)";
+            _chart.column = "";
+            // _chart.line = "displayWireTechDiameter(container)";
+        }
+        else if(isContain(gCName, "New Conductor Technology with lesser weight")){
+            _url = "wire_tech_lower_upper_weight @model_year="+ _staticMY +",@criteria_id="+ gCId;
+            _chart.default = "displayWireTechWeight(container)";
+            _chart.column = "";
+            // _chart.line = "displayWireTechWeight(container)";
+        } 
+        // else if(isContain(gCName, "2.5 wire gauge for cigar lighters and power outlet")){
+        //     //_chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //     //_chart.column = "displayCommonColumnChart(container)";
+        // }
+        // else if(isContain(gCName, "New Technology on wire Conductor")){
+        //     //_chart.default = "displayCommonPieChart(container)";
+        //     // _chart.pie = "displayCommonPieChart(container)";
+        //     //_chart.column = "displayCommonColumnChart(container)";
+        // }
+    }
+    else if(isContain(gMenu, "POWER DISTRIBUTION")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.power_distributions_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        //_chart.default = "displayCommonPieChart(container)";
+        // _chart.pie = "displayCommonPieChart(container)";
+        //_chart.column = "displayCommonColumnChart(container)";
+    }
+    else if(isContain(gMenu, "SAFETY CRITICAL CIRCUITS")){ 
+        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        //_chart.default = "displayCommonPieChart(container)";
+        // _chart.pie = "displayPieNetworkTopology(container)";
+        //_chart.column = "displayCommonColumnChart(container)";
+    }
+    else if(isContain(gMenu, "NETWORK TOPOLOGY")){ 
+        _url = "dynamic_network_topology_sel @criteria_id="+ gCId + _param;
+        //_chart.default = "displayCommonPieChart(container)";
+        // _chart.pie = "displayPieNetworkTopology(container)";
+        //_chart.column = "displayCommonColumnChart(container)";
+    }
+
+    _result.url = _url;
+    _result.chart = _chart;
+    _result.isStack = _isStack;
+    return _result;
 }
 
 function displayChart(){
     var _res = setChartSettings();
     if( _res.url!=="" ){
         getData(_res.url, function(){
-            var _graph = _res.chart.default;
-            if(gPrmGraphType==="bar"){
-                _graph = _res.chart.column;
-            }
-            var _fnName = new Function("container", _graph);
-                _fnName("chart_div");
+            getLegendData(function(){
+                var _graph = _res.chart.default;
+                if(gPrmGraphType==="bar"){
+                    _graph = _res.chart.column;
+                }
+                var _fnName = new Function("container", _graph);
+                    _fnName("chart_div");
+            });
         });
     }
 }
@@ -239,7 +247,6 @@ function setLegendSize(chart){
     // chart.legend.itemContainers.template.events.on("hit", (ev) => {
     //   var category = ev.target.dataItem.name;
   
-    //   console.log(chart.legend);
     //   //chart.data.forEach(item => item.pieData.find(i => i.category === category).hidden = !ev.target.isActive);
     // //   pieSeries.validateData();
     // });
@@ -409,6 +416,7 @@ function isContain(string, contains){
     return _res;
 } 
 
+// SET CHART DATA
 function setPieChartData(callback){
     var _data = [];
     var _key = getDistinctKey(gData);
@@ -418,9 +426,8 @@ function setPieChartData(callback){
     var _modelYear = _key.model_year;
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
-    var _dynamicObj = gData.groupBy([_category]);
-    var _legend = getLegendData(gCId);
-    
+    var _categoryObj =  sortBy(gData.groupBy([_category]), "name");
+       
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -438,11 +445,10 @@ function setPieChartData(callback){
     $.each(_selectedCategory, function(x, v) { 
         var _name = v.name;
 
-        $.each(_dynamicObj, function(y, w) { 
+        $.each(_categoryObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            var _json = {};
-            
+            var _json = { group: _name };
             var _res = w.items.filter(function (item) {
             	return item[_category] == _cName && item[_selectedKey] == _name;
             });
@@ -459,7 +465,6 @@ function setPieChartData(callback){
             
             var _sub = [];
             if(gHasSub){
-                console.log(_legend)
                 $.each(_res.groupBy(['wire_gauge']), function(y, wire){
                     var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
                         return accumulator + currentValue[_value];
@@ -467,28 +472,30 @@ function setPieChartData(callback){
                     
                     _sub.push({
                         category: wire.name,
-                        value: _sumWire
+                        value: _sumWire,
+                        color: ""
                     });
                 });
-                
-                if(_cName.indexOf("Other") != -1){
-                    _cName = "Wire sizes above 0.50 CSA";
-                }
-                if(_cName.indexOf("Small") != -1){
-                    _cName = "Wire sizes below 0.50 CSA";
+            }
+            _json.category = _cName;
+            _json.value = _count;
+            _json.subs = _sub;
+            
+            if(gLegendData.length > 0){
+                var _result = gLegendData.filter(function (item) {
+                	return item["alias"] == _cName;
+                });
+                if(_result.length > 0){
+                    _json.category = _result[0].legend_label;
+                    _json.color = (_result[0].color_code !=="" ? _result[0].color_code.toLowerCase() : "gray");
                 }
             }
-            
-            _data.push({
-                group: _name,
-                category: _cName,
-                value: _count,
-                subs: _sub
-            });
+
+            _data.push(_json);
         });
     });
     
-    callback({data: _data, selectedKey: _selectedKey, selectedCategory: _selectedCategory});
+    callback({data: _data.sort(), selectedKey: _selectedKey, selectedCategory: _selectedCategory});
 }
 
 function setColumnChartData(callback){
@@ -500,8 +507,7 @@ function setColumnChartData(callback){
     var _modelYear = _key.model_year;
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
-    var _categoryObj = gData.groupBy([_category]);
-    
+    var _categoryObj = sortBy(gData.groupBy([_category]), "name");
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -524,11 +530,10 @@ function setColumnChartData(callback){
         $.each(_categoryObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            var _cNameNew = _cName.replace(" ","_");
             var _res = v.items.filter(function (item) {
             	return item[_category] == _cName && item[_selectedKey] == _name;
             });
-            
+
             if(_value && _value !== ""){
                  _count = _res.reduce(function (accumulator, currentValue) {
                     return accumulator + currentValue[_value];
@@ -538,22 +543,98 @@ function setColumnChartData(callback){
                     _count++;
                 }
             }
-
+            
+            var _cNameNew = _cName.replace(/ /g,"_");
+            if(gLegendData.length > 0){
+                var _result = gLegendData.filter(function (item) {
+                	return item["alias"].toUpperCase() == _cName.toUpperCase();
+                });
+                if(_result.length > 0){
+                    _cNameNew = _result[0].legend_label.replace(/ /g,"_");
+                    //_obj.color = (_result[0].color_code !=="" ? _result[0].color_code.toLowerCase() : "gray");
+                    //w.name = _cNameNew;
+                }
+            }
             _obj[_cNameNew] = _count;
         });
         _data.push(_obj);
     });
-    
-    callback({data: _data, selectedKey: _selectedKey, _categoryObj: _categoryObj});
+
+    callback({data: _data.sort(), selectedKey: _selectedKey, categoryObj: _categoryObj});
 }
 
+function setStackedColumnChartData(callback){
+    var _data = [];
+    var _key = getDistinctKey(gData);
+    var _value = _key.value;
+    var _category = _key.category;
+    var _region = _key.region;
+    var _modelYear = _key.model_year;
+    var _oem = _key.oem;
+    var _vehicleType = _key.vehicle_type;
+    var _categoryObj = sortBy(gData.groupBy([_category]), "name");
+    var _selectedKey = _modelYear; //Default key selected
+    var _selectedCategory = gModelYears; //Default category selected
+
+    if(gPrmCategory==="Region"){
+        _selectedKey = _region;
+        _selectedCategory = gRegionNames;
+    }else if(gPrmCategory==="Vehicle Type"){
+        _selectedKey = _vehicleType;
+        _selectedCategory = gModelYears;
+    }else if(gPrmCategory==="OEM"){
+        _selectedKey = _oem;
+        _selectedCategory = gModelYears;
+    }
+
+    $.each(_selectedCategory, function(i, v) { 
+        var _name = v.name;
+        var _obj = {};
+            _obj.category = _name;
+        
+        $.each(_categoryObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            var _res = v.items.filter(function (item) {
+            	return item[_category] == _cName && item[_selectedKey] == _name;
+            });
+
+            if(_value && _value !== ""){
+                 _count = _res.reduce(function (accumulator, currentValue) {
+                    return accumulator + currentValue[_value];
+                }, 0);    
+            }else{
+                for(; _count < _res.length; ){
+                    _count++;
+                }
+            }
+            
+            var _cNameNew = _cName.replace(/ /g,"_");
+            if(gLegendData.length > 0){
+                var _result = gLegendData.filter(function (item) {
+                	return item["alias"].toUpperCase() == _cName.toUpperCase();
+                });
+                if(_result.length > 0){
+                    _cNameNew = _result[0].legend_label.replace(/ /g,"_");
+                    //_obj.color = (_result[0].color_code !=="" ? _result[0].color_code.toLowerCase() : "gray");
+                    //w.name = _cNameNew;
+                }
+            }
+            _obj[_cNameNew] = _count;
+        });
+        _data.push(_obj);
+    });
+
+    callback({data: _data.sort(), selectedKey: _selectedKey, categoryObj: _categoryObj});
+}
+// END CHART DATA
 //------------------------------- COMMON CHARTS ------------------------------//
 function displayCommonPieChart(container){
     setPieChartData(function(o){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.selectedCategory;
-   
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -590,13 +671,6 @@ function displayCommonPieChart(container){
             
             //Animate
             chart.hiddenState.properties.radius = am4core.percent(0);
-            //chart.hiddenState.properties.endAngle = -90;
-            
-            // var title = chart.titles.create();
-            // title.text =  "MY" + year;
-            // title.fontSize = 10;
-            // title.fontWeight = 800;
-            // title.marginBottom = 0;
             
             // Add and configure Series
             var pieSeries = chart.series.push(new am4charts.PieSeries());
@@ -650,10 +724,10 @@ function displayCommonPieChart(container){
             var _result = (v.items.length === 0 ? [] : _data.filter(function (item) {
             	return item.group == _groupName;
             }));
-
-            if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
             
-            _createChart(_result, _groupName, (i === 0 ? true : false));
+            if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
+
+            _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false));
         });
     });
 }
@@ -662,10 +736,70 @@ function displayCommonColumnChart(container){
     setColumnChartData(function(o){
         var _data = o.data;
         var _key = o.selectedKey;
-        var _category = o._categoryObj;
-       
-        console.log(_category);
+        var _category = o.categoryObj;
+
+        // CHART SETTINGS
+        am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
+    
+        var chart = am4core.create(container, am4charts.XYChart);
+        chart.data = _data;
+        chart.colors.step = 2;
+        chart.padding(15, 15, 10, 15);
         
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.renderer.minGridDistance = 60;
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.numberFormatter.numberFormat = "#";
+        categoryAxis.fontSize = 15;
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (typeof(text)!=="undefined" ? (Number.isInteger(parseInt(text)) ? "MY"+ text: text) : text);
+        });
+        
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.tooltip.disabled = true;
+        valueAxis.renderer.grid.template.strokeOpacity = 0.05;
+        valueAxis.renderer.minGridDistance = 20;
+        valueAxis.interactionsEnabled = false;
+        valueAxis.min = 0;
+        valueAxis.renderer.minWidth = 35;
+        
+        // Create series
+        var _createSeries = function(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.columns.template.width = am4core.percent(80);
+            series.columns.template.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')}";
+            series.name = name;
+            series.dataFields.categoryX = "category";
+            series.dataFields.valueY = field;
+            series.dataItems.template.locations.categoryX = 0.5;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.dy = - 20;
+        };
+        
+        $.each(_category, function(i, v) { 
+            var _name = v.name;
+            var _nameNew = _name.replace(/ /g,"_");
+            
+            _createSeries(_nameNew, _name);
+        });
+        
+        //Add cursor
+        chart.scrollbarX = new am4core.Scrollbar();
+        
+        setLegendSize(chart);
+    });
+    //setWireTrend(_data);
+}
+
+function displayCommonStackColumnChart(container){
+    setColumnChartData(function(o){
+        var _data = o.data;
+        var _key = o.selectedKey;
+        var _category = o.categoryObj;
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -678,20 +812,23 @@ function displayCommonColumnChart(container){
         // Create axes
         var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "category";
-        categoryAxis.numberFormatter.numberFormat = "#";
-        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.minGridDistance = 60;
         categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.numberFormatter.numberFormat = "#";
+        categoryAxis.fontSize = 15;
         categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+            return (typeof(text)!=="undefined" ? (Number.isInteger(parseInt(text)) ? "MY"+ text: text) : text);
         });
         
         var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        //valueAxis.title.text = "Count";
         valueAxis.min = 0;
         valueAxis.max = 100;
         valueAxis.strictMinMax = true;
         valueAxis.calculateTotals = true;
+        
+        valueAxis.renderer.minGridDistance = 20;
+        valueAxis.renderer.minWidth = 35;
         valueAxis.renderer.labels.template.adapter.add("text", function(text) {
           return text + "%";
         });
@@ -699,43 +836,47 @@ function displayCommonColumnChart(container){
         // Create series
         var _createSeries = function(field, name) {
             var series = chart.series.push(new am4charts.ColumnSeries());
+            series.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}% - {valueY.formatNumber('#,###')}";
+            series.columns.template.column.strokeOpacity = 1;
+            series.name = name;
+            series.dataFields.categoryX = "category";
             series.dataFields.valueY = field;
             series.dataFields.valueYShow = "totalPercent";
-            series.dataFields.categoryX = "category";
-            series.name = name;
-            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-            series.tooltip.fontSize = 8;
-            series.tooltip.dy = -10;
-            //series.tooltip.align = "top";
+            series.dataItems.template.locations.categoryX = 0.5;
+            series.stacked = true;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.dy = - 20;
             
-            series.tooltip.valign  = "top";
-            series.tooltip.tooltipPosition = "fixed";
-            series.tooltip.background.filters.clear();
-            //series.tooltip.pointerOrientation  = true;
-            series.tooltip.fixedWidthGrid = true;
-            series.tooltip.layout = "none";
-            series.tooltip.pointerOrientation = "horizontal";
-            //series.tooltip.label.minWidth = 40;
-            //series.tooltip.label.minHeight = 40;
-            series.tooltip.label.textAlign = "middle";
-            series.tooltip.label.textValign = "middle";
+            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
+            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+            bullet1.locationY = 0.5;
+            bullet1.label.fill = am4core.color("#ffffff");
+            bullet1.interactionsEnabled = false;
         };
         
         $.each(_category, function(i, v) { 
             var _name = v.name;
-            var _nameNew = _name.replace(" ","_");
+            var _nameNew = _name.replace(/_/g," ");
     
+            if(gLegendData.length > 0){
+                var _result = gLegendData.filter(function (item) {
+                	return item["alias"].toUpperCase() == _name.toUpperCase();
+                });
+                if(_result.length > 0){
+                    
+                    _name = _result[0].legend_label;
+                    _nameNew = _name.replace(/ /g,"_");
+                }
+            }
+
             _createSeries(_nameNew, _name);
         });
         
         //Add cursor
+        chart.scrollbarX = new am4core.Scrollbar();
+
         chart.cursor = new am4charts.XYCursor();
-        chart.cursor.fullWidthLineX = false;
-        chart.cursor.lineX.strokeWidth = 0;
-        chart.cursor.lineX.fill = am4core.color("#000");
-        chart.cursor.lineX.fillOpacity = 0.1;
         chart.cursor.behavior = "panX";
-        chart.cursor.lineY.disabled = true;
         
         setLegendSize(chart);
     });
@@ -811,6 +952,7 @@ function displayOverallColumnChart(container){
                     var _count = 0;
                     var _cName = w.name;
                     var _cNameNew = _cName.replace(" ","_");
+                    
                     var _res = r.items.filter(function (item) {
                     	return item[_category] == _cName && item[_model_year] == _my;
                     });
@@ -831,10 +973,6 @@ function displayOverallColumnChart(container){
             });
         });
     }
-    
-    // CHART SETTINGS
-    am4core.useTheme(am4themes_animated);
-    am4core.options.commercialLicense = true;
 
     var chart = am4core.create(container, am4charts.XYChart);
     chart.data = _data;
@@ -880,7 +1018,7 @@ function displayOverallColumnChart(container){
           series.tooltip.paddingBottom= 1;
           series.tooltip.dy = -10;
           series.tooltip.align = "top";
-          series.stacked = (_hasLocation ? true: false);
+          series.stacked = true;//(_hasLocation ? true: false);
           series.columns.template.width = am4core.percent(95);
 
         }
@@ -903,19 +1041,18 @@ function displayOverallColumnChart(container){
         };
     }
     else{
-        // Create axes
         var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "category";
-        categoryAxis.numberFormatter.numberFormat = "#";
-        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.minGridDistance = 60;
         categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.numberFormatter.numberFormat = "#";
+        //categoryAxis.fontSize = 15;
         categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
             return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
         });
         
         var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        //valueAxis.title.text = "Count";
         valueAxis.min = 0;
         valueAxis.max = 100;
         valueAxis.strictMinMax = true;
@@ -924,29 +1061,50 @@ function displayOverallColumnChart(container){
           return text + "%";
         });
         
+        // Create axes
+        // var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        // categoryAxis.dataFields.category = "category";
+        // categoryAxis.numberFormatter.numberFormat = "#";
+        // //categoryAxis.title.text = "Wire 0.50 and Below";
+        // categoryAxis.renderer.grid.template.location = 0;
+        // categoryAxis.renderer.minGridDistance = 20;
+        // categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+        //     return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+        // });
+        
+        // var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        // //valueAxis.title.text = "Count";
+        // valueAxis.min = 0;
+        // valueAxis.max = 100;
+        // valueAxis.strictMinMax = true;
+        // valueAxis.calculateTotals = true;
+        // valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+        //   return text + "%";
+        // });
+        
         // Create series
         var _createSeries = function(field, name) {
             var series = chart.series.push(new am4charts.ColumnSeries());
+            series.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}% - {valueY.formatNumber('#,###')}";
+            series.columns.template.column.strokeOpacity = 1;
+            series.name = name;
+            series.dataFields.categoryX = "category";
             series.dataFields.valueY = field;
             series.dataFields.valueYShow = "totalPercent";
-            series.dataFields.categoryX = "category";
-            series.name = name;
-            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-            series.tooltip.fontSize = 8;
-            series.tooltip.dy = -10;
-            //series.tooltip.align = "top";
+            series.dataItems.template.locations.categoryX = 0.5;
+            series.stacked = true;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.dy = - 20;
             
-            series.tooltip.valign  = "top";
-            series.tooltip.tooltipPosition = "fixed";
-            series.tooltip.background.filters.clear();
-            //series.tooltip.pointerOrientation  = true;
-            series.tooltip.fixedWidthGrid = true;
-            series.tooltip.layout = "none";
-            series.tooltip.pointerOrientation = "horizontal";
-            //series.tooltip.label.minWidth = 40;
-            //series.tooltip.label.minHeight = 40;
-            series.tooltip.label.textAlign = "middle";
-            series.tooltip.label.textValign = "middle";
+            // var columnTemplate = categoryAxis.columns.template;
+            // columnTemplate.width = am4core.percent(80);
+            // columnTemplate.propertyFields.fill = "color";
+            
+            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
+            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+            bullet1.locationY = 0.5;
+            bullet1.label.fill = am4core.color("#ffffff");
+            bullet1.interactionsEnabled = false;
         };
          
         var _createLabel = function(category, endCategory, label) {
@@ -962,12 +1120,28 @@ function displayOverallColumnChart(container){
             range.locations.endCategory = 0.9;
         };
     }
-    console.log(_categoryObj);
+
     $.each(_categoryObj, function(i, v) { 
         var _name = v.name;
-        var _nameNew = _name.replace(" ","_");
+        var _nameNew = _name.replace(/ /g,"_");
+        console.log("_name",_name);
+        console.log("gLegendData",gLegendData);
+        if(gLegendData.length > 0){
+            var _result = gLegendData.filter(function (item) {
+            	return item["alias"].toUpperCase() == _name.toUpperCase();
+            });
+            if(_result.length > 0){
+                
+                _name = _result[0].legend_label;
+                //_nameNew = _name.replace(/ /g,"_");
+            }
+        }
 
         _createSeries(_nameNew, _name);
+        // var _name = v.name;
+        // var _nameNew = _name.replace(" ","_");
+
+        // _createSeries(_nameNew, _name);
     }); 
     
     if(_hasLocation){
@@ -1000,17 +1174,14 @@ function displayOverallColumnChart(container){
             _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
         });
     }
-    
+
     //Add cursor
+    chart.scrollbarX = new am4core.Scrollbar();
+
     chart.cursor = new am4charts.XYCursor();
-    chart.cursor.fullWidthLineX = false;
-    chart.cursor.lineX.strokeWidth = 0;
-    chart.cursor.lineX.fill = am4core.color("#000");
-    chart.cursor.lineX.fillOpacity = 0.1;
     chart.cursor.behavior = "panX";
-    chart.cursor.lineY.disabled = true;
     
-    setLegendSize(chart);
+    //setLegendSize(chart);
     //setWireTrend(_data);
 }
 
@@ -1134,61 +1305,6 @@ function displayPieOverallChart(container){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.selectedCategory;
-        // var _data = [];
-        // var _dynamicKey = getDistinctKey(gData);
-        // var _value = _dynamicKey.value;
-        // var _category = _dynamicKey.category;
-        // var _dynamicObj = gData.groupBy([_category]);
-        //     _dynamicObj = sortBy(_dynamicObj, "name");
-        
-        // $.each(gModelYears, function(x, my) { 
-        //     var _my = my.name;
-            
-        //     $.each(_dynamicObj, function(y, w) { 
-        //         var _count = 0;
-        //         var _cName = w.name;
-        //         var _res = w.items.filter(function (item) {
-        //         	return item[_category] == _cName && item.model_year == _my;
-        //         });
-    
-        //         if(_value && _value !== ""){
-        //              _count = _res.reduce(function (accumulator, currentValue) {
-        //                 return accumulator + currentValue[_value];
-        //             }, 0);    
-        //         }else{
-        //             for(; _count < _res.length; ){
-        //                 _count++;
-        //             }
-        //         }  
-                
-        //         var _sub = [];
-        //         $.each(_res.groupBy(['wire_gauge']), function(y, wire){
-        //             var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
-        //                 return accumulator + currentValue[_value];
-        //             }, 0);
-                    
-        //             _sub.push({
-        //                 category: wire.name,
-        //                 value: _sumWire
-        //             });
-        //         });
-                
-        //         if(_cName.indexOf("Other") != -1){
-        //             _cName = "Wire sizes above 0.50 CSA";
-        //         }
-        //         if(_cName.indexOf("Small") != -1){
-        //             _cName = "Wire sizes below 0.50 CSA";
-        //         }
-    
-        //         _data.push({
-        //             model_year: +_my,
-        //             category: _cName,
-        //             value: _count,
-        //             subs: _sub
-        //         });
-        //     });
-            
-        // });
     
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
@@ -1304,12 +1420,12 @@ function displayPieOverallChart(container){
 
         $.each(_category, function(i, v){
             var _groupName = v.name;
-            var _result = _data.filter(function (item) {
+            var _result = (v.items.length === 0 ? [] : _data.filter(function (item) {
             	return item.group == _groupName;
-            });
-
+            }));
+          
             if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
-    
+
             _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false));
         });
     });
@@ -4546,4 +4662,4 @@ function displayColumnNetworkTopology(container, callback){
 }
 
 // ******************************** END CHART ********************************//
-        
+             

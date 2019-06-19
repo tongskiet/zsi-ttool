@@ -14,12 +14,13 @@ function displayMenus(){
         var _h = "";
         var _ctr = 0;
         $.each(_dataRows, function(i, v){
+            i++;
             var _menuName = $.trim(v.menu_name);
             var _menuLink = _menuName.toLowerCase().replace(/&/g,"and");
                 _menuLink = _menuLink.replace(/ /g,"_");
             _h = _tw.main_menu_card({
                   title         : _menuName
-                , link          : "criteria_single_e?id="+ v.menu_id +"&name="+ _menuName.replace(/&/g, '_')
+                , link          : "criteria_single_e?id="+ v.menu_id +"&name="+ _menuName.replace(/&/g, '_') + "&c=" + i + "&mtype=E"
                 , body_style    : "height:" +_cardHeight + "px"
                 , img3_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image3_id
                 , img4_src       : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image4_id 
@@ -33,4 +34,4 @@ function displayMenus(){
         });
         
     });
-}             
+}              

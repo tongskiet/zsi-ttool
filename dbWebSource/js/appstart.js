@@ -88,10 +88,10 @@ function displayTrendToolMenus(){ //load Main Menu
                 // console.log("specsId: ",this.specs_id);
                
                 _h += _tw.ttStandardMenu({
-                      link      : "#"
+                      link      : "javascript:void(0)"
                     , imageId1  : this.image2_id 
                     , imageId2  : this.image1_id
-                    , label     : this.menu_name.toUpperCase()
+                    , label     : this.menu_name.replace(/([^<])\/([^>])/g, "$1/ $2").toUpperCase()
                     , labelBreakCSS:  ( this.menu_name.length < 10 ?  "label-single" : "label-double" )
                     , onClick       : "displayTrendToolSubMenu(this,\""+ $.trim(this.menu_type) +"\","+this.menu_id+",\""+ $.trim(this.menu_name) +"\"," + _count + ")"
                 }).html();
@@ -471,4 +471,4 @@ function isTeamMemberOrAdmin(){
         return false;
         */
 } 
-                     
+                       

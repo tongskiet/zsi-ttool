@@ -47,15 +47,10 @@ function setDefaultParams(){
     gMYFrom = gMYTo - 2;
     gPrmSumUp = "year";
     gPrmCategory = "Model Year";
-    gPrmGraphType = "Pie";
+    gPrmGraphType = "pie";
     
     $("#my_from").val(gMYFrom);
     $("#my_to").val(gMYTo);
-}
-
-function removeSpecialChar(string){
-    var _newStr = $.trim(unescape(string).replace(/_/g,"&").replace(/[^\x20-\x7E]/g, "-").replace(/---/g,"-"));
-    return _newStr;
 }
 
 function filterGraphData(e){
@@ -68,72 +63,9 @@ function filterGraphData(e){
     displayChart();
 }
 
-function setChartSettings(o){
-    var _url = "";
-    var _result = {};
-    var _chart = {default:"", pie:"", column:"", line: ""};
-    var _param = "";
-        _param += ",@byMy='Y'";
-
-    if(gPrmCategory==="Region"){
-        _param += ",@byRegion='Y'";
-    }else if(gPrmCategory==="Vehicle Type"){
-        _param += ",@byVehicle_type='Y'";
-    }else if(gPrmCategory==="OEM"){
-        _param += ",@byOEM='Y'";
-    }
-    console.log(gMenu);
-    if(isContain(gMenu, "WIRES & CABLES")){
-        console.log("test1")
-        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        //_chart.pie = "displayCommonPieChart(container)";
-        //_chart.column = "displayColumnGroundEyelet(container)";
-    }
-    else if(isContain(gMenu, "INLINE CONNECTOR")){
-        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        //_chart.pie = "displayCommonPieChart(container)";
-        //_chart.column = "displayColumnGroundEyelet(container)";
-    }
-    else if(isContain(gMenu, "GROUND EYELET") || isContain(gMenu, "SPLICE") || isContain(gMenu, "BATTERY FUSE TERMINAL")){
-        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieGroundEyelet(container)";
-        _chart.column = "displayCommonColumnChart(container)";
-    }
-    else if(isContain(gMenu, "COVERINGS")){
-        
-        _url = "dynamic_coverings_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayChartCovering(container)";
-        _chart.line = "displayChartCovering(container)";
-    }
-    else if(isContain(gMenu, "RETAINERS")){
-        //_url = "dynamic_summary_sel @byMy='Y',@byRegion='Y',@criteria_id="+ _cId +",@table_view_name='dbo.retainers_v'";
-        _url = "dynamic_retainers_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayChartRetainer(container)";
-        _chart.line = "displayChartRetainer(container)";
-    }
-    else if(isContain(gMenu, "GROMMETS")){
-        
-        _url = "dynamic_grommets_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieGrommets(container)";
-        _chart.column = "displayColumnGrommets(container)";
-    }
-    else if(isContain(gMenu, "TROUGH/SHIELD/BRACKET")){
-        
-        _url = "dynamic_stc_sel @criteria_id="+ gCId + _param;
-        _chart.default = "displayCommonPieChart(container)";
-        _chart.pie = "displayPieSTC(container)";
-        _chart.column = "displayColumnSTC(container)";
-    }
-
-    _result.url = _url;
-    _result.chart = _chart;
-    _result.legend = getLegendData(gCId);
-   
-    return _result;
+function removeSpecialChar(string){
+    var _newStr = $.trim(unescape(string).replace(/_/g,"&").replace(/[^\x20-\x7E]/g, "-").replace(/---/g,"-"));
+    return _newStr;
 }
 
 function getData(url, callback){
@@ -163,25 +95,89 @@ function getData(url, callback){
     });
 }
 
-function getLegendData(criteria_id){
-    $.get("dynamic_legend_color_sel @criteria_id=" +criteria_id
+function getLegendData(callback){
+    $.get(execURL + "dynamic_legend_color_sel @criteria_id=" + gCId
         , function(data){
             gLegendData = data.rows;
-                
-            return data.rows;
+            
+            callback();
     });
+}
+
+function setChartSettings(o){
+    var _url = "";
+    var _result = {};
+    var _chart = {default:"", pie:"", column:"", line: ""};
+    var _param = "";
+        _param += ",@byMy='Y'";
+
+    if(gPrmCategory==="Region"){
+        _param += ",@byRegion='Y'";
+    }else if(gPrmCategory==="Vehicle Type"){
+        _param += ",@byVehicle_type='Y'";
+    }else if(gPrmCategory==="OEM"){
+        _param += ",@byOEM='Y'";
+    }
+
+    if(isContain(gMenu, "WIRES & CABLES")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.wires_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayCommonPieChart(container)";
+        _chart.column = "displayCommonColumnChart(container)";
+        //_chart.column = "displayColumnGroundEyelet(container)";
+    }
+    else if(isContain(gMenu, "INLINE CONNECTOR")){
+        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayCommonPieChart(container)";
+        _chart.column = "displayCommonColumnChart(container)";
+        //_chart.column = "displayColumnGroundEyelet(container)";
+    }
+    else if(isContain(gMenu, "GROUND EYELET") || isContain(gMenu, "SPLICE") || isContain(gMenu, "BATTERY FUSE TERMINAL")){
+        _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayCommonPieChart(container)";
+        _chart.pie = "displayPieGroundEyelet(container)";
+        _chart.column = "displayCommonColumnChart(container)";
+    }
+    else if(isContain(gMenu, "COVERINGS")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.coverings_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayChartCovering(container)";
+        _chart.line = "displayChartCovering(container)";
+    }
+    else if(isContain(gMenu, "RETAINERS")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.retainers_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayChartRetainer(container)";
+        _chart.line = "displayChartRetainer(container)";
+    }
+    else if(isContain(gMenu, "GROMMETS")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.grommets_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayCommonPieChart(container)";
+        _chart.pie = "displayPieGrommets(container)";
+        _chart.column = "displayColumnGrommets(container)";
+    }
+    else if(isContain(gMenu, "TROUGH/SHIELD/BRACKET")){
+        _url = "dynamic_summary_sel @table_view_name='dbo.stc_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
+        _chart.default = "displayCommonPieChart(container)";
+        _chart.pie = "displayPieSTC(container)";
+        _chart.column = "displayColumnSTC(container)";
+    }
+
+    _result.url = _url;
+    _result.chart = _chart;
+   
+    return _result;
 }
 
 function displayChart(){
     var _res = setChartSettings();
     if( _res.url!=="" ){
         getData(_res.url, function(){
-            var _graph = _res.chart.default;
-            if(gPrmGraphType==="bar"){
-                _graph = _res.chart.column;
-            }
-            var _fnName = new Function("container", _graph);
-                _fnName("chart_div");
+            getLegendData(function(){
+                var _graph = _res.chart.default;
+                if(gPrmGraphType==="bar"){
+                    _graph = _res.chart.column;
+                }
+                var _fnName = new Function("container", _graph);
+                    _fnName("chart_div");
+            });
         });
     }
 }
@@ -216,7 +212,6 @@ function setLegendSize(chart){
     // chart.legend.itemContainers.template.events.on("hit", (ev) => {
     //   var category = ev.target.dataItem.name;
   
-    //   console.log(chart.legend);
     //   //chart.data.forEach(item => item.pieData.find(i => i.category === category).hidden = !ev.target.isActive);
     // //   pieSeries.validateData();
     // });
@@ -386,8 +381,7 @@ function isContain(string, contains){
     return _res;
 } 
 
-//------------------------------ SET CHART DATA ------------------------------//
-
+// SET CHART DATA
 function setPieChartData(callback){
     var _data = [];
     var _key = getDistinctKey(gData);
@@ -397,8 +391,8 @@ function setPieChartData(callback){
     var _modelYear = _key.model_year;
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
-    var _dynamicObj = gData.groupBy([_category]);
-    
+    var _categoryObj =  sortBy(gData.groupBy([_category]), "name");
+       
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -416,56 +410,61 @@ function setPieChartData(callback){
     $.each(_selectedCategory, function(x, v) { 
         var _name = v.name;
 
-        $.each(_dynamicObj, function(y, w) { 
+        $.each(_categoryObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            var _json = {};
+            var _json = { group: _name };
             
-            var _res = w.items.filter(function (item) {
-            	return item[_category] == _cName && item[_selectedKey] == _name;
-            });
-
-            if(_value && _value !== ""){
-                 _count = _res.reduce(function (accumulator, currentValue) {
-                    return accumulator + currentValue[_value];
-                }, 0);    
-            }else{
-                for(; _count < _res.length; ){
-                    _count++;
-                }
-            }  
-            
-            var _sub = [];
-            if(gHasSub){
-                $.each(_res.groupBy(['wire_gauge']), function(y, wire){
-                    var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
-                        return accumulator + currentValue[_value];
-                    }, 0);
-                    
-                    _sub.push({
-                        category: wire.name,
-                        value: _sumWire
-                    });
+            if(_cName!==""){
+                var _res = w.items.filter(function (item) {
+                	return item[_category] == _cName && item[_selectedKey] == _name;
                 });
+    
+                if(_value && _value !== ""){
+                     _count = _res.reduce(function (accumulator, currentValue) {
+                        return accumulator + currentValue[_value];
+                    }, 0);    
+                }else{
+                    for(; _count < _res.length; ){
+                        _count++;
+                    }
+                }  
                 
-                if(_cName.indexOf("Other") != -1){
-                    _cName = "Wire sizes above 0.50 CSA";
+                var _sub = [];
+                if(gHasSub){
+                    $.each(_res.groupBy(['wire_gauge']), function(y, wire){
+                        var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
+                            return accumulator + currentValue[_value];
+                        }, 0);
+                        
+                        _sub.push({
+                            category: wire.name,
+                            value: _sumWire,
+                            color: ""
+                        });
+                    });
                 }
-                if(_cName.indexOf("Small") != -1){
-                    _cName = "Wire sizes below 0.50 CSA";
+                _json.category = _cName;
+                _json.value = _count;
+                _json.subs = _sub;
+                
+                if(gLegendData.length > 0){
+                    var _result = gLegendData.filter(function (item) {
+                    	return item["alias"] == _cName;
+                    });
+                    if(_result.length > 0){
+                        _json.category = _result[0].legend_label;
+                        console.log(_result[0].color_code )
+                        if(_result[0].color_code !=="") _json.color = _result[0].color_code.toLowerCase();
+                    }
                 }
+    
+                _data.push(_json);
             }
-            
-            _data.push({
-                group: _name,
-                category: _cName,
-                value: _count,
-                subs: _sub
-            });
         });
     });
     
-    callback({data: _data, selectedKey: _selectedKey, selectedCategory: _selectedCategory});
+    callback({data: _data.sort(), selectedKey: _selectedKey, selectedCategory: _selectedCategory});
 }
 
 function setColumnChartData(callback){
@@ -477,8 +476,7 @@ function setColumnChartData(callback){
     var _modelYear = _key.model_year;
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
-    var _categoryObj = gData.groupBy([_category]);
-    
+    var _categoryObj = sortBy(gData.groupBy([_category]), "name");
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -501,36 +499,117 @@ function setColumnChartData(callback){
         $.each(_categoryObj, function(y, w) { 
             var _count = 0;
             var _cName = w.name;
-            var _cNameNew = _cName.replace(" ","_");
-            var _res = v.items.filter(function (item) {
-            	return item[_category] == _cName && item[_selectedKey] == _name;
-            });
             
-            if(_value && _value !== ""){
-                 _count = _res.reduce(function (accumulator, currentValue) {
-                    return accumulator + currentValue[_value];
-                }, 0);    
-            }else{
-                for(; _count < _res.length; ){
-                    _count++;
+            if(_cName!==""){
+                var _res = v.items.filter(function (item) {
+                	return item[_category] == _cName && item[_selectedKey] == _name;
+                });
+    
+                if(_value && _value !== ""){
+                     _count = _res.reduce(function (accumulator, currentValue) {
+                        return accumulator + currentValue[_value];
+                    }, 0);    
+                }else{
+                    for(; _count < _res.length; ){
+                        _count++;
+                    }
                 }
+                
+                var _cNameNew = _cName.replace(/ /g,"_");
+                if(gLegendData.length > 0){
+                    var _result = gLegendData.filter(function (item) {
+                    	return item["alias"].toUpperCase() == _cName.toUpperCase();
+                    });
+                    if(_result.length > 0){
+                        _cNameNew = _result[0].legend_label.replace(/ /g,"_");
+                        //_obj.color = (_result[0].color_code !=="" ? _result[0].color_code.toLowerCase() : "gray");
+                        //w.name = _cNameNew;
+                    }
+                }
+                _obj[_cNameNew] = _count;
             }
-
-            _obj[_cNameNew] = _count;
         });
         _data.push(_obj);
     });
-    
-    callback({data: _data, selectedKey: _selectedKey, _categoryObj: _categoryObj});
+
+    callback({data: _data.sort(), selectedKey: _selectedKey, categoryObj: _categoryObj});
 }
 
+function setStackedColumnChartData(callback){
+    var _data = [];
+    var _key = getDistinctKey(gData);
+    var _value = _key.value;
+    var _category = _key.category;
+    var _region = _key.region;
+    var _modelYear = _key.model_year;
+    var _oem = _key.oem;
+    var _vehicleType = _key.vehicle_type;
+    var _categoryObj = sortBy(gData.groupBy([_category]), "name");
+    var _selectedKey = _modelYear; //Default key selected
+    var _selectedCategory = gModelYears; //Default category selected
+
+    if(gPrmCategory==="Region"){
+        _selectedKey = _region;
+        _selectedCategory = gRegionNames;
+    }else if(gPrmCategory==="Vehicle Type"){
+        _selectedKey = _vehicleType;
+        _selectedCategory = gModelYears;
+    }else if(gPrmCategory==="OEM"){
+        _selectedKey = _oem;
+        _selectedCategory = gModelYears;
+    }
+
+    $.each(_selectedCategory, function(i, v) { 
+        var _name = v.name;
+        var _obj = {};
+            _obj.category = _name;
+        
+        $.each(_categoryObj, function(y, w) { 
+            var _count = 0;
+            var _cName = w.name;
+            
+            if(_cName!==""){
+                var _res = v.items.filter(function (item) {
+                	return item[_category] == _cName && item[_selectedKey] == _name;
+                });
+    
+                if(_value && _value !== ""){
+                     _count = _res.reduce(function (accumulator, currentValue) {
+                        return accumulator + currentValue[_value];
+                    }, 0);    
+                }else{
+                    for(; _count < _res.length; ){
+                        _count++;
+                    }
+                }
+                
+                var _cNameNew = _cName.replace(/ /g,"_");
+                if(gLegendData.length > 0){
+                    var _result = gLegendData.filter(function (item) {
+                    	return item["alias"].toUpperCase() == _cName.toUpperCase();
+                    });
+                    if(_result.length > 0){
+                        _cNameNew = _result[0].legend_label.replace(/ /g,"_");
+                        //_obj.color = (_result[0].color_code !=="" ? _result[0].color_code.toLowerCase() : "gray");
+                        //w.name = _cNameNew;
+                    }
+                }
+                _obj[_cNameNew] = _count;
+            }
+        });
+        _data.push(_obj);
+    });
+
+    callback({data: _data.sort(), selectedKey: _selectedKey, categoryObj: _categoryObj});
+}
+// END CHART DATA
 //------------------------------- COMMON CHARTS ------------------------------//
 function displayCommonPieChart(container){
     setPieChartData(function(o){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.selectedCategory;
-   
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -567,13 +646,6 @@ function displayCommonPieChart(container){
             
             //Animate
             chart.hiddenState.properties.radius = am4core.percent(0);
-            //chart.hiddenState.properties.endAngle = -90;
-            
-            // var title = chart.titles.create();
-            // title.text =  "MY" + year;
-            // title.fontSize = 10;
-            // title.fontWeight = 800;
-            // title.marginBottom = 0;
             
             // Add and configure Series
             var pieSeries = chart.series.push(new am4charts.PieSeries());
@@ -627,10 +699,10 @@ function displayCommonPieChart(container){
             var _result = (v.items.length === 0 ? [] : _data.filter(function (item) {
             	return item.group == _groupName;
             }));
-
-            if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
             
-            _createChart(_result, _groupName, (i === 0 ? true : false));
+            if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
+
+            _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false));
         });
     });
 }
@@ -639,10 +711,88 @@ function displayCommonColumnChart(container){
     setColumnChartData(function(o){
         var _data = o.data;
         var _key = o.selectedKey;
-        var _category = o._categoryObj;
-       
-        console.log(_category);
+        var _category = o.categoryObj;
+
+        // CHART SETTINGS
+        am4core.useTheme(am4themes_animated);
+        am4core.options.commercialLicense = true;
+    
+        var chart = am4core.create(container, am4charts.XYChart);
+        chart.data = _data;
+        chart.colors.step = 2;
+        chart.padding(15, 15, 10, 15);
         
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "category";
+        categoryAxis.renderer.minGridDistance = 60;
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.numberFormatter.numberFormat = "#";
+        categoryAxis.fontSize = 15;
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            return (typeof(text)!=="undefined" ? (Number.isInteger(parseInt(text)) ? "MY"+ text: text) : text);
+        });
+        
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.tooltip.disabled = true;
+        valueAxis.renderer.grid.template.strokeOpacity = 0.05;
+        valueAxis.renderer.minGridDistance = 20;
+        valueAxis.interactionsEnabled = false;
+        valueAxis.min = 0;
+        valueAxis.renderer.minWidth = 35;
+        
+        // Create series
+        var _createSeries = function(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            //series.columns.template.width = am4core.percent(80);
+            //series.columns.template.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')}";
+            series.name = name;
+            series.dataFields.categoryX = "category";
+            series.dataFields.valueY = field;
+            series.dataItems.template.locations.categoryX = 0.5;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.dy = - 20;
+            
+            var columnTemplate = series.columns.template;
+            columnTemplate.width = am4core.percent(80);
+            columnTemplate.tooltipText = "{categoryX}: [bold]{valueY.formatNumber('#,###')}[/]";
+            // columnTemplate.fillOpacity = .8;
+            // columnTemplate.strokeOpacity = 0;
+            // columnTemplate.fill = am4core.color("#5a5");
+            
+            columnTemplate.adapter.add("fill", function(fill, target) {
+                console.log("target.dataItem",target.dataItem.name);
+                console.log("target.dataItem.valueY",target.dataItem.valueY);
+              if (target.dataItem && (target.dataItem.valueY < 0)) {
+                return am4core.color("#a55");
+              }
+              else {
+                return fill;
+              }
+            });
+        };
+        
+        $.each(_category, function(i, v) { 
+            var _name = v.name;
+            var _nameNew = _name.replace(/ /g,"_");
+            
+            _createSeries(_nameNew, _name);
+        });
+        
+        //Add cursor
+        chart.scrollbarX = new am4core.Scrollbar();
+        
+        setLegendSize(chart);
+    });
+    //setWireTrend(_data);
+}
+
+function displayCommonStackColumnChart(container){
+    setColumnChartData(function(o){
+        var _data = o.data;
+        var _key = o.selectedKey;
+        var _category = o.categoryObj;
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -655,20 +805,23 @@ function displayCommonColumnChart(container){
         // Create axes
         var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "category";
-        categoryAxis.numberFormatter.numberFormat = "#";
-        //categoryAxis.title.text = "Wire 0.50 and Below";
+        categoryAxis.renderer.minGridDistance = 60;
         categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.renderer.minGridDistance = 20;
+        categoryAxis.interactionsEnabled = false;
+        categoryAxis.numberFormatter.numberFormat = "#";
+        categoryAxis.fontSize = 15;
         categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
+            return (typeof(text)!=="undefined" ? (Number.isInteger(parseInt(text)) ? "MY"+ text: text) : text);
         });
         
         var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        //valueAxis.title.text = "Count";
         valueAxis.min = 0;
         valueAxis.max = 100;
         valueAxis.strictMinMax = true;
         valueAxis.calculateTotals = true;
+        
+        valueAxis.renderer.minGridDistance = 20;
+        valueAxis.renderer.minWidth = 35;
         valueAxis.renderer.labels.template.adapter.add("text", function(text) {
           return text + "%";
         });
@@ -676,43 +829,47 @@ function displayCommonColumnChart(container){
         // Create series
         var _createSeries = function(field, name) {
             var series = chart.series.push(new am4charts.ColumnSeries());
+            series.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}%";
+            series.columns.template.column.strokeOpacity = 1;
+            series.name = name;
+            series.dataFields.categoryX = "category";
             series.dataFields.valueY = field;
             series.dataFields.valueYShow = "totalPercent";
-            series.dataFields.categoryX = "category";
-            series.name = name;
-            series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-            series.tooltip.fontSize = 8;
-            series.tooltip.dy = -10;
-            //series.tooltip.align = "top";
+            series.dataItems.template.locations.categoryX = 0.5;
+            series.stacked = true;
+            series.tooltip.pointerOrientation = "vertical";
+            series.tooltip.dy = - 20;
             
-            series.tooltip.valign  = "top";
-            series.tooltip.tooltipPosition = "fixed";
-            series.tooltip.background.filters.clear();
-            //series.tooltip.pointerOrientation  = true;
-            series.tooltip.fixedWidthGrid = true;
-            series.tooltip.layout = "none";
-            series.tooltip.pointerOrientation = "horizontal";
-            //series.tooltip.label.minWidth = 40;
-            //series.tooltip.label.minHeight = 40;
-            series.tooltip.label.textAlign = "middle";
-            series.tooltip.label.textValign = "middle";
+            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
+            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+            bullet1.locationY = 0.5;
+            bullet1.label.fill = am4core.color("#ffffff");
+            bullet1.interactionsEnabled = false;
         };
         
         $.each(_category, function(i, v) { 
             var _name = v.name;
-            var _nameNew = _name.replace(" ","_");
+            var _nameNew = _name.replace(/_/g," ");
     
-            _createSeries(_nameNew, _name);
+            if(gLegendData.length > 0){
+                var _result = gLegendData.filter(function (item) {
+                	return item["alias"].toUpperCase() == _name.toUpperCase();
+                });
+                if(_result.length > 0){
+                    
+                    _name = _result[0].legend_label;
+                    _nameNew = _name.replace(/ /g,"_");
+                }
+            }
+
+            _createSeries(_nameNew, _name );
         });
         
         //Add cursor
+        chart.scrollbarX = new am4core.Scrollbar();
+
         chart.cursor = new am4charts.XYCursor();
-        chart.cursor.fullWidthLineX = false;
-        chart.cursor.lineX.strokeWidth = 0;
-        chart.cursor.lineX.fill = am4core.color("#000");
-        chart.cursor.lineX.fillOpacity = 0.1;
         chart.cursor.behavior = "panX";
-        chart.cursor.lineY.disabled = true;
         
         setLegendSize(chart);
     });
@@ -939,7 +1096,7 @@ function displayOverallColumnChart(container){
             range.locations.endCategory = 0.9;
         };
     }
-    console.log(_categoryObj);
+
     $.each(_categoryObj, function(i, v) { 
         var _name = v.name;
         var _nameNew = _name.replace(" ","_");
@@ -1686,7 +1843,7 @@ function displayPieGroundEyelet(container){
     container.width = am4core.percent(100);
     container.height = am4core.percent(100);
     container.layout = "horizontal";
-    console.log("_data", _data);
+   
     var _createChart = function(data, year){
         var chart = container.createChild(am4charts.PieChart);
         chart.data = data;
@@ -2757,4 +2914,4 @@ function displayColumnSTC(container){
 }
 
 // ******************************** END CHART ********************************//
-     
+        

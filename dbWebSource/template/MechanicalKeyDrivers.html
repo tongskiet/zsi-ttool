@@ -78,60 +78,57 @@
     width: 45%;
     height: auto;
     position: absolute;
-    
-    margin-top: -25%;
-    margin-left: -25%;
 }
 .animate .box-1{
-    top: 40%;
-    left: 25%;
+    top: 0;
+    left: 0;
     animation: 0.8s ease-out 0s 1 slideBoxOne;
 }
 .animate .box-2{
-    width: 60%;
-    top: 75%;
-    left: 65%;
+    width: 76%;
+    right: 0;
+    bottom: 0;
     animation: 0.8s ease-out 0s 1 slideBoxTwo;
 }
 @keyframes slideBoxOne {
   0% {
-    top: 50%;
-    left: 50%;
+    top: 12%;
+    left: 25%;
   }
   100% {
-    top: 40%;
-    left: 25%;
+    top: 0;
+    left: 0;
   }
 }
 @keyframes slideBoxOne2 {
   0% {
-    top: 40%;
-    left: 25%;
+    top: 0;
+    left: 0;
   }
   100% {
-    top: 70%;
-    left: 65%;
+    top: 23%;
+    left: 55%;
     z-index: 1;
   }
 }
 @keyframes slideBoxTwo {
   0% {
-    top: 50%;
-    left: 50%;
+    right: 12%;
+    bottom: 20%;
   }
   100% {
-    top: 75%;
-    left: 65%;
+    right: 0;
+    bottom: 0;
   }
 }
 @keyframes slideBoxTwo2 {
   0% {
-    top: 75%;
-    left: 65%;
+    right: 0;
+    bottom: 0;
   }
   100% {
-    top: 40%;
-    left: 25%;
+    right: 24%;
+    bottom: 40%;
   }
 }
 .animate.preload .box{
@@ -147,14 +144,14 @@
   animation: none !important;
 }
 .main-menu-card:hover .box-1{
-    top: 70%;
-    left: 65%;
+    top: 23%;
+    left: 55%;
     z-index: 1;
     animation: 0.6s ease-out 0s 1 slideBoxOne2;
 }
 .main-menu-card:hover .box-2{
-    top: 40%;
-    left: 25%;
+    right: 24%;
+    bottom: 40%;
     animation: 0.6s ease-out 0s 1 slideBoxTwo2;
 }
 /*------------------END------------------------*/
@@ -174,26 +171,12 @@
                 </div>
                 <div class="card-body px-4 py-2">
                     <div class="animate preload" style="{{{body_style}}}">
-                        <div class="box box-1">
+                        <div class="box box-1 shadow-sm">
                             <img class="img-first w-100 h-auto" src="{{{img3_src}}}" alt="{{title}}">
                         </div>
-                         <div class="box box-2">
+                         <div class="box box-2 shadow-sm">
                             <img class="img-second w-100 h-auto" src="{{{img4_src}}}" alt="{{title}}">
                         </div>
-                       
-                        <!--<div class="flip-container">-->
-                        <!--    <div class="flip-card shadow-sm">-->
-                        <!--        <div class="front face">-->
-                        <!--            <img class="img-first" src="{{{img3_src}}}" width="200" height="200" alt="{{title}}">-->
-                        <!--        </div>-->
-                        <!--        <div class="back face center">-->
-                        <!--            <img class="img-second" src="{{{img3_src}}}" width="200" height="200" alt="{{title}}">  -->
-                        <!--        </div>-->
-                        <!--    </div>-->
-                        <!--</div>-->
-                        <!--<div class="position-relative shadow-sm mt-auto ml-auto mr-0 mb-1 w-75" style="min-height:180px">-->
-                        <!--    <img class="img-second w-100 h-100" src="{{{img4_src}}}" alt="{{title}}">-->
-                        <!--</div>-->
                     </div>
                 </div>
             </div>
