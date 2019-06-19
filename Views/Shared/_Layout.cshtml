@@ -40,7 +40,7 @@
         <br> Please Contact System Administrator.
     </div>
   
-	<!-- -----------------------------------MAIN MENU ------------------------------------- -->
+	<!-- MAIN MENU -->
 	<nav class="navbar-main navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 		<div class="navbar-expand">
 			<ul class="navbar-nav m-0">
@@ -63,13 +63,13 @@
             <ul class="navbar-nav ml-auto mr-0">
 				@{ string role = (ViewBag.role == null ? "No Role" :  ViewBag.role ); }
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contact Us</a>
+                    <a class="nav-link" href="contact_us">Contact Us</a>
                 </li>
                 <li class="nav-item nav-divider d-none d-md-block">
                     <span class="divider mx-2 my-2">|</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About Trend Tool</a>
+                    <a class="nav-link" href="about_trend_tool">About Trend Tool</a>
                 </li>
                 <li class="nav-item">
                     <form class="form-inline my-1">
@@ -86,15 +86,15 @@
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-user-circle"></i> @zsi.web.SessionHandler.CurrentUser.userName.ToUpper() (@role)
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow-sm px-3" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item mb-1" href="@Url.Content("~/")page/name/signin">Log Out</a>
-                        <a class="dropdown-item mb-1" href="@Url.Content("~/")page/name/docs">Activity Log</a>
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm " aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="@Url.Content("~/")page/name/signin">Log Out</a>
+                        <a class="dropdown-item" href="@Url.Content("~/")page/name/docs">Activity Log</a>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
-	<!--------------------------------------- SUB MENU -------------------------------------------------------->
+	<!-- SUB MENU -->
     <nav class="navbar-sub navbar navbar-expand-md fixed-top navbar-dark shadow-sm">
         <button class="navbar-toggler p-1 border-0" type="button" data-toggle="collapse"
             data-target="#navbarSubCollapse" aria-controls="navbarSubCollapse" aria-expanded="false"
@@ -118,10 +118,7 @@
 		<div class='debugPanel noprint'>
 			  <a href='@Url.Content("~/")pagetemplate/source/@ViewBag.pageName' target="_blank">Edit Page Template</a>
 			| <a href='@Url.Content("~/")javascript/source/@ViewBag.pageName' target="_blank">Edit Javascript</a>
-			| <a href='@Url.Content("~/")page' target="_blank">Pages</a>
-			| <a href='@Url.Content("~/")pagetemplate' target="_blank">Page Templates</a>
-			| <a href='@Url.Content("~/")javascript' target="_blank">JavaScripts</a>
-			| <a href='@Url.Content("~/")sql' target="_blank">SQL Console</a>
+			
 		</div>
 		}
 	}

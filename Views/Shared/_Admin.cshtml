@@ -27,6 +27,7 @@
 			margin-left: auto !important;
 			margin-right: 1.5rem;
 		}
+	
 	</style>
 
 </head>
@@ -39,52 +40,80 @@
         Some processe(s) encountered a problem.
         <br> Please Contact System Administrator.
     </div>
-    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-		<nav class="navbar navbar-expand">
-			<ul class="navbar-nav">
+	<!-- -----------------------------------MAIN MENU ------------------------------------- -->
+	<nav class="navbar-main navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+		<div class="navbar-expand">
+			<ul class="navbar-nav m-0">
 				<li class="nav-item dropdown no-arrow">
 					<a class="dropdown-toggle" href="javascript:void(0);" onclick="toggleMenu();"   >
 						<button class="btn btn-link btn-sm text-white">
 							<i class="fas fa-bars"></i>
 						</button>
 					</a>
-					<div id="topMainMenu" class="tt-menu dropdown-menu dropdown-menu-left"> </div>
-				</li>
-			</ul>
-		</nav>
-		<a class="navbar-brand mr-1" href='@Url.Content("~/")'>
-			<i class="ttool lear-logo" style=""></i>
-		</a>
-		<div class="d-none d-sm-block appTitle"> E - Systems Trend Tool</div>
-
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<ul class="navbar-nav ml-auto">
-				@{ string role = (ViewBag.role == null ? "No Role" :  ViewBag.role ); }
-				<li>
-					<button class="navbar-toggler" type="button" data-toggle="offcanvas" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-						<span class="navbar-toggler-icon"></span>
-					</button>
-				<div id="menuPanel" class="collapse navbar-collapse"> </div></li>
-
-				<li class="nav-item dropdown">
-					<a href="#" class="nav-link  dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-						<i class="fas fa-user-circle fa-fw"> </i> <span class="d-none d-sm-inline "></span> @zsi.web.SessionHandler.CurrentUser.userName.ToUpper() (@role)
-						<span class="caret"></span>
-					</a>
-					
-					<ul class="dropdown-menu">		
-						<li class="nav-item"><a href="@Url.Content("~/")page/name/docs" class="nav-link"><i class="fas fa-book"> </i> User Manual</a></li>
-						<li class="nav-item"><a href="@Url.Content("~/")page/name/changepassword" class="nav-link"><i class="fas fa-key"> </i> Change Password</a></li>
-						<li class="nav-item"><a href="@Url.Content("~/")page/name/signin" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-					</ul>
+					<div id="topMainMenu" class="tt-menu dropdown-menu dropdown-menu-left" > </div>
 				</li>
 			</ul>
 		</div>
-	</nav>
-    @Html.Raw(ViewBag.GetScriptLinkCurrentVersion("appStart"))   
-    <div class="container-fluid page">
-        @RenderBody()
-    </div>
+        <a class="navbar-brand" href='@Url.Content("~/")'><i class="ttool lear-logo"></i> E - Systems Trend Tool</a>
+        <button class="navbar-toggler p-0 border-0" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto mr-0">
+				@{ string role = (ViewBag.role == null ? "No Role" :  ViewBag.role ); }
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact Us</a>
+                </li>
+                <li class="nav-item nav-divider d-none d-md-block">
+                    <span class="divider mx-2 my-2">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About Trend Tool</a>
+                </li>
+                <li class="nav-item">
+                    <form class="form-inline my-1">
+                        <div class="input-group input-group-sm mx-md-2">
+                            <input type="text" class="form-control" id="" placeholder="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-light" type="button" id=""><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> @zsi.web.SessionHandler.CurrentUser.userName.ToUpper() (@role)
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm px-3" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item mb-1" href="@Url.Content("~/")page/name/signin">Log Out</a>
+                        <a class="dropdown-item mb-1" href="@Url.Content("~/")page/name/docs">Activity Log</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+	<!--------------------------------------- SUB MENU -------------------------------------------------------->
+    <nav class="navbar-sub navbar navbar-expand-md fixed-top navbar-dark shadow-sm">
+        <button class="navbar-toggler p-1 border-0" type="button" data-toggle="collapse"
+            data-target="#navbarSubCollapse" aria-controls="navbarSubCollapse" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSubCollapse">
+            <div id="menuPanel"> </div>	
+        </div>
+    </nav>
+	
+    
+
+@Html.Raw(ViewBag.GetScriptLinkCurrentVersion("appStart"))
+<!-- <div class="container-fluid page"> -->
+<main role="main" class="w-100">
+	@RenderBody()
+</main>
+
 
 @{
     if (Session["zsi_login"].ToString() == "Y")
@@ -93,10 +122,7 @@
     <div class='debugPanel noprint'>     
           <a href='@Url.Content("~/")pagetemplate/source/@ViewBag.pageName' target="_blank">Edit Page Template</a> 
         | <a href='@Url.Content("~/")javascript/source/@ViewBag.pageName' target="_blank">Edit Javascript</a> 
-        | <a href='@Url.Content("~/")page' target="_blank">Pages</a>         
-        | <a href='@Url.Content("~/")pagetemplate' target="_blank">Page Templates</a>
-        | <a href='@Url.Content("~/")javascript' target="_blank">JavaScripts</a>
-		| <a href='@Url.Content("~/")sql' target="_blank">SQL Console</a>
+        
     </div> 
     }
  }
