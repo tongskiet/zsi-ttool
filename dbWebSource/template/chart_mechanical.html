@@ -12,12 +12,17 @@
     max-height: 120px;
     overflow-x: none;
     overflow-y: auto;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.flex-chart{
+    padding: 0 12%;
 }
 </style>
 
 <header>
     <div class="px-2 py-1 m-0 h4">
-        <!--<a href="electricalkeydrivers" class="text-dark text-decoration-none" title="Back"><i class="fas fa-arrow-alt-circle-left"></i></a>-->
         <span class="font-weight-bold text-uppercase" id="menu_name"></span> |  
         <span id="criteria_name"></span> 
     </div>
@@ -75,10 +80,14 @@
     </div>
 </header>
 <div class="zContainer">
-    <div class="flex flex-column flex-chart">
-        <div class="mb-auto" id="chart_div"></div>
-        <div class="legend-wrapper">
-            <div id="legend_div"></div>
+    <div class="flex-column flex-chart">
+        <div class="position-relative">
+            <div class="chart-wrapper overflow-auto">
+                <div class="d-flex mx-auto" id="chart_div"></div>
+            </div>
+            <div class="legend-wrapper">
+                <div id="legend_div"></div>
+            </div>
         </div>
         <div class="d-flex justify-content-center mb-3">
             <div class="zContainer">

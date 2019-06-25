@@ -9,6 +9,9 @@
 .emTitle a{
     color: #343A40;
 }
+.main-menu-card .card-header{
+    z-index: 1;
+}
 .main-menu-card .stretched-link{
    font-size: 18px;
 }
@@ -105,7 +108,7 @@
     left: 0;
   }
   100% {
-    top: 23%;
+    top: 25%;
     left: 55%;
     z-index: 1;
   }
@@ -127,7 +130,7 @@
   }
   100% {
     right: 24%;
-    bottom: 40%;
+    bottom: 23%;
   }
 }
 .animate.preload .box{
@@ -143,14 +146,14 @@
   animation: none !important;
 }
 .main-menu-card:hover .box-1{
-    top: 23%;
+    top: 25%;
     left: 55%;
     z-index: 1;
     animation: 0.6s ease-out 0s 1 slideBoxOne2;
 }
 .main-menu-card:hover .box-2{
     right: 24%;
-    bottom: 40%;
+    bottom: 23%;
     animation: 0.6s ease-out 0s 1 slideBoxTwo2;
 }
 /*------------------END------------------------*/
@@ -164,7 +167,7 @@
 <ul id="localTemplates">
     <li name="main_menu_card">
         <div class="col-md-6 col-lg-4 pr-2">
-            <div class="main-menu-card card shadow-sm rounded-0 mb-2">
+            <div class="main-menu-card card overflow-hidden shadow-sm rounded-0 mb-2">
                 <div class="card-header rounded-0 bg-dark py-1 h5 text-center" style="{{{header_style}}}">
                     <a href="{{link}}" class="stretched-link text-white text-decoration-none text-uppercase" onClick="{{{onClick}}}">{{title}}</a>
                 </div>

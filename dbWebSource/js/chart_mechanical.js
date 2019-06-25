@@ -21,9 +21,11 @@ var  svn                = zsi.setValIfNull
     ,gPrmGraphType      = ""
     ,gHasSub            = false
     ,gIsStacked         = false
-    ,gLists             = [];
+    ,gLists             = []
+    ,gWinWidth          = 0;
     
 zsi.ready(function(){
+    gWinWidth = $(window).width();
     var _mainHeight = $("main").height() - 60;
     var _chartHeight = _mainHeight / 2;
     
@@ -58,8 +60,11 @@ function setDefaultParams(){
 }
 
 function filterGraphData(e){
-    gMYFrom = $("#my_from").val();
-    gMYTo = $("#my_to").val();
+    gLists = [];
+    gHasSub = false;
+    gIsStacked = false;
+    gMYFrom = parseInt($("#my_from").val());
+    gMYTo = parseInt($("#my_to").val());
     gPrmSumUp = $("#sum_by").val();
     gPrmCategory = $("#category").val();
     gPrmGraphType = $("#graph_type").val();
@@ -75,41 +80,32 @@ function removeSpecialChar(string){
 function getData(url, callback){
     $.get(execURL + url, function(data){
         gData = data.rows;
-        
-        var i = 0;
+
         var _objKey = getDistinctKey(gData);
         var _region = _objKey.region;
         var _modelYear = _objKey.model_year;
         var _oem = _objKey.oem;
         var _vehicle_type = _objKey.vehicle_type;
         gRegionNames = sortBy(gData.groupBy([_region]), "name");
-        gModelYears = sortBy(gData.groupBy([_modelYear]), "name");
+        gModelYears = gData.groupBy([_modelYear], "name");
         gOEMs = sortBy(gData.groupBy([_oem]), "name");
         gVehicleTypes = sortBy(gData.groupBy([_vehicle_type]), "name");
-
+         
         for (var _my = gMYFrom; _my <= gMYTo; _my++) {
-            if(isUD(gModelYears[i])){
+            var _res = gModelYears.filter(function (item) {
+            	return item.name == _my;
+            });
+
+            if(_res.length === 0){
                 gModelYears.push({
                     name : _my.toString(),
                     items: []
                 });
             }
-            i++;
         }
-        
-        if(gLegendData.length === 0){
-            var _objKey = getDistinctKey(gData);
-            var _category = _objKey.category;
-            var _categoryObj =  sortBy(gData.groupBy([_category]), "name");
-            
-            gLists = _categoryObj.map(function(item) { return item.name });
-            
-            getLegendData(function(){
-                if(callback) callback();
-            });
-        }else{
-            if(callback) callback();
-        }
+        sortBy(gModelYears, 'name');
+
+        if(callback) callback();
     });
 }
 
@@ -130,7 +126,7 @@ function setChartSettings(o){
     
     _chart.default = "displayComPieChart(container)";
     _chart.column = "displayComStackColumnChart(container)";
-     
+
     if(gPrmCategory==="Region"){
         _param = ",@byRegion='Y'";
         _chart.column = "displayComOverallColumnChart(container)";
@@ -142,48 +138,28 @@ function setChartSettings(o){
 
     if(isContain(gMenu, "WIRES & CABLES")){
         _url = "dynamic_summary_sel @table_view_name='dbo.wires_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        //_chart.default = "displayComPieChart(container)";
-        //_chart.column = "displayComColumnChart(container)";
-        //_chart.column = "displayColumnGroundEyelet(container)";
     }
     else if(isContain(gMenu, "INLINE CONNECTOR")){
         _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        //_chart.default = "displayComPieChart(container)";
-        //_chart.column = "displayComColumnChart(container)";
-        //_chart.column = "displayColumnGroundEyelet(container)";
     }
     else if(isContain(gMenu, "GROUND EYELET") || isContain(gMenu, "SPLICE") || isContain(gMenu, "BATTERY FUSE TERMINAL")){
         _url = "dynamic_cts_usage_summary @criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        //_chart.default = "displayComPieChart(container)";
-        //_chart.pie = "displayPieGroundEyelet(container)";
-        //_chart.column = "displayComColumnChart(container)";
     }
     else if(isContain(gMenu, "COVERINGS")){
          _param = ",@byRegion='Y'";
         _url = "dynamic_summary_sel @table_view_name='dbo.coverings_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayComOverallColumnChart(container)";
-        //_chart.line = "displayChartCovering(container)";
     }
     else if(isContain(gMenu, "RETAINERS")){
         _param = ",@byRegion='Y'";
         _url = "dynamic_summary_sel @table_view_name='dbo.retainers_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayComOverallColumnChart(container)";
-        //_chart.default = "displayChartRetainer(container)";
-        //_chart.line = "displayChartRetainer(container)";
     }
     else if(isContain(gMenu, "GROMMETS")){
         _param = ",@byRegion='Y'";
         _url = "dynamic_summary_sel @table_view_name='dbo.grommets_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayComOverallColumnChart(container)";
-        //_chart.pie = "displayPieGrommets(container)";
-        //_chart.column = "displayColumnGrommets(container)";
     }
     else if(isContain(gMenu, "TROUGH/SHIELD/BRACKET")){
         _param = ",@byRegion='Y'";
         _url = "dynamic_summary_sel @table_view_name='dbo.stc_v',@criteria_id="+ gCId +",@model_year_fr="+ gMYFrom +",@model_year_to="+ gMYTo + _param;
-        _chart.default = "displayComOverallColumnChart(container)";
-        //_chart.pie = "displayPieSTC(container)";
-        //_chart.column = "displayColumnSTC(container)";
     }
 
     _result.url = _url;
@@ -197,7 +173,7 @@ function displayChart(){
     if( _res.url!=="" ){
         getLegendData(function(){
             getData(_res.url, function(){
-                $("#chart_div").empty();
+                $("#chart_div").empty().width("auto");
                 
                 var _graph = _res.chart.default;
                 if(gPrmGraphType==="bar"){
@@ -212,7 +188,7 @@ function displayChart(){
 
 //******************************* CHART FUNCTION *****************************//
 
-function setLegend(charts, series){
+function setLegend(charts){
     var _legend = [];
     var _chart = charts;
     
@@ -229,48 +205,10 @@ function setLegend(charts, series){
     _chart.legend = new am4charts.Legend();
     _chart.legend.labels.template.fontSize = 10;
     _chart.legend.valueLabels.template.fontSize = 10;
-    _chart.legend.itemContainers.template.paddingTop = 3;
-    _chart.legend.itemContainers.template.paddingBottom = 3;
     _chart.legend.itemContainers.template.hoverable = false;
     _chart.legend.itemContainers.template.clickable = false;
     _chart.legend.itemContainers.template.focusable = false;
     _chart.legend.itemContainers.template.cursorOverStyle = am4core.MouseCursorStyle.default;
-
-    // _chart.legend.itemContainers.template.events.on("hit", function(ev) {
-    //     var _category = ev.target.dataItem.name;
-    //     console.log(" ev.target", ev.target);
-    //     console.log(ev.target.dataItem.component);
-   
-            // _chart.data.forEach(function (item) {
-            //     return item.pieData.find(function (i) {
-            //         return i.category === category;
-            //     }).hidden = !ev.target.isActive;
-            // });
-            // pieSeries.validateData();
-   
-    //     // if(_chart.className){
-    //     //     $.each(charts, function(i, v){
-    //     //         var _cData = v.data;
-    //     //         if(_cData.length > 0 && _cData.length > _legend.length){
-    //     //             _chart = v;
-    //     //             _legend = _cData;
-    //     //         }
-    //     //     });
-    //     // }
-            
-    //     // });
-    //     // series4.events.on("hidden", function() {
-    //     //   series1.hide();
-    //     //   series2.hide();
-    //     //   series3.hide();
-    //     // });
-        
-    //     // series4.events.on("shown", function() {
-    //     //   series1.show();
-    //     //   series2.show();
-    //     //   series3.show();
-    //     // });
-    // });
 
     var markerTemplate = _chart.legend.markers.template;
     markerTemplate.width = 10;
@@ -279,21 +217,23 @@ function setLegend(charts, series){
     var legendContainer = am4core.create("legend_div", am4core.Container);
     legendContainer.width = am4core.percent(100);
     legendContainer.height = am4core.percent(100);
-    _chart.legend.parent = legendContainer;  
+    _chart.legend.parent = legendContainer;
         
-    _chart.events.on("datavalidated", resizeLegend);
-    _chart.events.on("maxsizechanged", resizeLegend);
-    
-    function resizeLegend(ev) {
-        document.getElementById("legend_div").style.height = _chart.legend.contentHeight + "px";
+    var resizeLegend = function(ev) {
+        var _legendHeight = _chart.legend.contentHeight;
+            _legendHeight = (_legendHeight > 0 ? _legendHeight : 32);
+        
+        if(_chart.className === "PieChart"){
+            $("#chart_div").css("margin-bottom", (_legendHeight > 120 ? 120: _legendHeight));
+        }
+        $(".legend-wrapper").css("bottom", (charts.length > 3 ? 16: 0));
+        $("#legend_div").height(_legendHeight);
+    };    
+      
+    if(charts.length > 0){    
+        _chart.events.on("datavalidated", resizeLegend);
+        _chart.events.on("maxsizechanged", resizeLegend);
     }
-    
-    // chart.legend.itemContainers.template.events.on("hit", (ev) => {
-    //   var category = ev.target.dataItem.name;
-        
-    //   //chart.data.forEach(item => item.pieData.find(i => i.category === category).hidden = !ev.target.isActive);
-    // //   pieSeries.validateData();
-    // });
 }
 
 function setTrendResult(o){
@@ -352,21 +292,19 @@ function setTrendResult(o){
 }
 
 function setWireTrend(data){
-    console.log(data);
     if(data.length > 0){
         var _trend = "";
         var lastObj = data[data.length - 1];
-        console.log("lastObj",lastObj);
+        //console.log("lastObj",lastObj);
         $.each(lastObj, function(k, v){
             var _key = k.replace("_",".");
             if($.isNumeric( _key ) && v !== 0){
                 _trend += _key + '<br>';
             }
         });
-        console.log(_trend);
+        //console.log(_trend);
         var _tw = new zsi.easyJsTemplateWriter();
         $("div#trends").html( _trend );
-        //$("#" + pContainer).append( _tw.trendResult({ trend: _trend }).html() );
     }
 }
 
@@ -462,7 +400,7 @@ function isContain(string, contains){
         _res = true;
     }
     return _res;
-}  
+} 
 
 //-------------------------------- CHARTS DATA  ------------------------------//
 function setPieChartData(callback){
@@ -475,7 +413,6 @@ function setPieChartData(callback){
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
     var _categoryObj =  sortBy(gData.groupBy([_category]), "name");
-       
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -490,7 +427,7 @@ function setPieChartData(callback){
         _selectedKey = _oem;
         _selectedCategory = gOEMs;
     }
-   
+
     $.each(_selectedCategory, function(x, v) { 
         var _group = v.name;
         var _items = v.items;
@@ -513,29 +450,13 @@ function setPieChartData(callback){
                 }
             }  
             
-            // var _sub = [];
-            // if(gHasSub){
-            //     $.each(_res.groupBy(['wire_gauge']), function(y, wire){
-            //         var _sumWire = wire.items.reduce(function (accumulator, currentValue) {
-            //             return accumulator + currentValue[_value];
-            //         }, 0);
-                    
-            //         _sub.push({
-            //             category: wire.name,
-            //             value: _sumWire,
-            //             color: ""
-            //         });
-            //     });
-            // }
             _json.category = _cName;
             _json.value = _count;
-            //_json.subs = _sub;
-
+            
             if(gLegendData.length > 0){
                 var _result = gLegendData.filter(function (item) {
                 	return item["alias"] == _cName;
                 });
-                
                 if(_result.length > 0){
                     _json.category = _result[0].legend_label;
                   
@@ -565,7 +486,6 @@ function setOverallPieChartData(callback){
     var _oem = _key.oem;
     var _vehicleType = _key.vehicle_type;
     var _categoryObj =  sortBy(gData.groupBy([_category]), "name");
-       
     var _selectedKey = _modelYear; //Default key selected
     var _selectedCategory = gModelYears; //Default category selected
 
@@ -857,7 +777,7 @@ function setOverallColumnChartData(callback){
                     $.each(_categoryObj, function(z, s) {
                         var _count = 0;
                         var _name = s.name;
-                        var _nameNew = _name.replace(" ","_");
+                        var _nameNew = _name.replace(/ /g,"_");
                         var _result2 = _result.filter(function (item) {
                         	return item[_location] == _specLocation && item[_category] == _name;
                         });
@@ -893,7 +813,7 @@ function setOverallColumnChartData(callback){
                 $.each(_categoryObj, function(y, w) { 
                     var _count = 0;
                     var _cName = w.name;
-                    var _cNameNew = _cName.replace(" ","_");
+                    var _cNameNew = _cName.replace(/ /g,"_");
                     var _res = r.items.filter(function (item) {
                     	return item[_category] == _cName && item[_modelYear] == _my;
                     });
@@ -990,22 +910,16 @@ function displayComPieChart(container){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.selectedCategory;
-        var _charts = [];
-console.log(" o.data",_data);
+    
+    console.log("_data",_data)        
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
         
-        var _tw = new zsi.easyJsTemplateWriter();
-            _tw.div();
-        
-        var _container = am4core.create(container, am4core.Container);
-        _container.width = am4core.percent(100);
-        _container.height = am4core.percent(100);
-        _container.layout = "horizontal";
-        
-        var _createChart = function(data, name, isLegend){
-            var chart = _container.createChild(am4charts.PieChart);
+        var _charts = [];
+        var _createChart = function(data, name, isLegend, div){
+            //var chart = _container.createChild(am4charts.PieChart);
+            var chart = am4core.create(div, am4charts.PieChart);
             chart.paddingTop= 15;
             chart.paddingBottom = 15;
             
@@ -1040,7 +954,7 @@ console.log(" o.data",_data);
             pieSeries.colors.step = 2;
             
             pieSeries.dataFields.hiddenInLegend = "disabled";
-    
+            
             /* Set tup slice appearance */
             var slice = pieSeries.slices.template;
             slice.propertyFields.fill = "color";
@@ -1079,7 +993,15 @@ console.log(" o.data",_data);
             _charts.push(chart);
         };
 
+        var _chartWidth = gWinWidth / 4;
+        var _conWidth = 0;
+        var _container = "#"+ container;
+        var _tw = new zsi.easyJsTemplateWriter(_container);
         $.each(_category, function(i, v){
+            var _charId = "chart_"+ i;
+            _conWidth += _chartWidth;
+            _tw.div({ class: "", id: _charId, style: "width:" + _chartWidth + "px" });
+            
             var _groupName = v.name;
             var _result = (v.items.length === 0 ? [] : _data.filter(function (item) {
             	return item.group == _groupName;
@@ -1087,8 +1009,9 @@ console.log(" o.data",_data);
             
             if(Number.isInteger(parseInt(_groupName))) _groupName = "MY"+ _groupName;
 
-            _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false));
+            _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false), _charId);
         });
+        $(_container).width(_conWidth - 10);
         
         setLegend(_charts);
         setWireTrend(_data);
@@ -1101,15 +1024,10 @@ function displayComOverallPieChart(container){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.selectedCategory;
-console.log("o.data",o.data);
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
-        
-        //  var _container = am4core.create(container, am4core.Container);
-        // _container.width = am4core.percent(100);
-        // _container.height = am4core.percent(100);
-        // _container.layout = "horizontal";
         
         var _charts = [];
         var _createChart = function(data, name, isLegend, div){
@@ -1120,6 +1038,7 @@ console.log("o.data",o.data);
             
             var selected;
             var generateChartData = function() {
+                setLegend(chart);
                 var chartData = [];
                 for (var i = 0; i < data.length; i++) {
                     
@@ -1224,14 +1143,19 @@ console.log("o.data",o.data);
                     }
                 }
             });
+            
             _charts.push(chart)
-            //if(isLegend) setLegend(chart);
         };
 
-        var _tw = new zsi.easyJsTemplateWriter("#"+ container);
+        var _winWidth = $(window).width();
+        var _chartWidth = _winWidth / 4;
+        var _conWidth = 0;
+        var _container = "#"+ container;
+        var _tw = new zsi.easyJsTemplateWriter(_container);
         $.each(_category, function(i, v){
             var _charId = "chart_"+ i;
-            _tw.div({ class: "flex-fill", id: _charId });
+            _conWidth += _chartWidth;
+            _tw.div({ class: "", id: _charId, style: "width:" + _chartWidth + "px" });
             
             var _groupName = v.name;
             var _result = (v.items.length === 0 ? [] : _data.filter(function (item) {
@@ -1242,6 +1166,7 @@ console.log("o.data",o.data);
 
             _createChart(sortBy(_result, "category"), _groupName, (i === 0 ? true : false), _charId);
         });
+        $(_container).width(_conWidth - 10);
         
         setLegend(_charts);
         setTrendResult(_data);
@@ -1249,74 +1174,14 @@ console.log("o.data",o.data);
 }
 
 // COLUMN CHART
-function displayComColumnChart(container){
-    setColumnChartData(function(o){
-        var _data = o.data;
-        var _key = o.selectedKey;
-        var _category = o.categoryObj;
-
-        // CHART SETTINGS
-        am4core.useTheme(am4themes_animated);
-        am4core.options.commercialLicense = true;
-    
-        var chart = am4core.create(container, am4charts.XYChart);
-        chart.data = _data;
-        chart.colors.step = 2;
-        chart.padding(15, 15, 10, 15);
-        
-        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "category";
-        categoryAxis.renderer.minGridDistance = 60;
-        categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.interactionsEnabled = false;
-        categoryAxis.numberFormatter.numberFormat = "#";
-        categoryAxis.fontSize = 15;
-        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (typeof(text)!=="undefined" ? (Number.isInteger(parseInt(text)) ? "MY"+ text: text) : text);
-        });
-        
-        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        valueAxis.tooltip.disabled = true;
-        valueAxis.renderer.grid.template.strokeOpacity = 0.05;
-        valueAxis.renderer.minGridDistance = 20;
-        valueAxis.interactionsEnabled = false;
-        valueAxis.min = 0;
-        valueAxis.renderer.minWidth = 35;
-        
-        // Create series
-        var _createSeries = function(field, name) {
-            var series = chart.series.push(new am4charts.ColumnSeries());
-            series.columns.template.width = am4core.percent(80);
-            series.columns.template.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')}";
-            series.name = name;
-            series.dataFields.categoryX = "category";
-            series.dataFields.valueY = field;
-            series.dataItems.template.locations.categoryX = 0.5;
-            series.tooltip.pointerOrientation = "vertical";
-            series.tooltip.dy = - 20;
-        };
-        
-        $.each(_category, function(i, v) { 
-            var _name = v.name;
-            var _nameNew = _name.replace(/ /g,"_");
-            
-            _createSeries(_nameNew, _name);
-        });
-        
-        //Add cursor
-        chart.scrollbarX = new am4core.Scrollbar();
-        
-        setLegend(chart);
-    });
-    //setWireTrend(_data);
-}
-
 function displayComStackColumnChart(container){
     setColumnChartData(function(o){
         var _data = o.data;
         var _key = o.selectedKey;
         var _category = o.categoryObj;
-console.log("o.data",o.data);
+    
+    console.log("_data",_data);
+    
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -1325,6 +1190,7 @@ console.log("o.data",o.data);
         chart.data = _data;
         chart.colors.step = 2;
         chart.padding(15, 15, 10, 15);
+        chart.maskBullets = false;
         
         // Create axes
         var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -1362,19 +1228,22 @@ console.log("o.data",o.data);
             series.dataItems.template.locations.categoryX = 0.5;
             series.stacked = gIsStacked;
             series.tooltip.pointerOrientation = "vertical";
-            series.tooltip.dy = - 20;
             
-            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
-            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-            bullet1.locationY = 0.5;
-            bullet1.label.fill = am4core.color("#ffffff");
-            bullet1.interactionsEnabled = false;
+            var valueLabel = series.bullets.push(new am4charts.LabelBullet());
+            valueLabel.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+            valueLabel.fontSize = 10;
+            if(gIsStacked){
+                valueLabel.label.fill = am4core.color("#ffffff");
+                valueLabel.locationY = 0.5;
+            }else{
+                valueLabel.dy = -10;
+            }
         };
-        
+
         $.each(_category, function(i, v) { 
             var _name = v.name;
-            var _nameNew = _name.replace(/_/g," ");
-    
+            var _nameNew = _name.replace(/ /g,"_");
+
             if(gLegendData.length > 0){
                 var _result = gLegendData.filter(function (item) {
                 	return item["alias"].toUpperCase() == _name.toUpperCase();
@@ -1396,306 +1265,8 @@ console.log("o.data",o.data);
         chart.cursor.behavior = "panX";
         
         setLegend(chart);
+        setWireTrend(_data);
     });
-    //setWireTrend(_data);
-}
-
-function displayComRegionColumnChart(container){
-    var _data = [];
-    var _objKey = getDistinctKey(gData);
-    var _value = _objKey.value;
-    var _category = _objKey.category;
-    var _location = _objKey.location;
-    var _region = _objKey.region;
-    var _model_year = _objKey.model_year;
-    var _categoryObj = gData.groupBy([_category]);
-    var _locationObj = gData.groupBy([_location]);
-    var _hasLocation = (_location ? true: false);
-
-    if(_hasLocation){
-        $.each(gRegionNames, function(i, r) { 
-            $.each(gModelYears, function(x, my) {
-                var _regionName = r.name;
-                var _modelYear = my.name;
-                var _result = r.items.filter(function (item) {
-                	return item[_model_year] == _modelYear;
-                });
-                
-                $.each(_locationObj, function(y, l) {
-                    var _specLocation = l.name;
-                    var _json = {
-                        REGION_NAME : _regionName,
-                        MODEL_YEAR : +_modelYear,
-                        category : _specLocation +"("+ _modelYear +"-"+ _regionName +")"
-                    };
-                    
-                    $.each(_categoryObj, function(z, s) {
-                        var _count = 0;
-                        var _name = s.name;
-                        var _nameNew = _name.replace(" ","_");
-                        var _result2 = _result.filter(function (item) {
-                        	return item[_location] == _specLocation && item[_category] == _name;
-                        });
-
-                        if(_value && _value !== ""){
-                             _count = _result2.reduce(function (accumulator, currentValue) {
-                                return accumulator + currentValue[_value];
-                            }, 0)
-                        }else{
-                            for(; _count < _result2.length; ){
-                                _count++;
-                            }
-                        }
-                       
-                        _json[_nameNew] = _count;
-                    });
-                    
-                    _data.push(_json);
-                }); 
-            });
-        });
-    }
-    else{
-         $.each(gRegionNames, function(i,r) { 
-            $.each(gModelYears, function(x, my) { 
-                var _my = my.name;
-                var _region = r.name;
-                var _obj = {};
-                _obj.year = +_my;
-                _obj.region = _region;
-                _obj.category = _my +"("+ _region +")";
-                
-                $.each(_categoryObj, function(y, w) { 
-                    var _count = 0;
-                    var _cName = w.name;
-                    var _cNameNew = _cName.replace(" ","_");
-                    
-                    var _res = r.items.filter(function (item) {
-                    	return item[_category] == _cName && item[_model_year] == _my;
-                    });
-                    
-                    if(_value && _value !== ""){
-                         _count = _res.reduce(function (accumulator, currentValue) {
-                            return accumulator + currentValue[_value];
-                        }, 0);    
-                    }else{
-                        for(; _count < _res.length; ){
-                            _count++;
-                        }
-                    }
-    
-                    _obj[_cNameNew] = _count;
-                });
-                _data.push(_obj);
-            });
-        });
-    }
-
-    var chart = am4core.create(container, am4charts.XYChart);
-    chart.data = _data;
-    chart.colors.step = 2;
-    chart.padding(15, 15, 10, 15);
-
-    if(_hasLocation){
-        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "category";
-        categoryAxis.renderer.minGridDistance = 20;
-        categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.interactionsEnabled = false;
-        categoryAxis.renderer.labels.template.fontSize = 10;
-        categoryAxis.renderer.labels.template.valign = "top";
-        categoryAxis.renderer.labels.template.location = 0;
-        categoryAxis.renderer.labels.template.rotation = (_hasLocation ? 270: 0);
-        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (!isUD(text) ? text.replace(/\(.*/, "") : text);
-        });
-    
-        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        //valueAxis.title.text = "Count";
-        valueAxis.min = 0;
-        //valueAxis.max = 100;
-        valueAxis.strictMinMax = true;
-        valueAxis.calculateTotals = true;
-        valueAxis.renderer.minGridDistance = 10;
-        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-          return text + "%";
-        });
-    
-        // Create series
-        var _createSeries = function(field, name) {
-            var series = chart.series.push(new am4charts.ColumnSeries());
-            series.columns.template.width = am4core.percent(80);
-            series.columns.template.tooltipText = "[bold]{name}:[/] {valueY.formatNumber('#,###')} - [bold]{valueY.formatNumber('#,###')}[/]";
-            series.columns.template.column.strokeOpacity = 1;
-            series.name = name;
-            series.dataFields.categoryX = "category";
-            series.dataFields.valueY = field;
-            series.dataFields.valueYShow = "totalPercent";
-            series.dataItems.template.locations.categoryX = 0.5;
-            series.stacked = gIsStacked;
-            series.tooltip.pointerOrientation = "vertical";
-            series.tooltip.dy = - 20;
-            
-            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
-            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-            bullet1.locationY = 0.5;
-            bullet1.label.fill = am4core.color("#ffffff");
-            bullet1.interactionsEnabled = false;
-        //   var series = chart.series.push(new am4charts.ColumnSeries());
-        //   series.dataFields.valueY = field;
-        //   //series.dataFields.categoryXShow = "totalPercent";
-        //   series.dataFields.categoryX = "category";
-        //   series.name = name;
-          
-        //   series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-        //   series.tooltip.fontSize = 8;
-        //   series.tooltip.paddingTop = 1;
-        //   series.tooltip.paddingBottom= 1;
-        //   series.tooltip.paddingBottom= 1;
-        //   series.tooltip.dy = -10;
-        //   series.tooltip.align = "top";
-        //   series.stacked = gIsStacked;//(_hasLocation ? true: false);
-        //   series.columns.template.width = am4core.percent(95);
-
-        }
-        
-        var _createLabel = function(category, endCategory, label, opacity, dy) {
-            var range = categoryAxis.axisRanges.create();
-            range.category = category;
-            range.endCategory = endCategory;
-            range.label.dataItem.text = label;
-            range.label.dy = dy;
-            //range.label.fontSize = 10;
-            range.label.fontWeight = "bold";
-            range.label.valign = "bottom";
-            range.label.location = 0.5;
-            range.label.rotation = 0;
-            range.axisFill.fill = am4core.color("#396478");
-            range.axisFill.fillOpacity = opacity;
-            range.locations.category = 0.1;
-            range.locations.endCategory = 0.9;
-        };
-    }
-    else{
-        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "category";
-        categoryAxis.renderer.minGridDistance = 60;
-        categoryAxis.renderer.grid.template.location = 0;
-        categoryAxis.interactionsEnabled = false;
-        categoryAxis.numberFormatter.numberFormat = "#";
-        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            return (typeof(text)!=="undefined" ? text.replace(/\(.*/, "") : text);
-        });
-        
-        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        valueAxis.min = 0;
-        valueAxis.max = 100;
-        valueAxis.strictMinMax = true;
-        valueAxis.calculateTotals = true;
-        valueAxis.renderer.labels.template.adapter.add("text", function(text) {
-          return text + "%";
-        });
-        
-        // Create series
-        var _createSeries = function(field, name) {
-            var series = chart.series.push(new am4charts.ColumnSeries());
-            series.columns.template.tooltipText = "{name}: {valueY.totalPercent.formatNumber('#.00')}% - {valueY.formatNumber('#,###')}";
-            series.columns.template.column.strokeOpacity = 1;
-            series.name = name;
-            series.dataFields.categoryX = "category";
-            series.dataFields.valueY = field;
-            series.dataFields.valueYShow = "totalPercent";
-            series.dataItems.template.locations.categoryX = 0.5;
-            series.stacked = gIsStacked;
-            series.tooltip.pointerOrientation = "vertical";
-            series.tooltip.dy = - 20;
-            
-            // var columnTemplate = categoryAxis.columns.template;
-            // columnTemplate.width = am4core.percent(80);
-            // columnTemplate.propertyFields.fill = "color";
-            
-            var bullet1 = series.bullets.push(new am4charts.LabelBullet());
-            bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-            bullet1.locationY = 0.5;
-            bullet1.label.fill = am4core.color("#ffffff");
-            bullet1.interactionsEnabled = false;
-        };
-         
-        var _createLabel = function(category, endCategory, label) {
-            var range = categoryAxis.axisRanges.create();
-            range.category = category;
-            range.endCategory = endCategory;
-            range.label.dataItem.text = label;
-            range.label.dy = 18;
-            range.label.fontWeight = "bold";
-            range.axisFill.fill = am4core.color("#396478");
-            range.axisFill.fillOpacity = 0.1;
-            range.locations.category = 0.1;
-            range.locations.endCategory = 0.9;
-        };
-    }
-
-    $.each(_categoryObj, function(i, v) { 
-        var _name = v.name;
-        var _nameNew = _name.replace(/ /g,"_");
-
-        if(gLegendData.length > 0){
-            var _result = gLegendData.filter(function (item) {
-            	return item["alias"].toUpperCase() == _name.toUpperCase();
-            });
-            if(_result.length > 0){
-                
-                _name = _result[0].legend_label;
-                //_nameNew = _name.replace(/ /g,"_");
-            }
-        }
-
-        _createSeries(_nameNew, _name);
-        // var _name = v.name;
-        // var _nameNew = _name.replace(" ","_");
-
-        // _createSeries(_nameNew, _name);
-    }); 
-    
-    if(_hasLocation){
-      var _specName = getFirstAndLastItem(_locationObj , "name");
-        
-        $.each(gModelYears, function(i, v) { 
-            var _my = v.name;
-            
-            $.each(gRegionNames, function(i, r) { 
-                var _reg = r.name;
-                var _first = _specName.first + "("+ _my +"-"+ _reg +")";
-                var _last = _specName.last + "("+ _my +"-"+ _reg +")";
-                
-                _createLabel(_first, _last, _my, 0, 10);
-            });
-        });
-        
-        $.each(gRegionNames, function(i, r) { 
-            var _reg = r.name;
-            var _first = _specName.first + "("+ gMYFrom +"-"+ _reg +")";
-            var _last = _specName.last + "("+ gMYTo +"-"+ _reg +")";
-            
-            _createLabel(_first, _last, _reg, 0.1, 20);
-        }); 
-    }
-    else{
-        $.each(gRegionNames, function(i, r) { 
-            var _region = "("+ r.name +")";
-            
-            _createLabel(gMYFrom + _region, gMYTo + _region, r.name,  0.1, 10);
-        });
-    }
-
-    //Add cursor
-    chart.scrollbarX = new am4core.Scrollbar();
-
-    chart.cursor = new am4charts.XYCursor();
-    chart.cursor.behavior = "panX";
-    
-    //setLegend(chart);
-    //setWireTrend(_data);
 }
 
 function displayComOverallColumnChart(container){
@@ -1705,7 +1276,9 @@ function displayComOverallColumnChart(container){
         var _category = o.categoryObj;
         var _locationObj = o.locationObj;
         var _hasLocation = o.hasLocation;
-console.log("o.data", o.data)
+        
+    console.log("_data", _data);
+
         // CHART SETTINGS
         am4core.useTheme(am4themes_animated);
         am4core.options.commercialLicense = true;
@@ -1714,6 +1287,9 @@ console.log("o.data", o.data)
         chart.data = _data;
         chart.colors.step = 2;
         chart.padding(15, 15, 10, 15);
+        chart.maskBullets = false;
+        
+    console.log("_hasLocation", _hasLocation);
     
         if(_hasLocation){
             var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -1753,29 +1329,16 @@ console.log("o.data", o.data)
                 series.dataItems.template.locations.categoryX = 0.5;
                 series.stacked = gIsStacked;
                 series.tooltip.pointerOrientation = "vertical";
-                series.tooltip.dy = - 20;
                 
-                var bullet1 = series.bullets.push(new am4charts.LabelBullet());
-                bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-                bullet1.locationY = 0.5;
-                bullet1.label.fill = am4core.color("#ffffff");
-                bullet1.interactionsEnabled = false;
-            //   var series = chart.series.push(new am4charts.ColumnSeries());
-            //   series.dataFields.valueY = field;
-            //   //series.dataFields.categoryXShow = "totalPercent";
-            //   series.dataFields.categoryX = "category";
-            //   series.name = name;
-              
-            //   series.tooltipText = "[bold]{name}:[/] {valueY.totalPercent.formatNumber('#.00')}% - [bold]{valueY.formatNumber('#,###')}[/]";
-            //   series.tooltip.fontSize = 8;
-            //   series.tooltip.paddingTop = 1;
-            //   series.tooltip.paddingBottom= 1;
-            //   series.tooltip.paddingBottom= 1;
-            //   series.tooltip.dy = -10;
-            //   series.tooltip.align = "top";
-            //   series.stacked = gIsStacked;//(_hasLocation ? true: false);
-            //   series.columns.template.width = am4core.percent(95);
-    
+                var valueLabel = series.bullets.push(new am4charts.LabelBullet());
+                valueLabel.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+                valueLabel.fontSize = 10;
+                if(gIsStacked){
+                    valueLabel.label.fill = am4core.color("#ffffff");
+                    valueLabel.locationY = 0.5;
+                }else{
+                    valueLabel.dy = -10;
+                }
             }
             
             var _createLabel = function(category, endCategory, label, opacity, dy) {
@@ -1827,17 +1390,20 @@ console.log("o.data", o.data)
                 series.dataItems.template.locations.categoryX = 0.5;
                 series.stacked = gIsStacked;
                 series.tooltip.pointerOrientation = "vertical";
-                series.tooltip.dy = - 20;
                 
                 // var columnTemplate = categoryAxis.columns.template;
                 // columnTemplate.width = am4core.percent(80);
                 // columnTemplate.propertyFields.fill = "color";
                 
-                var bullet1 = series.bullets.push(new am4charts.LabelBullet());
-                bullet1.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
-                bullet1.locationY = 0.5;
-                bullet1.label.fill = am4core.color("#ffffff");
-                bullet1.interactionsEnabled = false;
+                var valueLabel = series.bullets.push(new am4charts.LabelBullet());
+                valueLabel.label.text = "{valueY.totalPercent.formatNumber('#.00')}%";
+                valueLabel.fontSize = 10;
+                if(gIsStacked){
+                    valueLabel.label.fill = am4core.color("#ffffff");
+                    valueLabel.locationY = 0.5;
+                }else{
+                    valueLabel.dy = -10;
+                }
             };
              
             var _createLabel = function(category, endCategory, label) {
@@ -1863,17 +1429,11 @@ console.log("o.data", o.data)
                 	return item["alias"].toUpperCase() == _name.toUpperCase();
                 });
                 if(_result.length > 0){
-                    
                     _name = _result[0].legend_label;
-                    //_nameNew = _name.replace(/ /g,"_");
                 }
             }
     
             _createSeries(_nameNew, _name);
-            // var _name = v.name;
-            // var _nameNew = _name.replace(" ","_");
-    
-            // _createSeries(_nameNew, _name);
         }); 
         
         if(_hasLocation){
@@ -1914,7 +1474,7 @@ console.log("o.data", o.data)
         chart.cursor.behavior = "panX";
         
         setLegend(chart);
-        //setWireTrend(_data);
+        setWireTrend(_data);
     });
 }
 
@@ -3400,4 +2960,4 @@ function displayColumnSTC(container){
 }
 
 // ******************************** END CHART ********************************//
-            
+             
