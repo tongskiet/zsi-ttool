@@ -6,17 +6,18 @@
   "author": "Smager",
   "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^2.24.7",
-    "gulp": "^4.0.0",
-    "gulp-autoprefixer": "^6.0.0",
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^6.1.0",
     "gulp-rename": "^1.4.0",
-    "gulp-sass": "^4.0.1",
-    "gulp-sourcemaps": "^2.6.4"
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5"
   },
   "dependencies": {
-    "bootstrap": "^4.2.1",
-    "components-font-awesome": "^5.4.2",
-    "handlebars": "^4.0.12",
-    "jquery": "^3.3.1"
+    "bootstrap": "^4.3.1",
+    "components-font-awesome": "^5.9.0",
+    "handlebars": "^4.1.2",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0"
   }
 }

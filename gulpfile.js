@@ -15,10 +15,12 @@ gulp.task('compile-sass',function(){
 				  ,outputStyle :'compressed'
 			  }))
 			  .on('error',console.error.bind(console))
-			  .pipe(autoprefixer({
-			       browsers: ['last 2 versions']
-				  ,cascade: false
-			  }))
+			  .pipe(
+				autoprefixer({
+				overrideBrowserslist: ['last 2 versions']
+				,cascade: false
+				})
+			  )
 			  .pipe(rename({suffix: '.min'}))
 			  .pipe(sourcemaps.write('./'))
               .pipe(gulp.dest('//zsi-smager/wwwroot/lear_tt/css'))

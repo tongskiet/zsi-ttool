@@ -1,6 +1,12 @@
 // Toggles
 //
 // Used in conjunction with global variables to enable certain theme features.
+// Vendor
+@import "../node_modules/bootstrap/scss/vendor/rfs";
+
+// Deprecate
+@import "../node_modules/bootstrap/scss/mixins/deprecate";
+
 
 // Utilities
 @import "../node_modules/bootstrap/scss/mixins/breakpoints";
@@ -39,3 +45,4 @@
 @import "../node_modules/bootstrap/scss/mixins/grid-framework";
 @import "mixins/grid";
 @import "../node_modules/bootstrap/scss/mixins/float";
+
