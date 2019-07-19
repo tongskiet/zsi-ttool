@@ -26,9 +26,13 @@
 	padding-top: 3px;
 	position: fixed;
 	width: 200px;
-	z-index: 1001;
+	z-index: 1035;
 	display: none;
 	border: 1pt dotted #b8b8b8;
+	font-size: 0.75rem;	
+    #loadingText {
+		float: none;
+	}	
   }
   
   .errorWindow {

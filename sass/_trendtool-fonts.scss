@@ -1,0 +1,97 @@
+@font-face {
+    font-family: 'zsi-trendtool';
+    src:
+      url('../webfonts/zsi-trendtool.ttf?ty0cur') format('truetype'),
+      url('../webfonts/zsi-trendtool.woff?ty0cur') format('woff'),
+      url('../webfonts/zsi-trendtool.svg?ty0cur#zsi-trendtool') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  .ttool{
+      font-family: 'zsi-trendtool';
+      speak: none;
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      text-transform: none;
+      line-height: 1;
+  
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .batery-fuse-terminal:before {
+    content: "\e900";
+  }
+  .bernard:before {
+    content: "\e901";
+  }
+  .clips-retainers:before {
+    content: "\e902";
+  }
+  .covering:before {
+    content: "\e903";
+  }
+  .electrical:before {
+    content: "\e904";
+  }
+  .gaudencio:before {
+    content: "\e905";
+  }
+  .grommets:before {
+    content: "\e906";
+  }
+  .grommets2:before {
+    content: "\e907";
+  }
+  .ground-eyelet:before {
+    content: "\e908";
+  }
+  .grounding:before {
+    content: "\e909";
+  }
+  .hiplord:before {
+    content: "\e90a";
+  }
+  .inline-con:before {
+    content: "\e90b";
+  }
+  .lear-logo:before {
+    content: "\e90c";
+  }
+  .lear-logo-text:before {
+    content: "\e90d";
+  }
+  .mechanical:before {
+    content: "\e90e";
+  }
+  .network-distrib:before {
+    content: "\e90f";
+  }
+  .pdb:before {
+    content: "\e910";
+  }
+  .safety:before {
+    content: "\e911";
+  }
+  .smager:before {
+    content: "\e912";
+  }
+  .splices:before {
+    content: "\e913";
+  }
+  .tsb:before {
+    content: "\e914";
+  }
+  .vehicle:before {
+    content: "\e915";
+  }
+  .wire:before {
+    content: "\e916";
+  }
+  .zsi-logo:before {
+    content: "\e917";
+  }
+  
