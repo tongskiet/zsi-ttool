@@ -4,6 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=8, IE=9, IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="Developed By" content="zetta-solutions.net">
     <link rel="shortcut icon" href='@Url.Content("~/")favicon.png' type="image/x-icon">
     <title>@ViewBag.pageTitle - E-Systems Trend Tool </title>
 	<script src='@Url.Content("~/")Scripts/jquery.min.js'></script>
@@ -61,13 +62,13 @@
             <ul class="navbar-nav ml-auto mr-0">
 				@{ string role = (ViewBag.role == null ? "No Role" :  ViewBag.role ); }
                 <li class="nav-item">
-                    <a class="nav-link" href="contact_us">Contact Us</a>
+                    <a class="nav-link" href="@Url.Content("~/")page/contact-us">Contact Us</a>
                 </li>
                 <li class="nav-item nav-divider d-none d-md-block">
                     <span class="divider mx-2 my-2">|</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="about_trend_tool">About Trend Tool</a>
+                    <a class="nav-link" href="@Url.Content("~/")page/about-trend-tool" >About Trend Tool</a>
                 </li>
                 <li class="nav-item">
                     <form class="form-inline my-1">
@@ -85,8 +86,8 @@
                         <i class="fas fa-user-circle"></i> @zsi.web.SessionHandler.CurrentUser.userName.ToUpper() (@role)
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow-sm " aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="@Url.Content("~/")page/name/signin">Log Out</a>
-                        <a class="dropdown-item" href="@Url.Content("~/")page/name/docs">Activity Log</a>
+                        <a class="dropdown-item" href="@Url.Content("~/")page/signin">Log Out</a>
+                        <a class="dropdown-item" href="@Url.Content("~/")page/docs">User Manual</a>
                     </div>
                 </li>
             </ul>
