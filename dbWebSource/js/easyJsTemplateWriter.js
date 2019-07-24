@@ -65,7 +65,6 @@ zsi.easyJsTemplateWriter = function(sn){
     }
     ,_write = function(o){
         var _new = $(o.html);
-        
         //replace tag-li, and other tag-table elements
         _new = _replaceTagElements(_new);
         if(o.parent){
@@ -106,6 +105,6 @@ zsi.easyJsTemplateWriter = function(sn){
     return this;
 };  
 
- 
+if (typeof onTemplateWriterReady !=="undefined") onTemplateWriterReady(); 
 	
-                              
+                                  

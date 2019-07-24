@@ -1,0 +1,51 @@
+<style>
+    .nav-tabs a{
+        outline: none;
+    }
+    .tab-pane{
+        background-color: #fff;
+        min-height: 400px;
+        padding: 10px 5px;
+        margin-bottom:10px;
+        overflow: auto;
+    }
+
+    #grid{
+        width: 100%;
+    }
+    
+    .zGrid .item .title {
+        height: 22px;
+        line-height: 19px;
+    }
+    .pageTitle{
+        min-height: 27px;
+        height: inherit;
+    }
+</style>
+    <div class="zPanel"> 
+        <label class="col-xs-4 col-sm-1 col-md-1 control-label text-right">Show Option:</label>
+        <div class="col-xs-8 col-sm-2"> 
+            <select name="option_id" id="option_id" class="form-control input-sm"> </select>
+        </div>
+        <label class="col-xs-4 col-sm-1 control-label text-right">Column:</label>
+        <div class="col-xs-8 col-sm-2"> 
+            <select name="column" id="column" class="form-control input-sm">
+                <option value=""></option>
+                <option value="part_no">Part No.</option>
+                <option value="national_stock_no">National Stock No.</option>
+                <option value="item_name">Nomenclature Name</option>
+            </select>
+        </div>
+        <label class="col-xs-4 col-sm-1 control-label text-right">Keyword:</label>
+        <div class="col-xs-8 col-sm-2"> 
+            <input type="text" name="keyword" id="keyword" class="form-control input-sm">
+        </div>
+        <div class="col-xs-4 col-sm-2">
+            <button type="button" class="btn btn-primary btn-sm" id="btnGo"><span class=" glyphicon glyphicon-filter"></span></button>
+            <button type="button" class="btn btn-primary btn-sm" id="btnClear">clear</button>
+        </div>
+    </div>
+ 
+<div id="tabWrapper"></div>
+

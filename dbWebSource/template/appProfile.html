@@ -1,0 +1,73 @@
+<div class="zPanel">
+    <form method="post" id="frmProject">
+        <input type="hidden" name="project_id" id="project_id" >
+        <div class="form-group  row">  
+            <label class="col-12 col-sm-2 col-md-2 control-label">App Title</label>
+            <div class=" col-3">
+                 <input type="text" name="app_title" id="app_title" class="form-control input-sm" >
+            </div>  
+            
+            <label class="col-12 col-sm-2 col-md-2 control-label">Date Format</label>
+            <div class=" col-3">
+               <input type="text" name="d_format" id="d_format" class="form-control input-sm">
+             </div>
+        </div>                      
+        <div class="form-group  row">  
+
+            <label class="col-12 col-sm-2 col-md-2 control-label">Excel Conn Str</label>
+            <div class=" col-3">
+                 <input type="text" name="excel_conn_str" id="excel_conn_str" class="form-control input-sm">
+            </div>
+            
+            <label class="col-12 col-sm-2 col-md-2 control-label">Excel Folder</label>
+            <div class=" col-3">
+                 <input type="text" name="excel_folder" id="excel_folder" class="form-control input-sm" >
+            </div>                                      
+        </div>  
+        <div class="form-group  row">  
+            <label class="col-12 col-sm-2 col-md-2 control-label">Image Folder</label>
+            <div class=" col-3">
+                <input type="text" name="image_folder" id="image_folder" class="form-control input-sm">
+            </div>
+            
+            <label class="col-12 col-sm-2 col-md-2 control-label">Default Page</label>
+            <div class=" col-3">
+                <input name="default_page" id="default_page" class="form-control input-sm" >
+           </div>                                     
+
+        </div>  
+        <div class="form-group  row">  
+            <label class="col-12 col-sm-2 col-md-2 control-label">Network Group Folder</label>
+            <div class=" col-3">
+                <input name="network_group_folder" id="network_group_folder" class="form-control input-sm" >
+           </div>                                     
+
+            <label class="col-12 col-sm-2 col-md-2 control-label">Theme</label>
+            <div class=" col-3">
+                <select name="theme_id" id="theme_id" class="form-control input-sm"> </select>
+           </div>  
+        </div>    
+        <div class="form-group  row">  
+            <label class="col-12 col-sm-2 col-md-2 control-label">Developer Key</label>
+            <div class=" col-3">
+                <input name="developer_key" id="developer_key"  type="password" class="form-control input-sm" >
+           </div>   
+           
+
+            <label class="col-12 col-sm-2 col-md-2 control-label">Minified Source Code ? </label>
+            <div class=" col-3">
+                <select name="is_source_minified" id="is_source_minified" class="form-control input-sm">
+                    <option value="Y">Yes</option>    
+                    <option value="N">No</option>    
+                </select>
+            </div>  
+           
+        </div>                                    
+        <div class="form-group  row">  
+            <label class="col-12 col-sm-2 col-md-2 control-label">&nbsp;</label>
+            <div class=" col-9" style="margin-top:10px;">
+                <button type="button" class="btn btn-primary btn-sm" id="btnSave"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+            </div>
+        </div>                             
+    </form> 
+</div>
