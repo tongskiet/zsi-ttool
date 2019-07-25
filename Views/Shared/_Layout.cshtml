@@ -12,6 +12,7 @@
 	<script src='@Url.Content("~/")Scripts/detectmobilebrowser.js'></script>
     <link href='@Url.Content("~/")css/app.min.css' rel="stylesheet" />
     @Html.Raw(ViewBag.GetScriptLinkCurrentVersion("zsiLib"))
+	@Html.Raw(ViewBag.GetScriptLinkCurrentVersion("zsiLocalDb"))
     @{
         string userId = "";
         if ( zsi.web.SessionHandler.CurrentUser != null){ userId = "var userId=" + zsi.web.SessionHandler.CurrentUser.userId + ";"; }
@@ -73,9 +74,9 @@
                 <li class="nav-item">
                     <form class="form-inline my-1">
                         <div class="input-group input-group-sm mx-md-2">
-                            <input type="text" class="form-control" id="" placeholder="Search">
+                            <input type="text" class="form-control" id="search_criteria" placeholder="Search">
                             <div class="input-group-append">
-                                <button class="btn btn-light" type="button" id=""><i class="fas fa-search"></i></button>
+                                <button class="btn btn-light" type="button" id="btn-search"><i class="fas fa-search"></i></button>
                             </div>
                         </div>
                     </form>
@@ -123,7 +124,7 @@
 	}
 <script src='@Url.Content("~/")Scripts/popper.min.js'></script>
 <script src='@Url.Content("~/")Scripts/bootstrap.min.js'></script>
-<script src='@Url.Content("~/")javascript/name/easyJsTemplateWriter'></script>
+@Html.Raw(ViewBag.GetScriptLinkCurrentVersion("easyJsTemplateWriter"))
 <div class="alert alert-success">
     <p>Data has been saved.</p>
 </div>

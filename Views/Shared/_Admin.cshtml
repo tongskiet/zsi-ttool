@@ -11,7 +11,7 @@
     <script src='@Url.Content("~/")Scripts/handlebars.min.js'></script>
     <script src='@Url.Content("~/")Scripts/detectmobilebrowser.js'></script>	    
 	<link href='@Url.Content("~/")css/app.min.css' rel="stylesheet" />
-    <script type="text/javascript" src="@Url.Content("~/")Scripts/zsiLib.js"></script>  
+	@Html.Raw(ViewBag.GetScriptLinkCurrentVersion("zsiLib"))
     @{
         string userId = "";
         if ( zsi.web.SessionHandler.CurrentUser != null){ userId = "var userId=" + zsi.web.SessionHandler.CurrentUser.userId + ";"; }
@@ -128,7 +128,7 @@
  }
 
 <script src='@Url.Content("~/")Scripts/bootstrap.min.js'></script>
-<script src='@Url.Content("~/")javascript/name/easyJsTemplateWriter'></script>
+@Html.Raw(ViewBag.GetScriptLinkCurrentVersion("easyJsTemplateWriter"))
 <div class="alert alert-success">
     <p>Data has been saved.</p>
 </div>
