@@ -104,7 +104,4 @@ zsi.easyJsTemplateWriter = function(sn){
 
     return this;
 };  
-
-if (typeof onTemplateWriterReady !=="undefined") onTemplateWriterReady(); 
-	
                                   
