@@ -176,48 +176,37 @@ if(isMenuItemsSaved ==="N"){
 }
 
 
-if(isLocalStorageSupport()) {
-    loadPublicTemplates();
-    var menuItems = localStorage.getItem("menuItems");
-    if(menuItems)
-        displayMenu( JSON.parse(menuItems));
-    else
-        loadMenu();
-}
-else 
-    loadMenu();
-
-
 function isLocalStorageSupport(){
     if(typeof(Storage) !== "undefined") return true; else return false;
 }
 
 
-function loadMenu(){
+function loadMenu(callback){
     if (readCookie("zsi_login")!=="Y"){
         $.getJSON(procURL + "user_menus_sel", function(data){
-            if(data.rows.length>0) saveLocalStorageAndDisplay(data);
+            if(callback) callback(data);
         }); 
     }
     else{
         $.getJSON(base_url + "sql/exec?p=menus_sel", function(data){
-             if(data.rows.length>0) saveLocalStorageAndDisplay(data);
-             
+             if(callback) callback(data);
         });
                     
     }
 
 }
 
-function loadPublicTemplates(){
-    if(isLocalStorageSupport()) {
-        var _name ="publicTemplates";
-        var _tmpls = localStorage.getItem(_name);
-        if(_tmpls === null)
-            $.get(base_url + "page/tmplPublic", function(html){
-                if(html.indexOf("</html>") < 0) localStorage.setItem(_name, html);
-            });  
-    }
+function loadPublicTemplates(callBack){
+    var _name ="publicTemplates";
+    var _tmpls = localStorage.getItem(_name);
+    if(_tmpls === null)
+        $.get(base_url + "pub/tmplPublic", function(html){
+            if(html.indexOf("</html>") < 0) localStorage.setItem(_name, html);
+            
+            if(callBack) callBack();
+        });
+    else 
+        callBack();
 }
 
 function saveLocalStorageAndDisplay(data){
@@ -365,7 +354,16 @@ function getOptionsURL(code){
 }
 
 $(document).ready(function(){
-   displayTrendToolMenus();
+    loadPublicTemplates(function(){
+        var menuItems = localStorage.getItem("menuItems");
+        if(menuItems)
+            displayMenu( JSON.parse(menuItems));
+        else
+            loadMenu(function(data){
+                if(data.rows.length>0) saveLocalStorageAndDisplay(data);
+                displayTrendToolMenus();
+            });
+    });
 });
 
 $(document).on("click", function(event){
@@ -431,4 +429,4 @@ function isTeamMemberOrAdmin(){
         */
 } 
                         
-            
+                
