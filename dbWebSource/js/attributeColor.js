@@ -47,7 +47,7 @@ function displayRecords(){
               $("select[name='color_code']").dataBind({
                     url :execURL + " color_references_sel"
                     ,text:"color_name"
-                    ,value:"color_id"
+                    ,value:"color_code"
               });
         }  
     });    
@@ -62,4 +62,4 @@ $("#btnSave").click(function () {
                 displayRecords();
             }
     });
-});  
+});   

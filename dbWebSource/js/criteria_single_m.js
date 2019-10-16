@@ -6,13 +6,13 @@
     ,gMenuName          = zsi.getUrlParamValue("name")
     ,gData              = [];
     
- zsi.ready(function(){
+zsi.ready = function(){
     gMenuName = $.trim(unescape(gMenuName).replace("_", "&")).toUpperCase();
     $("#criteria_title").text(gMenuName);
     
     initScrollToTop();
     displayCriteria();
-});
+};
 
 function initScrollToTop(){
     $(window).resize(function() {
@@ -38,7 +38,7 @@ function resizeCard(){
     var _value = [];
     $(".flip-wrapper img").each(function() {
         var el = $(this).height(); 
-        console.log($(this).height());
+
         _value[_value.length] = el;
     });
 
@@ -48,7 +48,7 @@ function resizeCard(){
 }
 
 function getSubMenu(callback){
-    $.get(procURL + "criterias_sel @trend_menu_id="+ gMenuId, function(data){
+    $.get(execURL + "criterias_sel @trend_menu_id="+ gMenuId, function(data){
         gData = data.rows;
         callback(data.rows);
     });
@@ -65,6 +65,7 @@ function displayCriteria(){
             var _h = "";
             var _count = rows.length;
             var _ctr = 0;
+            console.log("displayCriteria.submenu");
             
             $(rows).each(function(i, v){
                 if(v.pcriteria_id !== ""){
@@ -76,9 +77,8 @@ function displayCriteria(){
                           title     : _cTitle
                         , chart_id  : "chart_"+ _cId
                         , link      : _cLink
-                        //, body_style : "height:" +_cardHeight + "px"
-                        , img_src   : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image2_id
-                        , img2_src  : "/file/viewimagedb?sqlcode=t83&imageid=" + v.image1_id 
+                        , img_src   : getImageUrl(this.image2_id)  
+                        , img2_src  : getImageUrl(this.image1_id)
                     }).html();
                 }
             });
@@ -88,4 +88,4 @@ function displayCriteria(){
         });
     }
 }
- 
+      

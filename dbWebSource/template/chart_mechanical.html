@@ -3,14 +3,19 @@
     display: none;
 }
 #chart_div{
+    width: -webkit-calc(100% - 1px);
+    width:    -moz-calc(100% - 1px);
+    width:         calc(100% - 1px);
     min-height: 350px;
-    left: -1px;
 }
 #legend_div {
-    height: 100%;
+    min-height: 22px;
+    max-height: 100%;
+    height: 22px;
     width: 100%;
 }
 .legend-wrapper {
+    min-height: 22px;
     max-height: 120px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -21,21 +26,139 @@
 .flex-chart{
     padding: 0 12%;
 }
+.modal-header {
+    background-color: #e60812;
+    padding: .5rem .5rem !important;
+}
+.modal-content {
+    background: #00000042;
+}
+.modal-footer{
+    display: none;
+}
+.slant {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 0;
+  outline: 0;
+}
+.slant:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -1px;
+    width: 0;
+    height: 0;
+    border-bottom: 35px solid #fff;
+    border-right: 16px solid transparent;
+}
+.slant:after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 0;
+    height: 0;
+    border-bottom: 35px solid #fff;
+    border-left: 16px solid transparent;
+}
+#option_box, .criteria-header{
+    background-color: #e7e6e6;
+}
+#option_box .dropdown-item{
+    padding: .1rem 1rem !important;
+}
+#option_box .dropdown-item:hover, 
+#option_box .dropdown-item:focus {
+    color: #16181b !important;
+    background-color: #d9d9d9 !important;
+}
+#btnReset {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 16px;
+    background: #343a40;
+    color: #fff;
+}
 @media (max-width: 991px){
     .flex-chart{
         padding: 0;
     }
 }
+@media (min-width: 992px){
+    .modal-lg, .modal-xl {
+        max-width: 700px;
+    }
+}
+#info{
+    color: #3c3b3b;
+    font-size: 17px;
+}
+#info:hover{
+    color:#f11616;
+    cursor:pointer;
+}
+.textarea-box{
+    top: 55px;
+    right: 5px;
+    background-color: #fff;
+    position: absolute;
+    display: none;
+    webkit-box-shadow: -4px 7px 5px 0px rgba(136, 136, 136, 0.58);
+    -moz-box-shadow: -4px 7px 5px 0px rgba(136, 136, 136, 0.58);
+    box-shadow: -4px 7px 5px 0px rgba(136, 136, 136, 0.58);
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 10000;
+    padding: 5px;
+}
+
+.textarea-box .infoBoxBody {
+    max-height: 400px;
+    min-width: 200px;
+    overflow: auto;
+}
+/* CUSTOM 3D CHECKBOX */
+.custom-control.custom-checkbox{padding-left: 0;}
+
+.custom-checkbox .custom-control-label {
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.custom-checkbox .custom-control-label::before, 
+.custom-checkbox .custom-control-label::after{
+  right: 3px;
+  left: auto;
+}
+/* New Updates*/
+body {
+    margin: 0;
+}
+main{
+    top: 69px;
+}
+.sub-legend-wrapper{
+    width: 100%;
+    max-height: 120px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+#sub_legend_div{
+    min-height: 22px;
+}
 </style>
 
 <header>
-    <div class="px-2 py-1 m-0 h4">
+    <div class="px-2 py-2 m-0 h4 criteria-header">
         <span class="font-weight-bold text-uppercase" id="menu_name"></span> |  
         <span id="criteria_name"></span> 
     </div>
-    <div class="d-flex flex-wrap form was-validation p-1 p-sm-0" style="background-color:#e7e6e6" novalidate>
+    <div class="d-flex flex-wrap form was-validation p-1 p-sm-0" id="option_box" novalidate>
         <div class=" form-inline pr-1 pr-sm-0">
-            <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
+            <label for="my_from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">FROM</label>
             <select class="custom-select form-control form-control-sm" id="my_from">
                 <option value="2014">2014</option>
                 <option value="2015">2015</option>
@@ -46,7 +169,7 @@
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
+            <label for="my_to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">TO</label>
             <select class="custom-select form-control form-control-sm" id="my_to">
                 <option value="2014">2014</option>
                 <option value="2015">2015</option>
@@ -57,40 +180,61 @@
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="from" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
+            <label for="sum_by" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUM UP BY</label>
             <div class="input-group input-group-sm">
                 <input type="number" min="1" max="6" class="form-control" id="sum_by">
                 <div class="input-group-append">
                     <span class="input-group-text">Yrs</span>
                 </div>
             </div>
-            <!--<select class="custom-select form-control form-control-sm" id="sum_by">-->
-            <!--    <option value="1" selected="selected">&nbsp; Yrs</option>-->
-            <!--    <option value="2">2 Yrs</option>-->
-            <!--    <option value="3" >3 Yrs</option>-->
-            <!--</select>-->
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
+            <label for="category" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">CATEGORY</label>
             <select class="custom-select form-control form-control-sm" id="category">
                 <option value="Model Year" selected="selected">Per Model Year</option>
                 <option value="Region">Per Region</option>
                 <option value="Vehicle Type">Per Vehicle Type</option>
                 <option value="OEM">Per OEM</option>
+                <option value="Market">Per Market</option>
+            </select>
+        </div>
+        <div class="form-inline pr-1 pr-sm-0 d-none" id="wrap_sub_category">
+            <label for="sub_category" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">SUB-CATEGORY</label>
+            <select class="custom-select form-control form-control-sm" id="sub_category">
+                <option value=""></option>
             </select>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
+            <label for="graph_type" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">GRAPH TYPE</label>
             <select class="custom-select form-control form-control-sm" id="graph_type">
-                <option value="pie" selected="selected">Pie Chart</option>
-                <option value="bar">Bar Chart</option>
+                <option value="pie" selected="selected">Pie</option>
+                <option value="bar">Bar</option>
             </select>
         </div>
+        <div class="form-inline pr-1 pr-sm-0">
+            <div class="custom-control custom-checkbox ml-sm-2">
+                <input type="checkbox" class="custom-control-input" id="is_3D">
+                <label class="custom-control-label" for="is_3D">3D</label>
+            </div>
+        </div>
+        <div id="param_box"></div>
         <div class="form-inline mr-lg-auto pr-1 pr-sm-0">
            <a class="btn btn-default col-form-label-sm mx-sm-1" href="javascript:void(0);" role="button" id="btnGo" onClick="filterGraphData(this);"><i class="fas fa-filter"></i> GO</a>
         </div>
         <div class="form-inline pr-1 pr-sm-0">
-           <a class="btn btn-default col-form-label-sm mx-sm-2" href="javascript:void(0);" role="button" id="btnDownload"  onClick="downloadGraphData(this);"><i class="fas fa-download"></i> DOWNLOAD</a>
+            <i class="fas fa-info-circle" id="info" title="Vehicle Information"></i>
+            <a class="btn btn-default col-form-label-sm mx-sm-2 dropdown-toggle" href="javascript:void(0);" role="button" id="btnDownload" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-download" title="download"></i> 
+            </a>
+            <div class="dropdown-menu" aria-labelledby="btnDownload">
+                <a class="dropdown-item" href="javascript:void(0);" onClick="downloadGraphSummary(this);">Summary</a>
+                <a class="dropdown-item" href="javascript:void(0);" onClick="downloadGraphData(this);">Reference Data</a>
+            </div>
+            <div class="textarea-box" id="infoBoxPanel" hide>
+                <div class="infoBoxBody">
+                    <span class="infoText"></span>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -98,32 +242,78 @@
     <div class="flex-column flex-chart">
         <div class="position-relative">
             <div class="chart-wrapper overflow-auto">
-                <div class="d-flex mx-auto" id="chart_div"></div>
+                <div class="d-flex flex-row mx-auto" id="chart_div"></div>
             </div>
             <div class="legend-wrapper">
                 <div id="legend_div"></div>
             </div>
+            <a class="btn btn-default col-form-label-sm rounded-circle p-1 px-2 mt-1 d-none" href="javascript:void(0);" role="button" id="btnReset" title="Reset Chart">
+                <i class="fas fa-redo-alt"></i>
+            </a>
         </div>
-        <div class="d-flex justify-content-center mb-3">
+        <div class="d-flex flex-column justify-content-center position-relative chart-result">
             <div class="zContainer">
                 <div class="row">
-                    <div class="col-sm-12 bg-danger text-white px-2 py-1">Result</div>
-                    <div class="col-sm-6 mb-3">
-                        <div class="font-weight-bold text-uppercase">TREND :</div> 
-                        <div class="px-3" id="trends"></div> 
+                    <div class="col-sm-12 bg-danger text-white px-3 py-1 slant">Result</div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="font-weight-bold text-uppercase px-1">TREND :</div> 
+                        <div class="px-3 text-break" id="trends"></div> 
                     </div>
-                    <div class="col-sm-6 mb-3">
-                        <div class="font-weight-bold text-uppercase">OPPORTUNITIES/EVOLUTION :</div> 
-                        <div class="px-3" id="opportunities"></div> 
+
+                    <div class="col-sm-4 mb-3">
+                        <div class="font-weight-bold text-uppercase px-1">NEW DESIGN PRACTICE :</div> 
+                        <div class="px-3 text-break" id="bestpractice"></div> 
+                    </div>
+                    
+                    <div class="col-sm-4 mb-3">
+                        <div class="font-weight-bold text-uppercase px-1">OPPORTUNITIES/EVOLUTION :</div> 
+                        <div class="px-3 text-break" id="opportunities"></div> 
                     </div>
                 </div>
+            </div>
+            <div class="chart-wrapper overflow-auto d-none position-relative" id="chart_wrapper_details">
+                <div class="position-absolute ml-4" style="left:0;z-index:1">
+                    <h4><span class="badge badge-secondary" id="selected_category"></span></h4>
+                </div>
+                <div class="form-inline position-absolute" style="right:0;z-index:1">
+                    <select class="custom-select form-control form-control-sm" id="chart_details_graph">
+                        <option value="sunburst" selected="selected">Sunburst</option>
+                        <option value="bar">Bar</option>
+                    </select>
+                </div>
+                <div class="d-none mx-auto" id="sunburst_details"></div>
+                <div class="d-none mx-auto" id="bar_details"></div>
             </div>
         </div>
     </div>
 </div>
 <ul id="localTemplates">
-    <li name=""></li>
+    <li name="param">
+        <div class="form-inline pr-1 pr-sm-0">
+            <label for="to" class="col-form-label-sm py-0 py-sm-2 mx-sm-2 mb-0">{{param_label}}</label>
+            <select class="custom-select form-control form-control-sm" id="{{column_name}}">
+                <option value=""></option>
+            </select>
+        </div>
+    </li>
+    <li name="spinner">
+        <div class="d-flex justify-content-center p-5 mx-auto">
+            <div class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </li>
+    <li name="noData">
+        <section class="jumbotron d-flex mt-4 w-100 align-items-center text-center">
+            <div class="container">
+              <h1 class="jumbotron-heading">No data found!</h1>
+            </div>
+        </section>
+    </li>
 </ul>
 <script src="../amcharts4/core.js"></script>
 <script src="../amcharts4/charts.js"></script>
+<script src="../amcharts4/maps.js"></script>
+<script src="../amcharts4/geodata/continentsLow.js"></script>
+<script src="../amcharts4/plugins/sunburst.js"></script>
 <script src="../amcharts4/themes/animated.js"></script>

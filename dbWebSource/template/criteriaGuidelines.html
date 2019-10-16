@@ -1,5 +1,74 @@
 <script src="/scripts/linq.min.js"></script>
 <style type="text/css" media="all">
+form#frm_preLoading div.modal-header button.close,form#frm_preLoading div.modal-footer{display:none;}
+.p-4{padding-top:0.5rem !important;
+    padding-bottom:0.5rem !important;
+}
+select.zGrid .active .zCell .form-control {
+    background-color: #333333 !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    border-right: 1pt solid #d6d8d8 !important;
+}
+.zRows #table .zRow.active {
+    background-color: #333333;
+    color: #fff;
+}
+.zRows .zRow:hover {
+    background-color: #333333 !important;
+    color: #fff !important;
+}
+.zGrid .zRow .form-control.mandatory {
+    background-color: #333333 !important;
+    color:#000 !important;
+}
+
+.zGrid .zRow .form-control.mandatory {
+    border-radius: 0;
+    border-right: 1pt solid #d6d8d8 !important;
+}
+/*start vicmar*/
+#frm_modalCriteria .modal-body{
+    margin-left: 3px !important;
+    margin-right: 3px !important;
+}
+#frm_modalCriteria .modal-body{
+    /*padding:1rem !important 1px !important; */
+    padding-top: 1rem !important;
+    padding-bottom 1rem !important;
+    padding-left:1px !important;
+    padding-right:1px !important;
+}
+#frm_modalCriteria .modal-body div nav #nav-tab .nav-link{
+    color:black;
+}
+#frm_modalCriteria .modal-body div nav #nav-tab .nav-link:hover{
+    color: #fff !important;
+}
+#frm_modalCriteria .modal-body div nav #nav-tab .nav-link.active {
+    background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%) !important;
+    color: #fff !important;
+}
+#frm_modalCriteriaColums  .modal-body{
+    margin-left: 3px !important;
+    margin-right: 3px !important;
+}
+#frm_modalCriteriaColums  .modal-body .row{
+    margin-left: -20px !important;
+    margin-right: -20px !important;
+}
+#modalWindowImageUploadElectrical.modal.show,#modalWindowImageUploadMechanical.modal.show,#modalwindowCriteriaImageUpload.modal.show{top:100px;}
+.modal-header {background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%);
+        color:#fff;
+    }
+/*end vicmar*/
+    div.row div#gridCriteriaColumnValues{margin-left: -10px !important;}
+    .nav-tabs .nav-link.active{background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%);
+        color:#fff;
+    }
+    .nav-tabs .nav-link:hover{background-image: linear-gradient(to bottom, #F11716 0px, #CA1F14 100%);
+        color:#fff;
+    }
     .clear-both{
         clear:both;
     }
@@ -46,6 +115,7 @@
         border: 2px solid #fff;
         border-radius: 10px;
         overflow:hidden;
+        z-index: 10000;
     }
     /* ---------CHART STYLE--------- */
     #chart_container {
@@ -72,6 +142,55 @@
     .zGrid {
         background-color: #fff;
     }
+    
+/*preloading data*/
+/* Moving on to the styling, we'll start with the main progress bar first and then the value part of it. After that, we'll do some experiments :D */
+/*body {*/
+/*	background: #322c35;*/
+/*}*/
+
+progress {
+	width: 400px;
+	height: 14px;
+	margin: 30px auto;
+	/*display: block;*/
+	/* Important Thing */
+	-webkit-appearance: none;
+	border: none;
+}
+
+/* All good till now. Now we'll style the background */
+progress::-webkit-progress-bar {
+	background: #E4E4E4;
+	border-radius: 50px;
+	padding: 2px;
+	box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Now the value part */
+progress::-webkit-progress-value {
+	border-radius: 50px;
+	box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+	background:
+		-webkit-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),
+		-webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.2)),
+		-webkit-linear-gradient(left, #343a40, #343a40);
+	
+	/* Looks great, now animating it */
+	background-size: 25px 14px, 100% 100%, 100% 100%;
+	-webkit-animation: move 5s linear 0 infinite;
+}
+
+/* That's it! Now let's try creating a new stripe pattern and animate it using animation and keyframes properties  */
+
+@-webkit-keyframes move {
+	0% {background-position: 0px 0px, 0 0, 0 0}
+	100% {background-position: -100px 0px, 0 0, 0 0}
+}
+
+/* Prefix-free was creating issues with the animation */
+
+    
 </style>
 
 <div class="zContainer">
@@ -80,18 +199,6 @@
             <div id="grid" class="zGrid"></div>    
             <div id="gridMech" class="zGrid"></div>    
         </div>
-        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 criteria">
-            <div class="row">
-                <div class="col-12">
-                    <div id="gridCriteria" class="zGrid"></div>    
-                </div>
-                <div class="col-12 pt-1"> 
-                    <button type="button" class="btn btn-primary " id="btnSave">
-                        <i class="far fa-save"></i> Save
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -99,7 +206,97 @@
     <img src="/file/viewImage?fileName=no-image.jpg&amp;isThumbNail=y" id="image" >
 </div>
 
+<div class="modal" id="modalCriteria" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            <form id="frm_modalCriteria" >
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCriteriaLabel"> Title </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    
+                </div>
+                <div class="modal-body p-4">
+                    <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+                        <nav>
+                          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" data-toggle="tab" href="#nav-n" role="tab" aria-controls="nav-n"> New 
+                                <span id="badge-N" class="badge badge-pill badge-dark"></span>
+                            </a>
+                            <a class="nav-item nav-link"        data-toggle="tab" href="#nav-a" role="tab" aria-controls="nav-a"> Approved 
+                                <span id="badge-A" class="badge badge-pill badge-dark"></span>
+                            </a>
+                            <a class="nav-item nav-link"        data-toggle="tab" href="#nav-r" role="tab" aria-controls="nav-r"> For Review 
+                                <span id="badge-S" class="badge badge-pill badge-dark"></span>
+                            </a>
+                            <a class="nav-item nav-link"        data-toggle="tab" href="#nav-c" role="tab" aria-controls="nav-c"> Cancelled 
+                                <span id="badge-C" class="badge badge-pill badge-dark"></span>
+                            </a>
+                          </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                          <div role="tabpanel" class="tab-pane fade show active" id="nav-n">
+                                <div class="row">
+                                    <div id="gridCriteria-N" class="zGrid"> </div>
+                                </div>
+                                <button type="button" onclick="submitDataCriteria(this,'N');" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                          </div>
+                          <div role="tabpanel" class="tab-pane fade"             id="nav-a">
+                                <div class="row">
+                                    <div id="gridCriteria-A" class="zGrid"> </div>
+                                </div>
+                                <button type="button" onclick="submitDataCriteria(this,'A');" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                          </div>
+                          <div role="tabpanel" class="tab-pane fade"             id="nav-r">
+                                <div class="row">
+                                    <div id="gridCriteria-S" class="zGrid"> </div>
+                                </div>
+                                <button type="button" onclick="submitDataCriteria(this,'S');" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                          </div>
+                          <div role="tabpanel" class="tab-pane fade"             id="nav-c">
+                            <div class="row">
+                                <div id="gridCriteria-C" class="zGrid"> </div>
+                            </div>
+                            <button type="button" onclick="submitDataCriteria(this,'C');" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                          </div>
+                        
+                        </div>
+        
+        
+                   </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <ul id="localTemplates">
+    <li name="modalBodyCriteriaSingle">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+                
+                <!--<ul class="nav nav-tabs">-->
+                <!--    <li class="nav-item" ><a class="nav-link active" href="#new" data-toggle="tab" id="N">Newa <span id="nBadge" class="badge badge-light"></span></a></li>  -->
+                <!--    <li class="nav-item" ><a class="nav-link" href="#approved"  data-toggle="tab" id="A">Approved <span id="aBadge" class="badge badge-light"></span></a></li>-->
+                <!--    <li class="nav-item" ><a class="nav-link" href="#forapproval" data-toggle="tab" id="S">For Review <span id="rBadge" class="badge badge-light"></span></a></li>  -->
+                <!--    <li class="nav-item" ><a class="nav-link" href="#cancelled" data-toggle="tab" id="C">Cancelled <span id="cBadge" class="badge badge-light"></span></a></li>  -->
+                <!--</ul>           -->
+                <div id="tabPanel" class="tab-pages">
+                    <div id="tabNew" class="tabPane">
+                        <div class="row">
+                            <div id="{{gridCriteria}}" class="zGrid"> </div>
+                        </div>
+                        <button type="button" id="btnSaveCriteriaNew" onclick="{{onClickSaveCriteria}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
+                    </div>
+                    
+                </div>
+
+                
+            </div>
+        </div>
+    </li>
     <li name="modalBody">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
@@ -117,11 +314,13 @@
             </div>
         </div>
     </li>
+    
     <li name="modalFooter">
         <div class="pull-left">
             <button type="button" id="btnSave" onclick="{{onClickSave}}" class="btn btn-primary mr-auto"><i class="far fa-save"></i> Save</button>
         </div>
     </li>
+    
     <li name="modalBodyRD">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
@@ -137,8 +336,8 @@
     <li name="modalBodyWGR">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
-                <div id="{{gridWGR}}" class="zGrid"> </div>
-                <div class="clear-both"></div>
+                <div id="{{gridWGR}}" class="zGrid row"> </div>
+                <!--<div class="clear-both"></div>-->
                 <button type="button" id="btnSave1" onclick="{{onClickSaveWGR}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
             </div>
         </div>
@@ -151,10 +350,8 @@
     	    <i class='fas fa-link'></i>
     	</a>-->
         <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
                 <div id="{{gridCricolVal}}" class="zGrid"> </div>
                 <button type="button" onclick="{{saveCriColVal}}" class="btn btn-primary m-1"><i class="far fa-save"></i> Save</button>
-            </div>
         </div>
     </li>
     <li name="chartDiv">

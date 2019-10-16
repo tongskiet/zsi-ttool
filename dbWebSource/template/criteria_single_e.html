@@ -10,12 +10,72 @@
 .criteria-card:hover .stretched-link::after{
     background-color: rgba(127, 127, 127, 0.2);
 }
+.criteria-card:hover .flip-card{
+    transform: rotateY(180deg);
+    box-shadow: -5px 5px 5px #aaa;
+}
+
 .criteria-card a.stretched-link{
     color:#000000;
     font-weight:bold;
 }
 .criteria-card i.fa-play{
     color:red; font-weight:bold; 
+}
+
+/*----------------------FLIP CSS------------------*/
+.criteria-card .card-body .flip-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.criteria-card .card-body .flip-container {
+    webkit-perspective: 1000px;
+    -moz-perspective: 1000px;
+    -o-perspective: 1000px;
+    perspective: 1000px;
+}
+.criteria-card .card-body .flip-container .flip-card {
+    width: 100%;
+    height: 100%;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transition: all 0.4s linear;
+    -moz-transform-style: preserve-3d;
+    -moz-transition: all 0.4s linear;
+    -o-transform-style: preserve-3d;
+    -o-transition: all 0.4s linear;
+    transform-style: preserve-3d;
+    transition: all 0.4s linear;
+}
+
+.criteria-card .card-body .flip-container .flip-card .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.criteria-card .card-body .flip-container .flip-card .face.back {
+    display: block;
+    width: 100%;
+    height: 100%;
+    -webkit-transform: rotateY(180deg);
+    -webkit-box-sizing: border-box;
+    -moz-transform: rotateY(180deg);
+    -moz-box-sizing: border-box;
+    -o-transform: rotateY(180deg);
+    -o-box-sizing: border-box;
+    transform: rotateY(180deg);
+}
+.criteria-card .card-body .flip-wrapper{
+    height: 400px;
+    min-height: 1px;
+    max-height: 100%;
+    overflow: hidden;
+    padding-bottom: 66.66666666666667%;
 }
 
 /* Scrool To Top CSS */
@@ -58,62 +118,6 @@
     color: #fff;
     top: 5px;
 }
-/*----------------------FLIP CSS------------------*/
-.flip-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-.flip-container {
-    webkit-perspective: 1000px;
-    -moz-perspective: 1000px;
-    -o-perspective: 1000px;
-    perspective: 1000px;
-}
-.flip-card {
-    width: 100%;
-    height: 100%;
-    -webkit-transform-style: preserve-3d;
-    -webkit-transition: all 0.4s linear;
-    -moz-transform-style: preserve-3d;
-    -moz-transition: all 0.4s linear;
-    -o-transform-style: preserve-3d;
-    -o-transition: all 0.4s linear;
-    transform-style: preserve-3d;
-    transition: all 0.4s linear;
-}
-.face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-    backface-visibility: hidden;
-}
-.face.back {
-    display: block;
-    width: 100%;
-    height: 100%;
-    -webkit-transform: rotateY(180deg);
-    -webkit-box-sizing: border-box;
-    -moz-transform: rotateY(180deg);
-    -moz-box-sizing: border-box;
-    -o-transform: rotateY(180deg);
-    -o-box-sizing: border-box;
-    transform: rotateY(180deg);
-}
-.criteria-card:hover .flip-card{
-    transform: rotateY(180deg);
-    box-shadow: -5px 5px 5px #aaa;
-}
-.flip-wrapper{
-    height: 400px;
-    min-height: 1px;
-    max-height: 100%;
-    overflow: hidden;
-    padding-bottom: 66.66666666666667%;
-}
 </style>
 <div class="zContainer">
     <div class="criteria">
@@ -126,36 +130,4 @@
     <!-- Return to Top -->
     <span class="btn-arrow" id="btnGoTop" title="Go Top"><i class="fas fa-angle-up fa-2x"></i></span>
 </div>
-<ul id="localTemplates">
-    <li name="criteria_card">
-        <div class="col-md-6 col-lg-4 pr-2" id="{{id}}">
-            <div class="criteria-card card shadow-sm rounded-0 mb-2">
-                <div class="card-header rounded-0 px-2 py-1 border-bottom-0" style="{{{header_style}}}">
-                    <div class="d-flex" style="min-height:38px">
-                        <div class="align-self-center pr-2"><i class="fas fa-play mr-1"></i></div>
-                        <div class="align-self-center text-dark">
-                            <a href="{{link}}" class="stretched-link text-dark text-decoration-none criteria-name font-weight-bold">{{title}}</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-1">
-                    <div class="border border-dark position-relative flip-wrapper" style="{{{body_style}}}">
-                        <div class="flip-container">
-                            <div class="flip-card shadow-sm">
-                                <div class="front face">
-                                    <img class="img-first w-100 h-auto mx-auto d-block" src="{{{img_src}}}" alt="{{title}}">
-                                </div>
-                                <div class="back face center">
-                                    <img class="img-second w-100 h-auto mx-auto d-block" src="{{{img2_src}}}" alt="{{title}}">  
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </li>
-</ul>
-<script src="../amcharts4/core.js"></script>
-<script src="../amcharts4/charts.js"></script>
-<script src="../amcharts4/themes/animated.js"></script>
+<ul id="localTemplates"></ul>

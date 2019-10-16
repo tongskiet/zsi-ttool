@@ -1,6 +1,7 @@
 var  svn              = zsi.setValIfNull
     ,bs                 = zsi.bs.ctrl
     ,bsButton           = zsi.bs.button
+    ,gKeyword           = zsi.getUrlParamValue("keyword")
     ,proc_url           = base_url + "common/executeproc/"
     ,gCriteriaRows      = []
     ,gRegionNames       = []
@@ -35,11 +36,17 @@ var  svn              = zsi.setValIfNull
     ,gDataNCT           = [];
 
 zsi.ready = function(){
+    // CHART SETTINGS
     gTW = new zsi.easyJsTemplateWriter();
+    gWinWidth = $(window).width();
+    am4core.useTheme(am4themes_animated);
+    am4core.options.commercialLicense = true;
 
-    var _res = gTrendMenuItems.filter(function(item){ return $.trim(item.name)=="E" })[0].items;
-    displayMenus(_res);
-    setInfoEvents();
+    getCriterias(function(data){
+        gCriteriaRows = data;
+        displayMenus(data);
+        setInfoEvents();
+    });
 };
 
 function getUserAccess(callBack){
@@ -73,113 +80,92 @@ function setInfoEvents(){
         });
         $(boxPanel).find(".infoText").html(_h);
     
+    }); 
+}
+
+function getCriterias(callback){
+    $.get(execURL + "criterias_sel @keyword='"+ gKeyword +"'", function(data){
+        callback(data.rows);
     });
 }
 
-function setDefaultParams(collapseId, callback){
-    gMYTo = new Date().getFullYear();
-    gMYFrom = gMYTo - 2;
-    gPrmSumUp = 1;
-    gPrmCategory = "Model Year";
-    gPrmGraphType = "";
-    gPrmIs3D = false;
-    gIsStacked = false;
-    gIsFullStacked = false;
-    gPrmIs3D = false;
+function displayMenus(rows){
+    var _cardHeight = $("main").height() - 60;
+    var _tw = new zsi.easyJsTemplateWriter("#criteria_list");
     
-    var _$section = $("#" + collapseId);
-    _$section.find("#my_from").val(gMYFrom);
-    _$section.find("#my_to").val(gMYTo);
-    _$section.find("#sum_by").val("");
-    _$section.find("#category").val(gPrmCategory);
-    _$section.find("#graph_type").val(gPrmGraphType);
-    _$section.find(".is_3D").prop('checked', false);
-    
-    if(callback) callback();
-}
+    if(rows.length > 0){
+        $.each(rows, function(i, v){
+            var _menuId = v.trend_menu_id;
+            var _menuName = v.menu_name;
+            var _cId = v.criteria_id;
+            var _cName = v.criteria_title;
+            var _ids = _menuId +"_"+ _cId;
+            var _chartId = "chart_"+ _ids;
+            var _collapseId = "collapse_"+ _ids;
+            var _legendId = "legend_"+ _ids;
+            var _trendId = "trend_"+ _ids;
+            var _ndpId = "ndp_"+ _ids;
+            var _opppId = "opp_"+ _ids;
+            var _is_3D_id = "is3D_"+ _ids;
+            var _barDtlId = "barDtl_"+ _ids;
+            var _sunburstDtlId = "sunburstDt_"+ _ids;
+            var _paramBoxId = "paramBox_"+ _ids;
 
-function toggleCollapse(e){
-    var _$this = $(e);
-    var _$main = $('main');
-    var _cardHeight = _$main.height();
-    var _$section = _$this.closest(".section");
-    var _$cardHeader = _$this.closest(".card-header");
-    var _$sectionCard = _$this.closest(".section-card");
-        _$sectionCard.find(".card-body").height(_cardHeight-62);
-        
-    var _mId = _$sectionCard.attr("mid");
-    var _cId = _$sectionCard.attr("cid");
-    var _mName = $.trim(_$section.find(".menu-name").text());
-    var _cName = $.trim(_$this.text());
-    var _collapseId = "collapse_"+ _mId +"_"+ _cId;
-        gMenu = _mName;
-        gCName = _cName;
-        gCId = _cId;
-        gPrmSubCategory = "";
-        gPrmGraphType = "";
-    
-    _$this.toggleClass("collapsed");
-    $(".section").find(".card-header").removeClass("active");
-    $(".section").find("a.collapsed").not(_$this).removeClass("collapsed");
-    
-    _$cardHeader.addClass("active");
-    _$sectionCard.find(".collapse").slideToggle(function(){
-        $(this).toggleClass("show");
-        $(".section").find("div.collapse").not($(this)).hide().removeClass("show");
-        
-        _$main.animate({
-            scrollTop: _$main.scrollTop() + _$sectionCard.offset().top - 72,
-        });
-        
-        _$main.promise().done(function(){
-            if(_$this.hasClass("collapsed")){
-                setDefaultParams(_collapseId, function(){
-                    displayCharts(_mId, _mName, _cId, _cName, function(){
-                       
-                    }); 
-                });
-            }else{
-                _$cardHeader.removeClass("active");
+            _tw.section_card({
+                  title         : _cName
+                , chart_id      : _chartId
+                , menu_id       : _menuId
+                , menu_name     : _menuName
+                , criteria_id   : _cId
+                , criteria_name : _cName
+                , collapse_id    : _collapseId
+                , collapse_class : (i===0 ? "show" : "") 
+                , aria_expanded  : (i===0 ? true : false)
+                , aria_collapsed : (i===0 ? "collapsed" : "")
+                //, chart_style    : "height:" + ((_cardHeight)/ 2) + "px"
+                , body_style     : "height:" + (_cardHeight) + "px"
+                , legend_id     : _legendId
+                , trend_id      : _trendId
+                , ndp_id        : _ndpId
+                , opp_id        : _opppId
+                , is_3D_id      : _is_3D_id
+                , sunburst_details_id : _sunburstDtlId
+                , bar_details_id    : _barDtlId
+                , param_box_id      : _paramBoxId
+            });
+            
+            if(i===0){
+                gCId = _cId;
+                gCName = _cName;
+                gMenu = _menuName;
+                setTimeout( function(){
+                    setDefaultParams(_collapseId, function(){
+                        displayCharts(_menuId, _menuName, _cId, _cName, function(){
+                     
+                        }); 
+                    });
+                },  300);
+                $("#criteria_list").find(".section-card:first-child() .card-header").addClass("active");
             }
         });
-    });
-    _$sectionCard.find("#wrap_sub_category").addClass("d-none").val("");
-}
-
-function filterGraphData(e){
-    gData = [];
-    gLegendData = [];
-    gLists = [];
-    gIsStacked = false;
-    gIsFullStacked = false;
-    var _$form = $(e).closest(".form");
-    gMYFrom = parseInt(_$form.find("#my_from").val());
-    gMYTo = parseInt(_$form.find("#my_to").val());
-    gPrmSumUp = parseInt(_$form.find("#sum_by").val());
-    gPrmCategory = _$form.find("#category").val();
-    gPrmSubCategory = _$form.find("#sub_category").val();
-    gPrmGraphType = _$form.find("#graph_type").val();
-    gPrmIs3D = _$form.find(".is_3D").is(":checked");
-    gPrmSumUp = (gPrmSumUp ? gPrmSumUp : 1);
-    
-    var _cId = _$form.find("#criteria_id").val();
-    var _cName = _$form.find("#criteria_name").val();
-    var _menuId = _$form.find("#menu_id").val();
-    var _menuName = _$form.find("#menu_name").val();
-    gMenu = _menuName;
-    gCName = _cName;
-    gCId = _cId;
-        
-    if(gMYFrom > gMYTo){
-        alert("Opps! Invalid range of year.");
-    }else if(gPrmGraphType==="map" && gPrmCategory!=="Region" && gPrmCategory!=="Market"){
-        alert("Map graph is not applicable for this category.");
     }else{
-        displayCharts(_menuId, _menuName, _cId, _cName, function(){
-        
-        });
+        _tw.noData();
     }
-}
+    
+    $('main').scroll(function() {
+        if ($(this).scrollTop() >= 50) {    
+            $('#btnGoTop').fadeIn(200);
+        } else {
+            $('#btnGoTop').fadeOut(200); 
+        }
+    });
+    
+    $('#btnGoTop').click(function(){ 
+        $('main').animate({
+            scrollTop: 0
+        });
+    });
+}  
 
 function createTableFromJSON(json) {
     for (json, o = [], r = 0; r < json.length; r++)
@@ -201,7 +187,11 @@ function createTableFromJSON(json) {
 }
 
 function convertDecimalToString(value){
-    return " " + parseFloat(value).toFixed(6);
+    if(isContain(gCName, "New Conductor Technology")){
+        return " " + parseFloat(value).toFixed(6);
+    }else{
+        return " " + parseFloat(value).toFixed(3);
+    }
 }
 
 function downloadGraphSummary(btn){
@@ -346,7 +336,6 @@ function downloadGraphSummary(btn){
             _html += "</tr>"
                 +"</thead>";
                 
-                
             //Table Body
             _html += "<tbody>"; 
                     $.each(_selectedCategory, function(i, rm){
@@ -399,24 +388,24 @@ function downloadGraphSummary(btn){
                                                 }
                                                 _total += _sValue;
                                                 
-                                                _html += "<td class='text-right'>"+ _sValue +"</td>";
+                                                _html += "<td class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_sValue) : _sValue) +"</td>";
                                             });
                                         }
                                     }else{
                                         if(_res2.length > 0) _cValue = _res2[0].value;
                                         
                                         _total += _cValue;
-                                        _html += "<td class='text-right'>"+ _cValue +"</td>";
+                                        _html += "<td class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_cValue) : _cValue) +"</td>";
                                     }
                                 }else{
                                     if(_res2.length > 0) _cValue = _res2[0].value;
                                     
                                     _total += _cValue;
-                                    _html += "<td class='text-right'>"+ _cValue +"</td>";
+                                    _html += "<td class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_cValue) : _cValue) +"</td>";
                                 }
                             });
                             
-                            _html += "<th class='text-right'>"+ _total +"</th>";
+                            _html += "<th class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_total) : _total) +"</th>";
                             _html += "</tr>";
                         }); 
                     });
@@ -435,7 +424,7 @@ function downloadGraphSummary(btn){
                          _html += "<th class='text-center'>"+ v.name +"</th>";
                     });
             _html += "</tr>"
-            
+                
             if(isContain(gCName, "New Conductor Technology")){
                 var _title = (isContain(gCName, "lesser weight")) ? "AVG WEIGHT" : "AVG DIA";
                 _html += "<tr>"
@@ -515,7 +504,7 @@ function downloadGraphSummary(btn){
                             
                             _html += "<td class='text-right'>"+ convertDecimalToString(_val) +"</td>";
                         });
-                    }else{   
+                    }else{ 
                         _html += "<tr>"
                             +"<th>"+ _cName +"</th>";
                             
@@ -528,7 +517,7 @@ function downloadGraphSummary(btn){
                             if(_res.length > 0) _val = _res[0].value;
                             
                             _total += _val;
-                            _html += "<th class='text-right'>"+ _val +"</th>";
+                            _html += "<th class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_val) : _val) +"</th>";
                             
                             _ctr++;
                             if(_ctr === _length){
@@ -553,7 +542,7 @@ function downloadGraphSummary(btn){
                                                         });
                                                         if(_res3.length > 0) _sVal = _res3[0].value;
                                                     }
-                                                    _html += "<td class='text-right'>"+ _sVal +"</td>";
+                                                    _html += "<td class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_sVal) : _sVal) +"</td>";
                                                 });
                                             _html += "</tr>";
                                         };
@@ -623,7 +612,7 @@ function downloadGraphSummary(btn){
                     }else{
                         _totalVal = getCount(_res4, "value");
                     }
-                    _html += "<th class='text-right'>"+ _totalVal +"</th>";
+                    _html += "<th class='text-right'>"+ (gMenu==="Coverings" ? convertDecimalToString(_totalVal) : _totalVal) +"</th>";
                 });
             _html += "</tr></tfoot>";
         }
@@ -648,10 +637,112 @@ function downloadGraphData(btn){
     });
 }
 
+function setDefaultParams(collapseId, callback){
+    gMYTo = new Date().getFullYear();
+    gMYFrom = gMYTo - 2;
+    gPrmSumUp = 1;
+    gPrmCategory = "Model Year";
+    gPrmGraphType = "";
+    gPrmIs3D = false;
+    gIsStacked = false;
+    gIsFullStacked = false;
+    gPrmIs3D = false;
+    
+    var _$section = $("#" + collapseId);
+    _$section.find("#my_from").val(gMYFrom);
+    _$section.find("#my_to").val(gMYTo);
+    _$section.find("#sum_by").val("");
+    _$section.find("#category").val(gPrmCategory);
+    _$section.find("#graph_type").val(gPrmGraphType);
+    _$section.find(".is_3D").prop('checked', false);
+    
+    if(callback) callback();
+}
+
+function toggleCollapse(e){
+    var _$this = $(e);
+    var _$main = $("main");
+    var _cardHeight = _$main.height();
+    var _$cardHeader = _$this.closest(".card-header");
+    var _$sectionCard = _$this.closest(".section-card");
+        _$sectionCard.find(".card-body").height(_cardHeight-62);
+        
+    var _mId = _$sectionCard.attr("mid");
+    var _cId = _$sectionCard.attr("cid");
+    var _mName = $.trim(_$sectionCard.find("#menu_name").val());
+    var _cName = $.trim(_$this.text());
+    var _collapseId = "collapse_"+ _mId +"_"+ _cId;
+        gMenu = _mName;
+        gCName = _cName;
+        gCId = _cId;
+        gPrmSubCategory = "";
+    
+    _$this.toggleClass("collapsed");
+    $("#criteria_list").find(".card-header").removeClass("active");
+    $("#criteria_list").find("a.collapsed").not(_$this).removeClass("collapsed");
+    
+    _$cardHeader.addClass("active");
+    _$sectionCard.find(".collapse").slideToggle(function(){
+        $(this).toggleClass("show");
+        $("#criteria_list").find("div.collapse").not($(this)).hide().removeClass("show");
+        
+        _$main.animate({
+            scrollTop: _$main.scrollTop() + _$sectionCard.offset().top - 70,
+        });
+
+        _$main.promise().done(function(){
+            if(_$this.hasClass("collapsed")){
+                setDefaultParams(_collapseId, function(){
+                    displayCharts(_mId, _mName, _cId, _cName, function(){
+                       
+                    }); 
+                });
+            }else{
+                _$cardHeader.removeClass("active");
+            }
+        });
+    });
+    _$sectionCard.find("#wrap_sub_category").addClass("d-none").val("");
+}
+
+function filterGraphData(e){
+    gData = [];
+    gLegendData = [];
+    gLists = [];
+    gIsStacked = false;
+    gIsFullStacked = false;
+    var _$form = $(e).closest(".form");
+    gMYFrom = parseInt(_$form.find("#my_from").val());
+    gMYTo = parseInt(_$form.find("#my_to").val());
+    gPrmSumUp = parseInt(_$form.find("#sum_by").val());
+    gPrmCategory = _$form.find("#category").val();
+    gPrmSubCategory = _$form.find("#sub_category").val();
+    gPrmGraphType = _$form.find("#graph_type").val();
+    gPrmIs3D = _$form.find(".is_3D").is(":checked");
+    gPrmSumUp = (gPrmSumUp ? gPrmSumUp : 1);
+    
+    var _cId = _$form.find("#criteria_id").val();
+    var _cName = _$form.find("#criteria_name").val();
+    var _menuId = _$form.find("#menu_id").val();
+    var _menuName = _$form.find("#menu_name").val();
+    gMenu = _menuName;
+    gCName = _cName;
+    gCId = _cId;
+      
+    if(gMYFrom > gMYTo){
+        alert("Opps! Invalid range of year.");
+    }else if(gPrmGraphType==="map" && gPrmCategory!=="Region" && gPrmCategory!=="Market"){
+        alert("Map graph is not applicable for this category.");
+    }else{
+        displayCharts(_menuId, _menuName, _cId, _cName, function(){
+        
+        });
+    }
+}
+
 function getData(url, callback){
     $.get(execURL + url, function(data){
         gData = data.rows;
-
         initGlobalData(function(){
             var _setSubCategory = function(el){
                 var _d = [];
@@ -771,9 +862,12 @@ function setCriteriaParams(callback){
                     
                     if(isContain(gCName, "New Conductor Technology with lesser weight") || isContain(gCName, "New Conductor Technology with lesser dimensions")){
                         _selectedValue = "0.75";
+                        // _$paramBox.find("#" + _columnName).attr("selectedvalue", "0.75");
+                        // gData = gData.filter(function(item){
+                        //     return item[_columnName] == "0.75";
+                        // });
                         
-                        //_$optionBox.find("select:not(#my_from, #my_to), input").attr("disabled", true);
-                        _$optionBox.find("#sum_by, #category").attr("disabled", true);
+                        _$optionBox.find("select:not(#my_from, #my_to), input").attr("disabled", true);
                         _$paramBox.find("select, input").attr("disabled", false);
                     }
                     if(isContain(gCName, "Fuse to Wire Matching")){
@@ -826,11 +920,11 @@ function initGlobalData(callback){
         var _vehicleType = _key.vehicle_type;
         var _oem = _key.oem;
         var _market = _key.market;
-
+        
         if(isContain(gCName, "New Conductor Technology with lesser weight")){
             gData = gData.filter(function(item){ return $.trim(item.conductor_type)=="BARE COPPER" });
         }
-
+        
         $.map(gData, function(v, i){
             if(isDecimal(v[_category])){
                 v[_category] = parseFloat(v[_category]).toFixed(2);
@@ -857,6 +951,10 @@ function initGlobalData(callback){
             if(gMenu==="Wires & Cables" && (!isUD(v.qweight) || !isUD(v.avg_weight))){
                 v.qweight = convertDecimalToString(v.qweight);
                 v.avg_weight = convertDecimalToString(v.avg_weight);
+            }
+            
+            if(gMenu==="Coverings" && !isUD(v.wlength)){
+                v.wlength = convertDecimalToString(v.wlength);
             }
             
             return v;
@@ -886,7 +984,7 @@ function initGlobalData(callback){
                         }
                         return v;
                     });
-         
+
         for (var _my = gMYFrom; _my <= gMYTo; _my++) {
             var _res = gModelYears.filter(function (item) {
             	return item.name == _my;
@@ -912,96 +1010,6 @@ function initGlobalData(callback){
     });
 }
 
-function displayMenus(rows){
-    var _cardHeight = $("main").height();
-    
-    if(rows.length > 0){
-        $.each(rows, function(x, o){
-            var _tw = new zsi.easyJsTemplateWriter();
-            var _menuId = o.menu_id;
-            var _menuName = o.menu_name;
-            var _menuItems = o.subMenus; 
-            var _count = _menuItems.length;
-            var _subBodyId = "section_body_"+ _menuId;
-            var _ctr = 0;
-            var _time = 350;
-            var _mainH = _tw.section({
-                title : _menuName,
-                body_id : _subBodyId,
-            }).html();
-            
-            $("#menuElectrical").append(_mainH);
-            
-            $.each(_menuItems, function(i, v){
-                var _cId = v.criteria_id;
-                var _cName = v.criteria_title;
-                var _cIds = _menuId +"_"+ _cId;
-                var _chartId = "chart_"+ _cIds;
-                var _collapseId = "collapse_"+ _cIds;
-                var _legendId = "legend_"+ _cIds;
-                var _trendId = "trend_"+ _cIds;
-                var _ndpId = "ndp_"+ _cIds;
-                var _opppId = "opp_"+ _cIds;
-                var _is_3D_id = "is3D_"+ _cIds;
-                var _barDtlId = "barDtl_"+ _cIds;
-                var _sunburstDtlId = "sunburstDt_"+ _cIds;
-                var _paramBoxId = "paramBox_"+ _cIds;
-                var _subH = _tw.section_card({
-                      title         : _cName
-                    , chart_id      : _chartId
-                    , menu_id       : _menuId
-                    , menu_name     : _menuName
-                    , criteria_id   : _cId
-                    , criteria_name : _cName
-                    , collapse_id    : _collapseId
-                    , collapse_class : (x===0 && i===0 ? "show" : "") 
-                    , aria_expanded  : (x===0 && i===0 ? true : false)
-                    , aria_collapsed : (x===0 && i===0 ? "collapsed" : "")
-                    , body_style     : "height:" + (x===0 && i===0 ? _cardHeight-133: _cardHeight-62) + "px"
-                    , legend_id     : _legendId
-                    , trend_id      : _trendId
-                    , ndp_id        : _ndpId
-                    , opp_id        : _opppId
-                    , is_3D_id      : _is_3D_id
-                    , sunburst_details_id : _sunburstDtlId
-                    , bar_details_id    : _barDtlId
-                    , param_box_id      : _paramBoxId
-                }).html();
-                
-                $("#"+ _subBodyId).append(_subH);
-                
-                if(x===0 && i===0){
-                    gCId = _cId;
-                    gCName = _cName;
-                    gMenu = _menuName;
-                    setTimeout( function(){
-                        setDefaultParams(_collapseId, function(){
-                            displayCharts(_menuId, _menuName, _cId, _cName, function(){
-                                _time += 350; 
-                            }); 
-                        });
-                    },  _time);
-                    $("#menuElectrical").find(".section:first-child()").find(".section-card:first-child() .card-header").addClass("active");
-                }
-            });
-        })
-    }
-    
-    $('main').scroll(function() {
-        if ($(this).scrollTop() >= 50) {    
-            $('#btnGoTop').fadeIn(200);
-        } else {
-            $('#btnGoTop').fadeOut(200); 
-        }
-    });
-    
-    $('#btnGoTop').click(function(){ 
-        $('main').animate({
-            scrollTop: 0
-        });
-    });
-}  
-
 function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
     getMathFunc(criteriaId, function(){
         getCriteriaParams(criteriaId, function(){
@@ -1014,18 +1022,14 @@ function displayCharts(menuId, menuName, criteriaId, criteriaName, callback){
                 });
                 getData(_res.url, function(){
                     resetDisplayChart(menuId, criteriaId, function(){
+                        // CHART SETTINGS
+                        am4core.useTheme(am4themes_animated);
+                        am4core.options.commercialLicense = true;
+                        
                         var _chartId = "chart_"+ menuId +"_"+ criteriaId;
-
-                        if(gData.length > 0){
-                            // CHART SETTINGS
-                            am4core.useTheme(am4themes_animated);
-                            am4core.options.commercialLicense = true;
-                            
-                            _fnName = new Function("container", _res.chart);
+                        var _fnName = new Function("container", _res.chart);
                             _fnName(_chartId);
-                        }else{
-                            new zsi.easyJsTemplateWriter("#" + _chartId).noData();
-                        }
+                            
                         if(callback) callback();
                     });
                 });
@@ -1636,7 +1640,7 @@ function getDistinctKey(data){
     var _device_name = "";
     var _ctsgfr_code = "";
     var _third_level = "";
-
+    
     if(data.length > 0){
         $.each(Object.keys(data[0]), function(i, key){
             var _key = key.toUpperCase();
@@ -1703,7 +1707,7 @@ function getDistinctKey(data){
                 if(gMathFunc.length > 1){
                     _data = _data.filter(function(item){ return item.math_function !== "SUM"});
                 } 
-            
+                
                 _value = gMathFunc.filter(function(item){ return item.math_function == "SUM" })[0];
                 _value = (isUD(_value) ? "" : _value.column_name.toLowerCase());
             var _dataL = _data.length;
@@ -1729,8 +1733,20 @@ function getDistinctKey(data){
                 }   
             });
         }
+    }    
+    
+    //MECHANICAL
+    if(isContain(gCName, "Eyelets not dip soldered or paint scraper")){
+        _loc = _alias_name;
+        _cat = _third_level;
+        _third_level = "";
     }
     
+    if(isContain(gCName, "Strain relief of Inline connectors having SRS and Airbag")){
+        _loc = "";
+    }
+    
+    //ELECTRICAL
     if(isContain(gCName, "Overall wire usage lower than 0.5 CSA")){
         _loc = "";
     }
@@ -1749,7 +1765,7 @@ function getDistinctKey(data){
     
     if(isContain(gCName, "New Conductor Technology")){
         _cat = "wire_type";
-    } 
+    }
     
     _location = _loc;
     _category = _cat;   
@@ -1818,586 +1834,586 @@ function isContain(string, contains){
 
 //------------------------------- POPUP --------------------------------------//
 function showChartDetails(o){
-        var _key = getDistinctKey(gData);
-        var _value = _key.value;
-        var _category = _key.category;
-        var _region = _key.region;
-        var _modelYear = _key.model_year;
-        var _vehicleType = _key.vehicle_type;
-        var _oem = _key.oem;
-        var _harness = _key.harness_name;
-        var _market = _key.market;
-        var _location = _key.location;
-        var _harnessName = _key.harness_name;
-        var _thirdLevel = _key.third_level;
-        var _dummyData = [{
-            "category": "Dummy",
-            "disabled": true,
-            "value": 1,
-            "color": am4core.color("#dadada"),
-            "opacity": 0.3,
-            "strokeDasharray": "4,4",
-            "tooltip": ""
-        }]; 
-        var _selectedKey = _modelYear;
-        var _selectedKey = _modelYear;
-        var _refData = gModelYears;
-        
-        if(gPrmCategory==="Region"){
-            _selectedKey = _region;
-        }else if(gPrmCategory==="Vehicle Type"){
-            _selectedKey = _vehicleType;
-            _refData = gVehicleTypes;
-        }else if(gPrmCategory==="OEM"){
-            _selectedKey = _oem;
-            _refData = gOEMs;
-        }else if(gPrmCategory==="Market"){
-            _selectedKey = _market;
-        }
-        
-        if(gPrmSubCategory!==""){
-            _refData = gModelYears;
-        }
-       
-        var _togglePieSlices = function(data, reset) {
-            var _sliceData = [];
-            for (var i = 0; i < data.length; i++) {
-                if (i == o.selected) {
-                    for (var x = 0; x < data[i].subs.length; x++) {
-                        _sliceData.push({
-                            category: data[i].subs[x].category,
-                            value: data[i].subs[x].value,
-                            color: data[i].subs[x].color,
-                            pulled: (reset ? false : true)
-                        });
-                    }
-                } else {
+    var _key = getDistinctKey(gData);
+    var _value = _key.value;
+    var _category = _key.category;
+    var _region = _key.region;
+    var _modelYear = _key.model_year;
+    var _vehicleType = _key.vehicle_type;
+    var _oem = _key.oem;
+    var _harness = _key.harness_name;
+    var _market = _key.market;
+    var _location = _key.location;
+    var _harnessName = _key.harness_name;
+    var _thirdLevel = _key.third_level;
+    var _dummyData = [{
+        "category": "Dummy",
+        "disabled": true,
+        "value": 1,
+        "color": am4core.color("#dadada"),
+        "opacity": 0.3,
+        "strokeDasharray": "4,4",
+        "tooltip": ""
+    }]; 
+    var _selectedKey = _modelYear;
+    var _selectedKey = _modelYear;
+    var _refData = gModelYears;
+    
+    if(gPrmCategory==="Region"){
+        _selectedKey = _region;
+    }else if(gPrmCategory==="Vehicle Type"){
+        _selectedKey = _vehicleType;
+        _refData = gVehicleTypes;
+    }else if(gPrmCategory==="OEM"){
+        _selectedKey = _oem;
+        _refData = gOEMs;
+    }else if(gPrmCategory==="Market"){
+        _selectedKey = _market;
+    }
+    
+    if(gPrmSubCategory!==""){
+        _refData = gModelYears;
+    }
+   
+    var _togglePieSlices = function(data, reset) {
+        var _sliceData = [];
+        for (var i = 0; i < data.length; i++) {
+            if (i == o.selected) {
+                for (var x = 0; x < data[i].subs.length; x++) {
                     _sliceData.push({
-                        category: data[i].category,
-                        value: data[i].value,
-                        color: data[i].color,
-                        pulled: (data[i].category == o.category ? (reset ? false:true) : false),
-                        id: i
+                        category: data[i].subs[x].category,
+                        value: data[i].subs[x].value,
+                        color: data[i].subs[x].color,
+                        pulled: (reset ? false : true)
                     });
                 }
+            } else {
+                _sliceData.push({
+                    category: data[i].category,
+                    value: data[i].value,
+                    color: data[i].color,
+                    pulled: (data[i].category == o.category ? (reset ? false:true) : false),
+                    id: i
+                });
             }
-            return _sliceData;
-        };
-        var _generateSunburstData = function(data){
-            var _sunburstData = [];
-            var _group = data[0].group;
-            var _data = _refData.filter(function(item){ return item.name == _group });
-                _data = _data[0].items;
+        }
+        return _sliceData;
+    };
+    var _generateSunburstData = function(data){
+        var _sunburstData = [];
+        var _group = data[0].group;
+        var _data = _refData.filter(function(item){ return item.name == _group });
+            _data = _data[0].items;
+            
+        var _res = _data.filter(function (item) {
+            if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
+            	return item[_location] == o.category && item[_selectedKey] == data[0].region; 
+        	}else if(gPrmCategory==="Model Year"){
+        	    return item[_location] == o.category; 
+        	}else{
+        	    return item[_location] == o.category && item[_selectedKey] == _group; 
+        	}
+        });
+        
+        var _groupCat = sortBy(_res.groupBy([_category]), "name");
+        var _catColor = o.data.filter(function(item) {return item.category == o.category });
+        if( _catColor.length > 0 ){
+            _catColor = _catColor[0].subs;
+        }
+        
+        $.each(_groupCat, function(i, category){
+            var _groupOem = category.items.groupBy([_oem]);
+            //var _groupHarness = category.items.groupBy([_harnessName]);
+            var _color = $.map(_catColor, function(v){  if(v.category == category.name) return v.color; });
+            var _json = {
+                name : category.name,
+                children : [],
+                color: (_color.length > 0) ? _color[0] : "undefined"
+            };  
+            
+            $.each(_groupOem, function(i, oem){
+            //$.each(_groupHarness, function(i, harness){
+                var _groupHarness = oem.items.groupBy([_harnessName]);
+                //var _groupOem = harness.items.groupBy([_oem]);
+                var _jsonOEM = {
+                    name : oem.name,
+                    children : []
+                };
                 
-            var _res = _data.filter(function (item) {
-                if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
-                	return item[_location] == o.category && item[_selectedKey] == data[0].region; 
-            	}else if(gPrmCategory==="Model Year"){
-            	    return item[_location] == o.category; 
-            	}else{
-            	    return item[_location] == o.category && item[_selectedKey] == _group; 
-            	}
+                $.each(_groupHarness, function(i, harness){
+                    _jsonOEM.children.push({
+                        name : harness.name,
+                        value :  getCount(harness.items, _value),
+                    });
+                });
+                
+                _json.children.push(_jsonOEM);
             });
             
-            var _groupCat = sortBy(_res.groupBy([_category]), "name");
-            var _catColor = o.data.filter(function(item) {return item.category == o.category });
-            if( _catColor.length > 0 ){
-                _catColor = _catColor[0].subs;
+            _sunburstData.push(_json);
+        });
+        
+        return _sunburstData;
+    };
+    var _generateChartData = function(data){
+        var _sData = [];
+        var _cData = data.filter(function(item){ 
+            if(_location){
+                return item.category == gPCategory;
+            }else{
+                return item.category == o.category;
             }
+        });
+        var _sName = _cData[0].region
+        var _group = _cData[0].group;
+        
+        var _data = _refData.filter(function(item){ return item.name == _group });
+            _data = _data[0].items;
+        var _res  = _data.filter(function(item){
+            if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
+                if(_location){
+            	    return item[_location] == gPCategory && item[_category] == o.category && item[_selectedKey] == _sName; 
+                }else{
+                    return item[_category] == o.category && item[_selectedKey] == _sName; 
+                }
+        	}else if(gPrmCategory==="Model Year"){
+        	    if(_location){
+            	    return item[_location] == gPCategory && item[_category] == o.category; 
+                }else{
+                    return item[_category] == o.category; 
+                } 
+        	}else{
+        	    if(_location){
+            	    return item[_location] == gPCategory && item[_category] == o.category && item[_selectedKey] == _group; 
+                }else{
+                    return item[_category] == o.category && item[_selectedKey] == _group; 
+                }
+        	}
+        });
+
+        if(!_thirdLevel){
+            var _colorData = (_location) ? _cData[0].subs : _cData;
+            var _color = (_location) ? _cData[0].subs.filter(function(v){ return v.category == o.category }) :  _cData[0].color;
             
-            $.each(_groupCat, function(i, category){
-                var _groupOem = category.items.groupBy([_oem]);
-                //var _groupHarness = category.items.groupBy([_harnessName]);
-                var _color = $.map(_catColor, function(v){  if(v.category == category.name) return v.color; });
+            var _groupOem = _res.groupBy([_oem]);
+            $.each(_groupOem, function(i, oem){
+                var _groupHarness = oem.items.groupBy([_harnessName]);
                 var _json = {
-                    name : category.name,
+                    name : oem.name,
                     children : [],
-                    color: (_color.length > 0) ? _color[0] : "undefined"
+                    color: (_location) ? _color[0].color : _color
                 };  
                 
-                $.each(_groupOem, function(i, oem){
-                //$.each(_groupHarness, function(i, harness){
-                    var _groupHarness = oem.items.groupBy([_harnessName]);
-                    //var _groupOem = harness.items.groupBy([_oem]);
-                    var _jsonOEM = {
-                        name : oem.name,
-                        children : []
+                $.each(_groupHarness, function(i, harness){
+                    var _jsonHarness = {
+                        name : harness.name,
+                        value :  getCount(harness.items, _value),
                     };
                     
-                    $.each(_groupHarness, function(i, harness){
-                        _jsonOEM.children.push({
-                            name : harness.name,
-                            value :  getCount(harness.items, _value),
-                        });
-                    });
-                    
-                    _json.children.push(_jsonOEM);
+                    _json.children.push(_jsonHarness);
                 });
                 
-                _sunburstData.push(_json);
+                _sData.push(_json);
             });
-            
-            return _sunburstData;
-        };
-        var _generateChartData = function(data){
-            var _sData = [];
-            var _cData = data.filter(function(item){ 
-                if(_location){
-                    return item.category == gPCategory;
-                }else{
-                    return item.category == o.category;
-                }
+        }else{
+            $.each(sortBy(gData.groupBy([_thirdLevel]), "name"), function(i, v){
+                var _name = v.name;
+                var _res2 = _res.filter(function (item) {
+                	return item[_thirdLevel] == _name;
+                });
+                
+                _sData.push({
+                   category: _name,
+                   value: getCount(_res2, _value)
+                });
             });
-            var _sName = _cData[0].region
-            var _group = _cData[0].group;
-            
-            var _data = _refData.filter(function(item){ return item.name == _group });
-                _data = _data[0].items;
-            var _res  = _data.filter(function(item){
-                if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
-                    if(_location){
-                	    return item[_location] == gPCategory && item[_category] == o.category && item[_selectedKey] == _sName; 
-                    }else{
-                        return item[_category] == o.category && item[_selectedKey] == _sName; 
-                    }
-            	}else if(gPrmCategory==="Model Year"){
-            	    if(_location){
-                	    return item[_location] == gPCategory && item[_category] == o.category; 
-                    }else{
-                        return item[_category] == o.category; 
-                    } 
-            	}else{
-            	    if(_location){
-                	    return item[_location] == gPCategory && item[_category] == o.category && item[_selectedKey] == _group; 
-                    }else{
-                        return item[_category] == o.category && item[_selectedKey] == _group; 
-                    }
-            	}
-            });
+        }
+   
+        return _sData;
+    };
     
-            if(!_thirdLevel){
-                var _colorData = (_location) ? _cData[0].subs : _cData;
-                var _color = (_location) ? _cData[0].subs.filter(function(v){ return v.category == o.category }) :  _cData[0].color;
+    var _$chartDiv = $("#" + o.container);
+    var _chartDivCW = _$chartDiv.find("div:first-child").width();
+    var _$cFlex = _$chartDiv.closest(".flex-chart");
+    var _$btnReset = _$cFlex.find(".btnReset");
+    var _$chartWrapper = _$cFlex.find(".chart-wrapper");
+    var _$legendWrapper = _$cFlex.find(".legend-wrapper");
+    var _$chartWrapDetails = _$cFlex.find(".chart_details_wrapper");
+    var _$selectGraph = _$cFlex.find(".chart_details_opt");
+    var _$sunburstDtl = _$cFlex.find(".sunburst_details"); //Chart default Id
+    var _$barDtl = _$cFlex.find(".bar_details");
+    var _$selectedCategory = $(".selected_category");
+    var _$chartDtlDiv = _$sunburstDtl; //Default Detail Graph
+    var _chartDtlId = "";
+    var _tw = null;
+    var _sValue = "";
+    
+    var _setChartDtlId = function(callback){
+        _sValue = _$selectGraph.val();
+        if( _sValue === "bar"){
+            _$chartDtlDiv = _$barDtl;  
+        }else{
+            _$chartDtlDiv = _$sunburstDtl;
+        }
+        
+        _chartDtlId = _$chartDtlDiv.attr("id");
+        _tw = new zsi.easyJsTemplateWriter("#" + _chartDtlId);
+        
+        callback();
+    };
+    var _displaySunburstDetails = function(isPopup){
+        if(_location){
+            if(isUD(o.selected) && isPopup){
+                //Show POPUP Details
+                var _modal = "modalChart"
+                var _chartDiv = "chart_details_single";
+                var _chartData = [];
                 
-                var _groupOem = _res.groupBy([_oem]);
-                $.each(_groupOem, function(i, oem){
-                    var _groupHarness = oem.items.groupBy([_harnessName]);
-                    var _json = {
-                        name : oem.name,
-                        children : [],
-                        color: (_location) ? _color[0].color : _color
-                    };  
-                    
-                    $.each(_groupHarness, function(i, harness){
-                        var _jsonHarness = {
-                            name : harness.name,
-                            value :  getCount(harness.items, _value),
-                        };
-                        
-                        _json.children.push(_jsonHarness);
-                    });
-                    
-                    _sData.push(_json);
-                });
-            }else{
-                $.each(sortBy(gData.groupBy([_thirdLevel]), "name"), function(i, v){
-                    var _name = v.name;
-                    var _res2 = _res.filter(function (item) {
-                    	return item[_thirdLevel] == _name;
-                    });
-                    
-                    _sData.push({
-                       category: _name,
-                       value: getCount(_res2, _value)
-                    });
-                });
-            }
-       
-            return _sData;
-        };
-        
-        var _$chartDiv = $("#" + o.container);
-        var _chartDivCW = _$chartDiv.find("div:first-child").width();
-        var _$cFlex = _$chartDiv.closest(".flex-chart");
-        var _$btnReset = _$cFlex.find(".btnReset");
-        var _$chartWrapper = _$cFlex.find(".chart-wrapper");
-        var _$legendWrapper = _$cFlex.find(".legend-wrapper");
-        var _$chartWrapDetails = _$cFlex.find(".chart_details_wrapper");
-        var _$selectGraph = _$cFlex.find(".chart_details_opt");
-        var _$sunburstDtl = _$cFlex.find(".sunburst_details"); //Chart default Id
-        var _$barDtl = _$cFlex.find(".bar_details");
-        var _$selectedCategory = $(".selected_category");
-        var _$chartDtlDiv = _$sunburstDtl; //Default Detail Graph
-        var _chartDtlId = "";
-        var _tw = null;
-        var _sValue = "";
-        
-        var _setChartDtlId = function(callback){
-            _sValue = _$selectGraph.val();
-            if( _sValue === "bar"){
-                _$chartDtlDiv = _$barDtl;  
-            }else{
-                _$chartDtlDiv = _$sunburstDtl;
-            }
-            
-            _chartDtlId = _$chartDtlDiv.attr("id");
-            _tw = new zsi.easyJsTemplateWriter("#" + _chartDtlId);
-            
-            callback();
-        };
-        var _displaySunburstDetails = function(isPopup){
-            if(_location){
-                if(isUD(o.selected) && isPopup){
-                    //Show POPUP Details
-                    var _modal = "modalChart"
-                    var _chartDiv = "chart_details_single";
-                    var _chartData = [];
-                    
-                    if(o.data.length > 0){
-                        _chartData = _generateChartData(o.data);
-                    }else{
-                        _chartData = _dummyData;
-                    }
-                    
-                    new zsi.easyJsTemplateWriter("body")
-                        .bsModalBox({
-                              id        : _modal
-                            , sizeAttr  : "modal-lg"
-                            , title     : "Sunburst"
-                            , body      : gTW.new().div({ id: _chartDiv, style: "min-height: calc(100vh - 165px)" })
-                                             .in().spinner().html() 
-                        })
-            
-                    $("#" + _modal).find(".modal-title").text(o.percentage +": "+ o.category +" » Details") ;
-                    $("#" + _modal).modal({ show: true, keyboard: false, backdrop: 'static' });
-                    
-                    if(_thirdLevel){
-                        displayDetailsPie(_chartDiv, _chartData)
-                    }else{
-                        displayDetailsSunburst(_chartDiv, _chartData);
-                    }
+                if(o.data.length > 0){
+                    _chartData = _generateChartData(o.data);
+                }else{
+                    _chartData = _dummyData;
                 }
-                else{
-                    gPCategory = o.category;
-                    
-                    _$chartDtlDiv.empty().css({
-                        width : _$chartDiv.width(),
-                        height : _$chartDiv.height()
-                    });
-                    
-                    $.each(o.charts, function(i, chart){
-                        var _hasDummy = false;
-                        var _data = [];
-                        var _cData = o.chartsData[i];
-                        var _res = _cData.filter(function(item){ return item.value > 0 });
-                       
-                        if(_cData.length > 0 && _res.length > 0){
-                            chart.data = _togglePieSlices(_cData);
-                            _data = _generateSunburstData(_cData);
-                        }else{
-                            chart.data = _dummyData;
-                            _data = _dummyData;
-                            _hasDummy = true;
-                        }
-                        
-                        if(_data.length === 0){
-                            _data = _dummyData;
-                            _hasDummy = true;
-                        }
-                        
-                        if(_$selectGraph.val() === "sunburst"){
-                            var _contnr =  o.container + "_dtl_"+ i;
-                            _tw.div({ class: "", id: _contnr, style: "width:" + _chartDivCW + "px" })
-                                .in().spinner().out();
-                                
-                            setTimeout(function(){
-                                displayDetailsSunburst(_contnr, _data, _hasDummy);
-                            }, 300);
-                        }
-                    });
-                    
-                    _$legendWrapper.css("bottom", (o.charts.length > 3 ? 16 : 0) + "px");
+                
+                new zsi.easyJsTemplateWriter("body")
+                    .bsModalBox({
+                          id        : _modal
+                        , sizeAttr  : "modal-lg"
+                        , title     : "Sunburst"
+                        , body      : gTW.new().div({ id: _chartDiv, style: "min-height: calc(100vh - 165px)" })
+                                         .in().spinner().html() 
+                    })
+        
+                $("#" + _modal).find(".modal-title").text(o.percentage +": "+ o.category +" » Details") ;
+                $("#" + _modal).modal({ show: true, keyboard: false, backdrop: 'static' });
+                
+                if(_thirdLevel){
+                    displayDetailsPie(_chartDiv, _chartData)
+                }else{
+                    displayDetailsSunburst(_chartDiv, _chartData);
                 }
             }
             else{
-                if(isUD(o.selected)){
-                    gPCategory = o.category;
-                    
-                    _$chartDtlDiv.empty().css({
-                        width : _$chartDiv.width(),
-                        height : _$chartDiv.height()
-                    });
-               
-                    var _ctr = 0;
-                    $.each(o.charts, function(i, chart){
-                        var _hasDummy = false;
-                        var _data = [];
-                        var _cData = o.chartsData[i];
-                        var _res = _cData.filter(function(item){ return item.value > 0 });
-     
-                        if(_cData.length > 0 && _res.length > 0){
-                                chart.data = _togglePieSlices(_cData);
-                                _data = _generateChartData(_cData);
-                        }else{
-                            chart.data = _dummyData;
-                            _data = _dummyData;
-                            _hasDummy = true;
-                        }
+                gPCategory = o.category;
                 
-                        if(_data.length === 0){
-                            _data = _dummyData;
-                            _hasDummy = true;
-                        }
-                  
-                        if(_sValue === "sunburst"){
-                            var _contnr = o.container + "_dtl_"+ i;
-                            _tw.div({ class: "", id: _contnr, style: "width:" + _chartDivCW + "px" })
-                                .in().spinner().out();
-                            
-                            setTimeout(function(){
-                                displayDetailsSunburst(_contnr, _data, _hasDummy);
-                            }, 300); 
-                        }
-                        _ctr++;
-                        
-                        if(_ctr === o.charts.length){
-                            //Show POPUP Details
-                            var _modal = "modalChart"
-                            var _chartDiv = "chart_details_single";
-                            var _chartData = [];
-                            
-                            if(o.data.length > 0){
-                                _chartData = _generateChartData(o.data);
-                            }else{
-                                _chartData = _dummyData;
-                            }
-                            
-                            new zsi.easyJsTemplateWriter("body")
-                                .bsModalBox({
-                                      id        : _modal
-                                    , sizeAttr  : "modal-lg"
-                                    , title     : "Sunburst"
-                                    , body      : gTW.new().div({ id: _chartDiv, style: "min-height: calc(100vh - 165px)" })
-                                                     .in().spinner().html() 
-                                })
-                    
-                            $("#" + _modal).find(".modal-title").text(o.percentage +": "+ o.category +" » Details") ;
-                            $("#" + _modal).modal({ show: true, keyboard: false, backdrop: 'static' });
-                            
-                            if(_thirdLevel){
-                                displayDetailsPie(_chartDiv, _chartData)
-                            }else{
-                                displayDetailsSunburst(_chartDiv, _chartData);
-                            }
-                        }
-                    });
-                }
-            }
-        };
-        var _displayColumnDetails = function(container){
-            _$chartDtlDiv.empty().css({
-                width : _$chartWrapper.width(),
-                height : _$chartWrapper.height()
-            });
-            
-            var _data = [];
-            var _groupCat = gCategories;
-            var _keyToFilter = (_location ? _location : _category);
-            var _dataToFilter = (_location ? gLocations : gCategories);
-            var _catKey = (_location ? (isUD(o.selected) ? gPCategory : o.category) : o.category);
-            var _catColor = o.data.filter(function(item) {return item.category == o.category });
-                _groupCat = _dataToFilter.filter(function(item, i){ return $.trim(item.name) == _catKey })[0].items;
-                _groupCat = sortBy(_groupCat.groupBy([_category]), "name");
-            
-            if( _catColor.length > 0 ){
-                $.map(_groupCat, function(v){
-                    if(_location){
-                        $.each(_catColor[0].subs, function(i, x){
-                            if(v.name == x.category){
-                                v.color = x.color;
-                            } 
-                        });
-                    }else{
-                        if(v.name == _catColor[0].category){
-                            v.color = _catColor[0].color;
-                        } 
-                    }
-                    return v;
+                _$chartDtlDiv.empty().css({
+                    width : _$chartDiv.width(),
+                    height : _$chartDiv.height()
                 });
-            }
-            
-            if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
-                var _selectedCategory = (gPrmCategory==="Region" ? gRegionNames : gMarket);
                 
-                if(gPrmSubCategory!==""){
-                    if(gPrmCategory==="Vehicle Type"){
-                        _selectedCategory = gVehicleTypes;
-                    }else if(gPrmCategory==="OEM"){
-                        _selectedCategory = gOEMs;
-                    }
-                    _selectedCategory = _selectedCategory.filter(function(item){ return item.name == gPrmSubCategory });
-                }
-                
-                $.each(_selectedCategory, function(i, r) { 
-                    var _gName = r.name;
-                    $.each(gModelYears, function(x, my) {
-                        var _my = my.name;
-                        var _res = r.items.filter(function (item) {
-                        	return isContain(_my, item[_modelYear]) && item[_keyToFilter] == _catKey;
-                        });
-             
-                        $.each(gOEMs, function(y, oem) {
-                            var _oemName = oem.name;
-                            var _json = {
-                                group : _gName,
-                                model_year : _my,
-                                category : _oemName +"("+ _my +"-"+ _gName +")"
-                            };
-                            
-                            $.each(_groupCat, function(z, s) {
-                                var _cName = s.name;
-                                var _cNameNew = _cName.replace(/ /g,"_");
-                                var _res2 = _res.filter(function (item) {
-                                	return item[_oem] == _oemName && item[_category] == _cName;
-                                });
-                                
-                                _json[_cNameNew] = getCount(_res2, _value);
-                            });
-        
-                            _data.push(_json);
-                        }); 
-                    });
-                });    
-                    
-                _tw.spinner().out();
-                setTimeout(function(){
-                    displayDetailsRegionColumn(container, _data, _groupCat);
-                }, 300);
-            }else{
-                $.each(_refData, function(i, v) { 
-                    var _fName = v.name;
-                    var _fItems = v.items.filter(function(item){ return item[_keyToFilter] == _catKey });
+                $.each(o.charts, function(i, chart){
+                    var _hasDummy = false;
+                    var _data = [];
+                    var _cData = o.chartsData[i];
+                    var _res = _cData.filter(function(item){ return item.value > 0 });
                    
-                    $.each(gOEMs, function(i, oem) {
-                        var _oemName = oem.name;
-                        var _res = _fItems.filter(function (item) {
-                        	return item[_oem] == _oemName;
-                        });
-                        var _json = {
-                            group : _fName,
-                            category : _oemName +"("+ _fName +")"
-                        };
-                                
-                        $.each(_groupCat, function(z, s) {
-                            var _name = s.name;
-                            var _nameNew = _name.replace(/ /g,"_");
-                            var _res2 = _res.filter(function (item) {
-                            	return item[_category] == _name;
-                            });
-        
-                            _json[_nameNew] = getCount(_res2, _value);
-                        });
-                        
-                        _data.push(_json);
-                    });
+                    if(_cData.length > 0 && _res.length > 0){
+                        chart.data = _togglePieSlices(_cData);
+                        _data = _generateSunburstData(_cData);
+                    }else{
+                        chart.data = _dummyData;
+                        _data = _dummyData;
+                        _hasDummy = true;
+                    }
+                    
+                    if(_data.length === 0){
+                        _data = _dummyData;
+                        _hasDummy = true;
+                    }
+                    
+                    if(_$selectGraph.val() === "sunburst"){
+                        var _contnr =  o.container + "_dtl_"+ i;
+                        _tw.div({ class: "", id: _contnr, style: "width:" + _chartDivCW + "px" })
+                            .in().spinner().out();
+                            
+                        setTimeout(function(){
+                            displayDetailsSunburst(_contnr, _data, _hasDummy);
+                        }, 300);
+                    }
                 });
                 
-                _tw.spinner().out();
-                setTimeout(function(){
-                    displayDetailsColumn(container, _data, _groupCat); 
-                }, 300);
+                _$legendWrapper.css("bottom", (o.charts.length > 3 ? 16 : 0) + "px");
             }
-        };
-        var _setSelectedChartDetails = function(callback){
-            _setChartDtlId(function(){
-                if(_$chartWrapDetails.hasClass("d-none")){
-                    _$selectGraph.val("sunburst"); //  Set Default Chart Details
-                }
+        }
+        else{
+            if(isUD(o.selected)){
+                gPCategory = o.category;
                 
-                if(_sValue==="bar"){
-                    _displayColumnDetails(_chartDtlId);
-                    _$sunburstDtl.addClass("d-none").removeClass("d-flex");
-                }
-                else{
-                    _$barDtl.addClass("d-none").removeClass("d-flex");
-         
-                    if(o.charts.length <= 3){
-                        _$chartWrapper.addClass("overflow-hidden");
+                _$chartDtlDiv.empty().css({
+                    width : _$chartDiv.width(),
+                    height : _$chartDiv.height()
+                });
+           
+                var _ctr = 0;
+                $.each(o.charts, function(i, chart){
+                    var _hasDummy = false;
+                    var _data = [];
+                    var _cData = o.chartsData[i];
+                    var _res = _cData.filter(function(item){ return item.value > 0 });
+ 
+                    if(_cData.length > 0 && _res.length > 0){
+                            chart.data = _togglePieSlices(_cData);
+                            _data = _generateChartData(_cData);
                     }else{
-                        _$chartWrapper.removeClass("overflow-hidden");
+                        chart.data = _dummyData;
+                        _data = _dummyData;
+                        _hasDummy = true;
                     }
-                }
-                
-                _$btnReset.removeClass("d-none");
-                _$chartWrapDetails.removeClass("d-none");
-                _$chartDtlDiv.addClass("d-flex").removeClass("d-none");
             
-                callback();
+                    if(_data.length === 0){
+                        _data = _dummyData;
+                        _hasDummy = true;
+                    }
+              
+                    if(_sValue === "sunburst"){
+                        var _contnr = o.container + "_dtl_"+ i;
+                        _tw.div({ class: "", id: _contnr, style: "width:" + _chartDivCW + "px" })
+                            .in().spinner().out();
+                        
+                        setTimeout(function(){
+                            displayDetailsSunburst(_contnr, _data, _hasDummy);
+                        }, 300); 
+                    }
+                    _ctr++;
+                    
+                    if(_ctr === o.charts.length){
+                        //Show POPUP Details
+                        var _modal = "modalChart"
+                        var _chartDiv = "chart_details_single";
+                        var _chartData = [];
+                        
+                        if(o.data.length > 0){
+                            _chartData = _generateChartData(o.data);
+                        }else{
+                            _chartData = _dummyData;
+                        }
+                        
+                        new zsi.easyJsTemplateWriter("body")
+                            .bsModalBox({
+                                  id        : _modal
+                                , sizeAttr  : "modal-lg"
+                                , title     : "Sunburst"
+                                , body      : gTW.new().div({ id: _chartDiv, style: "min-height: calc(100vh - 165px)" })
+                                                 .in().spinner().html() 
+                            })
+                
+                        $("#" + _modal).find(".modal-title").text(o.percentage +": "+ o.category +" » Details") ;
+                        $("#" + _modal).modal({ show: true, keyboard: false, backdrop: 'static' });
+                        
+                        if(_thirdLevel){
+                            displayDetailsPie(_chartDiv, _chartData)
+                        }else{
+                            displayDetailsSunburst(_chartDiv, _chartData);
+                        }
+                    }
+                });
+            }
+        }
+    };
+    var _displayColumnDetails = function(container){
+        _$chartDtlDiv.empty().css({
+            width : _$chartWrapper.width(),
+            height : _$chartWrapper.height()
+        });
+        
+        var _data = [];
+        var _groupCat = gCategories;
+        var _keyToFilter = (_location ? _location : _category);
+        var _dataToFilter = (_location ? gLocations : gCategories);
+        var _catKey = (_location ? (isUD(o.selected) ? gPCategory : o.category) : o.category);
+        var _catColor = o.data.filter(function(item) {return item.category == o.category });
+            _groupCat = _dataToFilter.filter(function(item, i){ return $.trim(item.name) == _catKey })[0].items;
+            _groupCat = sortBy(_groupCat.groupBy([_category]), "name");
+        
+        if( _catColor.length > 0 ){
+            $.map(_groupCat, function(v){
+                if(_location){
+                    $.each(_catColor[0].subs, function(i, x){
+                        if(v.name == x.category){
+                            v.color = x.color;
+                        } 
+                    });
+                }else{
+                    if(v.name == _catColor[0].category){
+                        v.color = _catColor[0].color;
+                    } 
+                }
+                return v;
             });
-        };
+        }
+        
+        if(gPrmCategory==="Region" || gPrmCategory==="Market" || gPrmSubCategory!==""){
+            var _selectedCategory = (gPrmCategory==="Region" ? gRegionNames : gMarket);
+            
+            if(gPrmSubCategory!==""){
+                if(gPrmCategory==="Vehicle Type"){
+                    _selectedCategory = gVehicleTypes;
+                }else if(gPrmCategory==="OEM"){
+                    _selectedCategory = gOEMs;
+                }
+                _selectedCategory = _selectedCategory.filter(function(item){ return item.name == gPrmSubCategory });
+            }
+            
+            $.each(_selectedCategory, function(i, r) { 
+                var _gName = r.name;
+                $.each(gModelYears, function(x, my) {
+                    var _my = my.name;
+                    var _res = r.items.filter(function (item) {
+                    	return isContain(_my, item[_modelYear]) && item[_keyToFilter] == _catKey;
+                    });
+         
+                    $.each(gOEMs, function(y, oem) {
+                        var _oemName = oem.name;
+                        var _json = {
+                            group : _gName,
+                            model_year : _my,
+                            category : _oemName +"("+ _my +"-"+ _gName +")"
+                        };
+                        
+                        $.each(_groupCat, function(z, s) {
+                            var _cName = s.name;
+                            var _cNameNew = _cName.replace(/ /g,"_");
+                            var _res2 = _res.filter(function (item) {
+                            	return item[_oem] == _oemName && item[_category] == _cName;
+                            });
+                            
+                            _json[_cNameNew] = getCount(_res2, _value);
+                        });
     
+                        _data.push(_json);
+                    }); 
+                });
+            });    
+                
+            _tw.spinner().out();
+            setTimeout(function(){
+                displayDetailsRegionColumn(container, _data, _groupCat);
+            }, 300);
+        }else{
+            $.each(_refData, function(i, v) { 
+                var _fName = v.name;
+                var _fItems = v.items.filter(function(item){ return item[_keyToFilter] == _catKey });
+               
+                $.each(gOEMs, function(i, oem) {
+                    var _oemName = oem.name;
+                    var _res = _fItems.filter(function (item) {
+                    	return item[_oem] == _oemName;
+                    });
+                    var _json = {
+                        group : _fName,
+                        category : _oemName +"("+ _fName +")"
+                    };
+                            
+                    $.each(_groupCat, function(z, s) {
+                        var _name = s.name;
+                        var _nameNew = _name.replace(/ /g,"_");
+                        var _res2 = _res.filter(function (item) {
+                        	return item[_category] == _name;
+                        });
     
-        _$selectedCategory.text(o.category).css("background-color", o.color);
+                        _json[_nameNew] = getCount(_res2, _value);
+                    });
+                    
+                    _data.push(_json);
+                });
+            });
+            
+            _tw.spinner().out();
+            setTimeout(function(){
+                displayDetailsColumn(container, _data, _groupCat); 
+            }, 300);
+        }
+    };
+    var _setSelectedChartDetails = function(callback){
+        _setChartDtlId(function(){
+            if(_$chartWrapDetails.hasClass("d-none")){
+                _$selectGraph.val("sunburst"); //  Set Default Chart Details
+            }
+            
+            if(_sValue==="bar"){
+                _displayColumnDetails(_chartDtlId);
+                _$sunburstDtl.addClass("d-none").removeClass("d-flex");
+            }
+            else{
+                _$barDtl.addClass("d-none").removeClass("d-flex");
+     
+                if(o.charts.length <= 3){
+                    _$chartWrapper.addClass("overflow-hidden");
+                }else{
+                    _$chartWrapper.removeClass("overflow-hidden");
+                }
+            }
+            
+            _$btnReset.removeClass("d-none");
+            _$chartWrapDetails.removeClass("d-none");
+            _$chartDtlDiv.addClass("d-flex").removeClass("d-none");
+        
+            callback();
+        });
+    };
+
+
+    _$selectedCategory.text(o.category).css("background-color", o.color);
+    _setChartDtlId(function(){
+        _setSelectedChartDetails(function(){
+            _displaySunburstDetails(true);
+        });
+    });
+    
+    //Set selected chart
+   // _setSelectedChartDetails();
+    
+    //MOUSE EVENTS
+    //On Scroll
+    _$chartWrapper.scrollLeft(_$chartWrapper.scrollLeft());
+    _$chartWrapper.on('scroll', function() {
+        _$chartWrapper.scrollLeft($(this).scrollLeft());
+    });
+    
+    //On click btnReset: Reset Chart Data
+    _$btnReset.unbind().click(function(e){
+        e.preventDefault();
+        o.selected = undefined;
+        $.each(o.charts, function(i, chart){
+            var _cData = o.chartsData[i];
+            var _res = _cData.filter(function(item){ return item.value > 0 });
+            
+            if(_cData.length > 0 && _res.length > 0){
+                chart.data = _togglePieSlices(_cData, true);
+            }else{
+                chart.data = _dummyData;
+            }
+        });
+        
+        $(this).addClass("d-none");
+        
+        _$chartDtlDiv.empty().css({
+            width : _$chartDiv.width(),
+            height : _$chartDiv.height()
+        });
+        _$selectGraph.val("sunburst"); //  Set Default Chart Details
+        _$chartWrapDetails.addClass("d-none");
+        
+        o.chart.events.once("datavalidated", function(){
+            setTimeout(function(){
+                var _lHeight = o.chart.legend.contentHeight;
+                $("#legend_div").height(_lHeight);
+                _$legendWrapper.css("bottom", (o.charts.length > 3 ? 16 : 0) + "px");
+                _$chartDiv.css("margin-bottom",  _lHeight + "px");
+            }, 100);
+        });
+    });
+    
+    //On change chart selection
+    _$selectGraph.removeClass("d-none");
+    _$selectGraph.unbind().change(function(){
         _setChartDtlId(function(){
             _setSelectedChartDetails(function(){
-                _displaySunburstDetails(true);
+                if(_sValue === "sunburst" && !isUD(o.selected)) _displaySunburstDetails(false); 
             });
         });
-        
-        //Set selected chart
-       // _setSelectedChartDetails();
-        
-        //MOUSE EVENTS
-        //On Scroll
-        _$chartWrapper.scrollLeft(_$chartWrapper.scrollLeft());
-        _$chartWrapper.on('scroll', function() {
-            _$chartWrapper.scrollLeft($(this).scrollLeft());
-        });
-        
-        //On click btnReset: Reset Chart Data
-        _$btnReset.unbind().click(function(e){
-            e.preventDefault();
-            o.selected = undefined;
-            $.each(o.charts, function(i, chart){
-                var _cData = o.chartsData[i];
-                var _res = _cData.filter(function(item){ return item.value > 0 });
-                
-                if(_cData.length > 0 && _res.length > 0){
-                    chart.data = _togglePieSlices(_cData, true);
-                }else{
-                    chart.data = _dummyData;
-                }
-            });
-            
-            $(this).addClass("d-none");
-            
-            _$chartDtlDiv.empty().css({
-                width : _$chartDiv.width(),
-                height : _$chartDiv.height()
-            });
-            _$selectGraph.val("sunburst"); //  Set Default Chart Details
-            _$chartWrapDetails.addClass("d-none");
-            
-            o.chart.events.once("datavalidated", function(){
-                setTimeout(function(){
-                    var _lHeight = o.chart.legend.contentHeight;
-                    $("#legend_div").height(_lHeight);
-                    _$legendWrapper.css("bottom", (o.charts.length > 3 ? 16 : 0) + "px");
-                    _$chartDiv.css("margin-bottom",  _lHeight + "px");
-                }, 100);
-            });
-        });
-        
-        //On change chart selection
-        _$selectGraph.removeClass("d-none");
-        _$selectGraph.unbind().change(function(){
-            _setChartDtlId(function(){
-                _setSelectedChartDetails(function(){
-                    if(_sValue === "sunburst" && !isUD(o.selected)) _displaySunburstDetails(false); 
-                });
-            });
-        });
-    }
+    });
+}
 
 //------------------------------ SET CHART DATA ------------------------------//
 function getChartDetails(){
@@ -3831,7 +3847,7 @@ function displayDetailsPie(container, data){
     
     pieSeries.ticks.template.disabled = true;
     pieSeries.alignLabels = false;
-    pieSeries.labels.template.text = "{value.percent.formatNumber('#.##')}%";
+    pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
     pieSeries.labels.template.radius = am4core.percent(-40);
     pieSeries.labels.template.fill = am4core.color("white");
     
@@ -4830,7 +4846,7 @@ function displayNCTLesserDimensions(container, callback){
             var _wLength = v.items.length;
             var _res = items.filter(function(item){ 
                 return item.wire_type == _wType;  
-            });
+            });    
             var _avg = _res.reduce(function (accumulator, currentValue) {
                     return parseFloat(accumulator) + parseFloat(currentValue.avg_dia);
                 }, 0);
@@ -4932,7 +4948,7 @@ function displayNCTLesserDimensions(container, callback){
         range2.label.inside = true;
         range2.label.text = "Lower Diameter Limit";
         range2.label.fill = range2.grid.stroke;
-        range2.label.verticalCenter = "top";
+        range2.label.verticalCenter = "bottom";
         
         // Add legend
         chart.legend = new am4charts.Legend();
@@ -5087,7 +5103,7 @@ function displayNCTLesserWeight(container, callback){
         range2.label.inside = true;
         range2.label.text = "Lower Weight";
         range2.label.fill = range2.grid.stroke;
-        range2.label.verticalCenter = "top";
+        range2.label.verticalCenter = "bottom";
         
         // Add legend
         chart.legend = new am4charts.Legend();
