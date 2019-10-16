@@ -15,3 +15,5 @@ css/*.map
 yarn.lock
 .vs/*
 createCodeBackup.exe.config
+dbWebSource/.DS_Store
+.DS_Store
